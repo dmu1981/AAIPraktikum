@@ -1,0 +1,251 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PyTorch - Convolutional Neural Networks &mdash; Advances in AI Praktikum  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+
+  
+    <link rel="canonical" href="https://dmu1981.github.io/MPTPraktikum/pytorch/cnn.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=245627df"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script src="../_static/translations.js?v=79cc9f76"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../genindex.html" />
+    <link rel="search" title="Suche" href="../search.html" />
+    <link rel="prev" title="PyTorch - Grundlagen" href="index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Advances in AI Praktikum
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Aufgaben:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="index.html">PyTorch - Grundlagen</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Convolutional Neural Networks</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-1-data-augmentation-pipeline"><strong>Aufgabe 1</strong>: Data Augmentation Pipeline</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-2-der-datensatz-laden"><strong>Aufgabe 2</strong>: Der Datensatz laden</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-3-das-netzwerk-definieren"><strong>Aufgabe 3</strong>: Das Netzwerk definieren</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pytorch.cifar100.CNNNetwork"><code class="docutils literal notranslate"><span class="pre">CNNNetwork</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pytorch.cifar100.CNNNetwork.__init__"><code class="docutils literal notranslate"><span class="pre">CNNNetwork.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pytorch.cifar100.CNNNetwork.forward"><code class="docutils literal notranslate"><span class="pre">CNNNetwork.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Advances in AI Praktikum</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">PyTorch - Convolutional Neural Networks</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/pytorch/cnn.rst.txt" rel="nofollow"> Quelltext anzeigen</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pytorch-convolutional-neural-networks">
+<h1>PyTorch - Convolutional Neural Networks<a class="headerlink" href="#pytorch-convolutional-neural-networks" title="Link to this heading"></a></h1>
+<p>Im Jahr 1998 veröffentlichte
+<a class="reference external" href="https://de.wikipedia.org/wiki/Yann_LeCun">Yann LeCun</a> das erste Convolutional Neural Network (CNN) mit dem Namen <a class="reference external" href="http://vision.stanford.edu/cs598_spring07/papers/Lecun98.pdf">LeNet-5</a>.</p>
+<p>Er war der erste, der die Architektur eines CNNs definierte und es erfolgreich auf die Erkennung von handgeschriebenen Ziffern
+anwandte.</p>
+<a class="reference internal image-reference" href="../_images/YannLeCun.jpg"><img alt="Yann LeCun (Quelle: `https://de.wikipedia.org/wiki/Yann_LeCun`_)" class="align-center" src="../_images/YannLeCun.jpg" style="width: 300px;" />
+</a>
+<p>In dieser Aufgabe werden Sie ein Convolutional Neural Network (CNN) mit PyTorch erstellen, das auf dem CIFAR-100-Datensatz trainiert wird.</p>
+<p><a class="reference external" href="https://www.kaggle.com/datasets/fedesoriano/cifar100">CIFAR-100</a> ist ein Datensatz, der 100 verschiedene Klassen von Bildern enthält, darunter Tiere, Fahrzeuge und alltägliche Objekte.</p>
+<a class="reference internal image-reference" href="../_images/cifar100.png"><img alt="CIFAR-100" class="align-center" src="../_images/cifar100.png" style="width: 600px;" />
+</a>
+<p>In dieser Aufgabe arbeiten Sie in der Datei <code class="file docutils literal notranslate"><span class="pre">pytorch/cifar100.py</span></code>.</p>
+<section id="aufgabe-1-data-augmentation-pipeline">
+<h2><strong>Aufgabe 1</strong>: Data Augmentation Pipeline<a class="headerlink" href="#aufgabe-1-data-augmentation-pipeline" title="Link to this heading"></a></h2>
+<p>In dieser Aufgabe werden Sie eine Data Augmentation Pipeline für den CIFAR-100-Datensatz erstellen.
+Data Augmentation ist eine Technik, die verwendet wird, um die Vielfalt der Trainingsdaten zu erhöhen, indem verschiedene Transformationen auf die Bilder angewendet werden.
+Dies kann helfen, die Generalisierungsfähigkeit des Modells zu verbessern und Overfitting zu reduzieren.
+Sie können verschiedene Transformationen wie zufällige Drehungen, Skalierungen, Spiegelungen und Farbänderungen anwenden.
+PyTorch bietet eine einfache Möglichkeit, Data Augmentation mit der <a class="reference external" href="https://docs.pytorch.org/vision/0.9/transforms.html">torchvision.transforms</a>-Bibliothek zu implementieren.</p>
+<p>Dabei verwendet man in der Regel die Klasse <a class="reference external" href="https://docs.pytorch.org/vision/stable/generated/torchvision.transforms.Compose.html">torchvision.transforms.Compose</a>, um mehrere Transformationen zu kombinieren.
+Sie sollten eine Pipeline erstellen, die mindestens folgende Transformationen enthält:</p>
+<ul class="simple">
+<li><p><strong>Konvertierung in Tensor</strong>: Die <a class="reference external" href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.ToTensor.html">torchvision.transforms.ToTensor()</a>-Klasse konvertiert die Bilder in PyTorch-Tensoren, die für das Training verwendet werden können.</p></li>
+<li><p><strong>Zufällige horizontale Spiegelung</strong>: Die <a class="reference external" href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.RandomHorizontalFlip.html">torchvision.transforms.RandomHorizontalFlip()</a>-Klasse spiegelt die Bilder zufällig horizontal, was bei vielen Objekten sinnvoll ist. Verwenden Sie <cite>p=0.5</cite>.</p></li>
+<li><p><strong>Zufällige Drehung</strong>: Die Klasse <a class="reference external" href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.RandomRotation.html#torchvision.transforms.RandomRotation">torchvision.transforms.RandomRotation()</a> dreht die Bilder um einen zufälligen Winkel, um die Robustheit des Modells gegenüber verschiedenen Orientierungen zu erhöhen. Verwenden Sie <cite>degrees=15</cite>, um die Bilder um bis zu 15 Grad (plus oder minus) zu drehen.</p></li>
+<li><p><strong>Zufälliger Zuschnitt</strong>: Die <a class="reference external" href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.RandomCrop.html">torchvision.transforms.RandomCrop()</a>-Klasse schneidet die Bilder zufällig aus, um die Robustheit des Modells gegenüber verschiedenen Bildausschnitten zu erhöhen. Verwenden Sie <cite>size=(32, 32)</cite> und <cite>padding=4</cite>, um die Bilder auf die Größe 32x32 zu beschneiden und einen Rand von 4 Pixeln hinzuzufügen.</p></li>
+<li><p><strong>Normalisierung</strong>: Die <a class="reference external" href="https://docs.pytorch.org/vision/main/generated/torchvision.transforms.Normalize.html">torchvision.transforms.Normalize()</a>-Klasse normalisiert die Bilder, um die Pixelwerte in einen bestimmten Bereich zu bringen. Verwenden Sie <cite>mean = (0.5, )</cite> und <cite>std = (0.5, )</cite>, um die Bilder zu normalisieren.</p></li>
+</ul>
+<p><strong>Achtung</strong>: Erstellen Sie auch eine zweite Pipeline für die Validierung, die nur die Konvertierung in Tensor und die Normalisierung enthält, ohne Data Augmentation.</p>
+<div class="toggle admonition">
+<p class="admonition-title">Lösung anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">training_transform</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span>
+    <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+    <span class="n">transforms</span><span class="o">.</span><span class="n">RandomHorizontalFlip</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
+    <span class="n">transforms</span><span class="o">.</span><span class="n">RandomRotation</span><span class="p">(</span><span class="n">degrees</span><span class="o">=</span><span class="mi">15</span><span class="p">),</span>
+    <span class="n">transforms</span><span class="o">.</span><span class="n">RandomCrop</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
+    <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">((</span><span class="mf">0.5</span><span class="p">,),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,))</span>
+<span class="p">])</span>
+
+<span class="n">validation_transform</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span>
+    <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+    <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">((</span><span class="mf">0.5</span><span class="p">,),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,))</span>
+<span class="p">])</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="aufgabe-2-der-datensatz-laden">
+<h2><strong>Aufgabe 2</strong>: Der Datensatz laden<a class="headerlink" href="#aufgabe-2-der-datensatz-laden" title="Link to this heading"></a></h2>
+<p>Nun müssen Sie den CIFAR-100-Datensatz laden. PyTorch bietet eine einfache Möglichkeit, diesen Datensatz zu laden und in Trainings- und Validierungssets zu unterteilen.
+Sie können den Datensatz mit der Klasse <cite>torchvision.datasets.CIFAR100</cite> laden.</p>
+<p>Instantieren Sie zwei <a class="reference external" href="https://docs.pytorch.org/vision/main/generated/torchvision.datasets.CIFAR100.html">torchvision.datasets.CIFAR100</a>-Objekte: eines für das Training und eines für die Validierung.
+Verwenden Sie die <cite>root</cite>-Option, um den Speicherort des Datensatzes anzugeben, und die <cite>download</cite>-Option, um den Datensatz herunterzuladen, falls er nicht vorhanden ist.
+Verwenden Sie die <cite>train</cite>-Option, um anzugeben, ob es sich um das Trainings- oder Validierungsset handelt.</p>
+<div class="toggle admonition">
+<p class="admonition-title">Lösung anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">training_data</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR100</span><span class="p">(</span>
+    <span class="n">root</span><span class="o">=</span><span class="s2">&quot;data/cifar100&quot;</span><span class="p">,</span>
+    <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><span class="n">training_transform</span>
+<span class="p">)</span>
+
+<span class="n">validation_data</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR100</span><span class="p">(</span>
+    <span class="n">root</span><span class="o">=</span><span class="s2">&quot;data/cifar100&quot;</span><span class="p">,</span>
+    <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+    <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+    <span class="n">transform</span><span class="o">=</span><span class="n">validation_transform</span>
+<span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Wrappen Sie die Datensätze in <a class="reference external" href="https://pytorch.org/docs/stable/data.html#torch.utils.data.DataLoader">torch.utils.data.DataLoader</a>-Objekte, um sie in Batches laden zu können.
+Ein Batch ist dabei eine Gruppe von Bildern, die gleichzeitig verarbeitet werden.
+Verwenden Sie die <cite>batch_size</cite>-Option, um die Größe der Batches festzulegen, und die <cite>shuffle</cite>-Option, um die Daten zufällig zu mischen.
+Wählen Sie eine Batch-Größe zwischen 32 und 256, abhängig von Ihrer Hardware und den verfügbaren Ressourcen.</p>
+<div class="toggle admonition">
+<p class="admonition-title">Lösung anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">training_set</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">training_data</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">validation_set</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">validation_data</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="aufgabe-3-das-netzwerk-definieren">
+<h2><strong>Aufgabe 3</strong>: Das Netzwerk definieren<a class="headerlink" href="#aufgabe-3-das-netzwerk-definieren" title="Link to this heading"></a></h2>
+<p>Implementieren Sie nun die Klasse <code class="xref py py-class docutils literal notranslate"><span class="pre">CNNNetwork</span></code>, die ein einfaches Convolutional Neural Network (CNN) mit mehreren Convolutional-Schichten und voll verbundenen Schichten definiert.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pytorch.cifar100.CNNNetwork">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytorch.cifar100.</span></span><span class="sig-name descname"><span class="pre">CNNNetwork</span></span><a class="reference internal" href="../_modules/pytorch/cifar100.html#CNNNetwork"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#pytorch.cifar100.CNNNetwork" title="Link to this definition"></a></dt>
+<dd><p>Ein einfaches neuronales Netzwerk mit einer versteckten Schicht.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytorch.cifar100.CNNNetwork.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pytorch/cifar100.html#CNNNetwork.__init__"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#pytorch.cifar100.CNNNetwork.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialisiert das Netzwerk mit mehreren Convolutional-Schichten und voll verbundenen Schichten.</p>
+<p><strong>TODO</strong>:</p>
+<ul class="simple">
+<li><p>Rufen Sie die Methode <cite>super().__init__()</cite> auf, um die Basisklasse zu initialisieren.</p></li>
+<li><p>Definieren Sie die Faltungs-Schichten <cite>conv1</cite>, <cite>conv2</cite>, <cite>conv3</cite> mit den entsprechenden Eingangs- und Ausgangskanälen. Verwenden Sie <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Conv2d.html">nn.Conv2d(…)</a>. Setzen Sie <cite>kernel_size=3</cite> und <cite>padding=“same“</cite> für alle Schichten.
+Verwenden Sie jeweils 16, 32 und 64 Ausgänge für <cite>conv1</cite>, <cite>conv2</cite> und <cite>conv3</cite>.</p></li>
+<li><p>Definieren Sie die voll verbundenen Schichten <cite>fc1</cite> und <cite>fc2</cite> mit den entsprechenden Eingangs- und Ausgangsgrößen. Verwenden Sie <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Linear.html">nn.Linear(…)</a>. Setzen Sie <cite>fc1</cite> auf 512 Ausgänge und <cite>fc2</cite> auf 100 Ausgänge.</p></li>
+<li><p>Fügen Sie eine <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Flatten.html">Flatten-Schicht</a> hinzu, um die Ausgabe der Convolutional-Schichten in einen Vektor umzuwandeln.</p></li>
+<li><p>Fügen Sie eine <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.MaxPool2d.html">Max-Pooling-Schicht</a> <cite>pool</cite> mit <cite>kernel_size=2</cite> und <cite>stride=2</cite> hinzu, um die räumliche Dimension der Feature-Maps zu reduzieren.</p></li>
+<li><p>Verwenden Sie <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.relu.html">torch.relu</a> für die Aktivierung.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytorch.cifar100.CNNNetwork.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pytorch/cifar100.html#CNNNetwork.forward"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#pytorch.cifar100.CNNNetwork.forward" title="Link to this definition"></a></dt>
+<dd><p>Führt den Vorwärtsdurchlauf des Netzwerks aus.</p>
+<p><strong>TODO</strong>:</p>
+<ul class="simple">
+<li><p>Wenden Sie abwechselnd immer die Faltungs-Schichten <cite>conv1</cite>, <cite>conv2</cite>, <cite>conv3</cite> auf die Eingabe <cite>x</cite> an, gefolgt von einer ReLU-Aktivierung und einem Pooling-Layer.</p></li>
+<li><p>Flatten Sie die Ausgabe der letzten Faltungs-Schicht mit .`self.flatten(x)`</p></li>
+<li><p>Wenden Sie die voll verbundenen Schichten <cite>fc1</cite> und <cite>fc2</cite> auf die flachgelegte Ausgabe an, wobei Sie ReLU-Aktivierung auf die Ausgabe von <cite>fc1</cite> anwenden.</p></li>
+<li><p>Geben Sie die Ausgabe der letzten Schicht <cite>fc2</cite> zurück.</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="index.html" class="btn btn-neutral float-left" title="PyTorch - Grundlagen" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Prof. Dr. Dennis Müller.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

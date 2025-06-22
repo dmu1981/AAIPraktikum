@@ -1,0 +1,324 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>PyTorch - Grundlagen &mdash; Advances in AI Praktikum  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+
+  
+    <link rel="canonical" href="https://dmu1981.github.io/MPTPraktikum/pytorch/index.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=245627df"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script src="../_static/translations.js?v=79cc9f76"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../genindex.html" />
+    <link rel="search" title="Suche" href="../search.html" />
+    <link rel="next" title="PyTorch - Convolutional Neural Networks" href="cnn.html" />
+    <link rel="prev" title="Advances in AI - Praktikum" href="../index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Advances in AI Praktikum
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Aufgaben:</span></p>
+<ul class="current">
+<li class="toctree-l1 current"><a class="current reference internal" href="#">PyTorch - Grundlagen</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-1-ein-einfaches-neuronales-netzwerk-erstellen"><strong>Aufgabe 1</strong>: Ein einfaches neuronales Netzwerk erstellen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-2-das-netzwerk-definieren"><strong>Aufgabe 2</strong>: Das Netzwerk definieren</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pytorch.simple.SimpleNetwork"><code class="docutils literal notranslate"><span class="pre">SimpleNetwork</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#pytorch.simple.SimpleNetwork.__init__"><code class="docutils literal notranslate"><span class="pre">SimpleNetwork.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#pytorch.simple.SimpleNetwork.forward"><code class="docutils literal notranslate"><span class="pre">SimpleNetwork.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-3-das-netzwerk-trainieren"><strong>Aufgabe 3</strong>: Das Netzwerk trainieren</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pytorch.simple.train_model"><code class="docutils literal notranslate"><span class="pre">train_model()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-4-das-netzwerk-testen"><strong>Aufgabe 4</strong>: Das Netzwerk testen</a></li>
+</ul>
+</li>
+<li class="toctree-l1"><a class="reference internal" href="cnn.html">Convolutional Neural Networks</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Advances in AI Praktikum</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">PyTorch - Grundlagen</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/pytorch/index.rst.txt" rel="nofollow"> Quelltext anzeigen</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="pytorch-grundlagen">
+<h1>PyTorch - Grundlagen<a class="headerlink" href="#pytorch-grundlagen" title="Link to this heading"></a></h1>
+<p>Während diesem Semester werden wir uns intensiv mit PyTorch beschäftigen.
+Sie benötigen eine funktionierende Installation von PyTorch, um die Aufgaben zu bearbeiten.
+Sie sollen die offizielle Installationsanleitung von PyTorch befolgen, die Sie <a class="reference external" href="https://pytorch.org/get-started/locally/">hier</a> finden.</p>
+<p>Installieren Sie PyTorch mit der passenden Konfiguration für Ihre Hardware und Ihr Betriebssystem.
+Achten Sie darauf, dass Sie die richtige Version von CUDA auswählen, wenn Sie eine NVIDIA-GPU verwenden möchten.</p>
+<p>Überprüfen Sie anschließend ihre Installation, indem Sie die folgenden Befehle in einem Python-Interpreter ausführen:</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">__version__</span><span class="p">)</span>
+<span class="nb">print</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">())</span>
+</pre></div>
+</div>
+<p>Wenn die Installation erfolgreich war, sollten Sie die PyTorch-Version und den Status der CUDA-Verfügbarkeit sehen.</p>
+<section id="aufgabe-1-ein-einfaches-neuronales-netzwerk-erstellen">
+<h2><strong>Aufgabe 1</strong>: Ein einfaches neuronales Netzwerk erstellen<a class="headerlink" href="#aufgabe-1-ein-einfaches-neuronales-netzwerk-erstellen" title="Link to this heading"></a></h2>
+<p>In dieser Aufgabe werden Sie ein einfaches neuronales Netzwerk mit PyTorch erstellen.
+Folgen Sie den Schritten in der offiziellen Dokumentation, um ein neuronales Netzwerk zu definieren,
+es zu trainieren und die Leistung zu bewerten.</p>
+<p>Sie arbeiten in der Datei <code class="file docutils literal notranslate"><span class="pre">pytorch/simple.py</span></code>.</p>
+<p>Wir wollen das s.g. XOR-Problem lösen, bei dem das Netzwerk lernen soll, die logische XOR-Funktion zu approximieren.
+Sie sollen ein Netzwerk mit mindestens einem versteckten Layer erstellen, das in der Lage ist, diese Aufgabe zu bewältigen.</p>
+<p>Definieren Sie zunächst die Trainingsdaten für das XOR-Problem:</p>
+<div class="math notranslate nohighlight">
+\[\begin{split}\begin{align*}
+\text{Input} &amp; : \begin{pmatrix}
+0 &amp; 0 \\
+0 &amp; 1 \\
+1 &amp; 0 \\
+1 &amp; 1
+\end{pmatrix} \\
+\text{Output} &amp; : \begin{pmatrix}
+0 \\
+1 \\
+1 \\
+0
+\end{pmatrix}
+\end{align*}\end{split}\]</div>
+<p>Legen Sie dazu PyTorch-Tensoren für die Eingaben und Ausgaben an. Achten Sie darauf die Tensoren direkt
+im richtigen Datentyp zu erstellen, z.B. <cite>torch.float32</cite> für die Eingaben und <cite>torch.long</cite> für die Zielklassen.
+Legen Sie diese Tensoren auf das richtige Gerät (CPU oder GPU) ab, abhängig von Ihrer Hardware. Schauen Sie
+in die <a class="reference external" href="https://docs.pytorch.org/docs/stable/tensors.html">offizielle Dokumentation</a>, wie Sie dies tun können.</p>
+<div class="toggle admonition">
+<p class="admonition-title">Lösung anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">training_data</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">(</span>
+  <span class="p">[[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">0.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">0.0</span><span class="p">],</span> <span class="p">[</span><span class="mf">1.0</span><span class="p">,</span> <span class="mf">1.0</span><span class="p">]],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">float32</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">DEVICE</span>
+<span class="p">)</span>
+<span class="n">labels</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">0</span><span class="p">],</span> <span class="n">dtype</span><span class="o">=</span><span class="n">torch</span><span class="o">.</span><span class="n">long</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">DEVICE</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="aufgabe-2-das-netzwerk-definieren">
+<h2><strong>Aufgabe 2</strong>: Das Netzwerk definieren<a class="headerlink" href="#aufgabe-2-das-netzwerk-definieren" title="Link to this heading"></a></h2>
+<p>Implementieren Sie nun die Klasse <code class="xref py py-class docutils literal notranslate"><span class="pre">SimpleNetwork</span></code>, die ein einfaches neuronales Netzwerk mit einem versteckten Layer definiert.
+PyTorch Module sind Klassen, die von <cite>torch.nn.Module</cite> erben. Sie managen das registrieren von trainierbaren Parametern
+und bieten eine einfache Schnittstelle für das Training und die Vorhersage.</p>
+<p>Es ist zwingend notwendig, dass Sie die <cite>forward</cite>-Methode implementieren,
+die die Vorwärtsausbreitung des Netzwerks definiert. Da unser Netzwerk trainierbare Parameter hat müssen Sie auch die
+<cite>__init__</cite>-Methode implementieren, die die Struktur des Netzwerks definiert.
+Rufen Sie <strong>immer</strong> in der <cite>__init__</cite>-Methode die <cite>super().__init__()</cite>-Methode auf, um die Basisklasse zu initialisieren.
+Verwenden Sie dann <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Linear.html">torch.nn.Linear</a> für die Definition der Schichten des Netzwerks.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="pytorch.simple.SimpleNetwork">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytorch.simple.</span></span><span class="sig-name descname"><span class="pre">SimpleNetwork</span></span><a class="reference internal" href="../_modules/pytorch/simple.html#SimpleNetwork"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#pytorch.simple.SimpleNetwork" title="Link to this definition"></a></dt>
+<dd><p>Ein einfaches neuronales Netzwerk mit einer versteckten Schicht.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="pytorch.simple.SimpleNetwork.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pytorch/simple.html#SimpleNetwork.__init__"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#pytorch.simple.SimpleNetwork.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialisiert das Netzwerk mit einer versteckten Schicht.</p>
+<p><strong>TODO</strong>:</p>
+<ul class="simple">
+<li><p>Rufen Sie die Methode <cite>super().__init__()</cite> auf, um die Basisklasse zu initialisieren.</p></li>
+<li><p>Definieren Sie die erste voll verbundene Schicht <cite>fc1</cite> mit 2 Eingängen und 8 Ausgängen.</p></li>
+<li><p>Definieren Sie die zweite voll verbundene Schicht <cite>fc2</cite> mit 8 Eingängen und 2 Ausgängen.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="pytorch.simple.SimpleNetwork.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pytorch/simple.html#SimpleNetwork.forward"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#pytorch.simple.SimpleNetwork.forward" title="Link to this definition"></a></dt>
+<dd><p>Führt den Vorwärtsdurchlauf des Netzwerks aus.</p>
+<p><strong>TODO</strong>:</p>
+<ul class="simple">
+<li><p>Wenden Sie die erste voll verbundene Schicht <cite>fc1</cite> auf die Eingabe <cite>x</cite> an.</p></li>
+<li><p>Wenden Sie die ReLU-Aktivierungsfunktion (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.ReLU.html">torch.relu</a>) auf die Ausgabe der ersten Schicht <cite>fc1</cite> an.</p></li>
+<li><p>Wenden Sie die zweite voll verbundene Schicht <cite>fc2</cite> auf die Ausgabe der ReLU-Aktivierung an.</p></li>
+<li><p>Geben Sie die Ausgabe der zweiten Schicht <cite>fc2</cite> zurück.</p></li>
+</ul>
+</dd></dl>
+
+</dd></dl>
+
+<div class="toggle admonition">
+<p class="admonition-title">Lösung für den Konstruktor __init__ anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+  <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+  <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">8</span><span class="p">)</span>
+  <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">8</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="toggle admonition">
+<p class="admonition-title">Lösung für die Forward-Methode anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="aufgabe-3-das-netzwerk-trainieren">
+<h2><strong>Aufgabe 3</strong>: Das Netzwerk trainieren<a class="headerlink" href="#aufgabe-3-das-netzwerk-trainieren" title="Link to this heading"></a></h2>
+<p>Implementieren Sie dann die Methode</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pytorch.simple.train_model">
+<span class="sig-prename descclassname"><span class="pre">pytorch.simple.</span></span><span class="sig-name descname"><span class="pre">train_model</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">data</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">criterion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epochs</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">8000</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pytorch/simple.html#train_model"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#pytorch.simple.train_model" title="Link to this definition"></a></dt>
+<dd><p>Trainiert das Modell mit den gegebenen Daten und Labels.</p>
+<p>Diese Funktion führt das Training des Modells durch, indem sie die Eingabedaten und Labels verwendet,
+um die Gewichte des Modells zu aktualisieren. Der Verlust wird in jeder 1000. Epoche ausgegeben.</p>
+<section id="parameter">
+<h3>Parameter:<a class="headerlink" href="#parameter" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>model<span class="classifier">nn.Module</span></dt><dd><p>Das zu trainierende neuronale Netzwerk.</p>
+</dd>
+<dt>data<span class="classifier">torch.Tensor</span></dt><dd><p>Die Eingabedaten für das Training.</p>
+</dd>
+<dt>labels<span class="classifier">torch.Tensor</span></dt><dd><p>Die zugehörigen Labels für die Eingabedaten.</p>
+</dd>
+<dt>criterion<span class="classifier">nn.Module</span></dt><dd><p>Das Kriterium zur Berechnung des Verlusts (z.B. CrossEntropyLoss).</p>
+</dd>
+<dt>optimizer<span class="classifier">torch.optim.Optimizer</span></dt><dd><p>Der Optimierer, der verwendet wird, um die Gewichte des Modells zu aktualisieren</p>
+</dd>
+<dt>epochs<span class="classifier">int, optional</span></dt><dd><p>Die Anzahl der Epochen, die das Modell trainiert werden soll (Standard: 8000).</p>
+</dd>
+</dl>
+<p><strong>TODO</strong>:</p>
+<p>Iterieren Sie über die Anzahl der Epochen und führen Sie in jeder Epoche die folgenden Schritte aus:</p>
+<ul class="simple">
+<li><p>Setzen Sie die Gradienten des Optimierers zurück. (<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.optim.Optimizer.zero_grad.html">optimizer.zero_grad()</a>)</p></li>
+<li><p>Führen Sie einen Vorwärtsdurchlauf des Modells mit den Eingabedaten <cite>data</cite> durch.</p></li>
+<li><p>Berechnen Sie den Verlust zwischen den Modell-Ausgaben und den Labels mit dem Kriterium <cite>criterion</cite>.</p></li>
+<li><p>Führen Sie den Rückwärtsdurchlauf durch, um die Gradienten zu berechnen. (<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.Tensor.backward.html">loss.backward()</a>)</p></li>
+<li><p>Geben Sie den Verlust alle 1000 Epochen aus.</p></li>
+<li><p>Führen Sie den Optimierungsschritt durch, um die Gewichte des Modells zu aktualisieren. (<a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.optim.Optimizer.step.html">optimizer.step()</a>)</p></li>
+</ul>
+</section>
+</dd></dl>
+
+<p>um das Netzwerk zu trainieren.</p>
+<div class="toggle admonition">
+<p class="admonition-title">Lösung für die Forward-Methode anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">train_model</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">data</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">epochs</span><span class="o">=</span><span class="mi">8000</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">epochs</span><span class="p">):</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">epoch</span> <span class="o">%</span> <span class="mi">1000</span> <span class="o">==</span> <span class="mi">999</span><span class="p">:</span>
+            <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Epoch </span><span class="si">{</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">, Loss: </span><span class="si">{</span><span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="aufgabe-4-das-netzwerk-testen">
+<h2><strong>Aufgabe 4</strong>: Das Netzwerk testen<a class="headerlink" href="#aufgabe-4-das-netzwerk-testen" title="Link to this heading"></a></h2>
+<p>Starten Sie das Training des Netzwerks, indem Sie das Skript <code class="file docutils literal notranslate"><span class="pre">pytorch/simple.py</span></code> ausführen.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>pytorch/simple.py
+
+Epoch<span class="w"> </span><span class="m">1000</span>,<span class="w"> </span>Loss:<span class="w"> </span><span class="m">0</span>.03407074883580208
+Epoch<span class="w"> </span><span class="m">2000</span>,<span class="w"> </span>Loss:<span class="w"> </span><span class="m">0</span>.009740689769387245
+Epoch<span class="w"> </span><span class="m">3000</span>,<span class="w"> </span>Loss:<span class="w"> </span><span class="m">0</span>.005211123265326023
+Epoch<span class="w"> </span><span class="m">4000</span>,<span class="w"> </span>Loss:<span class="w"> </span><span class="m">0</span>.0034439843147993088
+Epoch<span class="w"> </span><span class="m">5000</span>,<span class="w"> </span>Loss:<span class="w"> </span><span class="m">0</span>.0025294627994298935
+Epoch<span class="w"> </span><span class="m">6000</span>,<span class="w"> </span>Loss:<span class="w"> </span><span class="m">0</span>.001979016000404954
+Epoch<span class="w"> </span><span class="m">7000</span>,<span class="w"> </span>Loss:<span class="w"> </span><span class="m">0</span>.0016146576963365078
+Epoch<span class="w"> </span><span class="m">8000</span>,<span class="w"> </span>Loss:<span class="w"> </span><span class="m">0</span>.0013573128962889314
+Training<span class="w"> </span>complete.
+tensor<span class="o">([[</span><span class="w"> </span><span class="m">3</span>.0257,<span class="w"> </span>-3.4460<span class="o">]</span>,
+<span class="w">        </span><span class="o">[</span>-3.0238,<span class="w">  </span><span class="m">3</span>.6015<span class="o">]</span>,
+<span class="w">        </span><span class="o">[</span>-2.5722,<span class="w">  </span><span class="m">4</span>.1114<span class="o">]</span>,
+<span class="w">        </span><span class="o">[</span><span class="w"> </span><span class="m">3</span>.9732,<span class="w"> </span>-2.6664<span class="o">]]</span>,<span class="w"> </span><span class="nv">device</span><span class="o">=</span><span class="s1">&#39;cuda:0&#39;</span><span class="o">)</span>
+</pre></div>
+</div>
+<p><strong>Musterlösung</strong>:</p>
+<p><a class="reference internal" href="simple_source.html"><span class="doc">Ein einfaches Netzwerk trainieren - Musterlösung</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../index.html" class="btn btn-neutral float-left" title="Advances in AI - Praktikum" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
+        <a href="cnn.html" class="btn btn-neutral float-right" title="PyTorch - Convolutional Neural Networks" accesskey="n" rel="next">Weiter <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Prof. Dr. Dennis Müller.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
