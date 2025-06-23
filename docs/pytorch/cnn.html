@@ -64,6 +64,12 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-4-das-training-des-netzwerks"><strong>Aufgabe 4</strong>: Das Training des Netzwerks</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#pytorch.cifar100.epoch"><code class="docutils literal notranslate"><span class="pre">epoch()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-5-batch-normalisierung-hinzufugen"><strong>Aufgabe 5</strong>: Batch-Normalisierung hinzufügen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-6-dropout-hinzufugen"><strong>Aufgabe 6</strong>: Dropout hinzufügen</a></li>
 </ul>
 </li>
 </ul>
@@ -215,6 +221,217 @@ Verwenden Sie jeweils 16, 32 und 64 Ausgänge für <cite>conv1</cite>, <cite>con
 
 </dd></dl>
 
+<div class="toggle admonition">
+<p class="admonition-title">Implementierung des Konstruktors anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+  <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+  <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)</span>
+  <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)</span>
+  <span class="bp">self</span><span class="o">.</span><span class="n">conv3</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)</span>
+
+  <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">64</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
+  <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
+  <span class="bp">self</span><span class="o">.</span><span class="n">flatten</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Flatten</span><span class="p">()</span>
+  <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="toggle admonition">
+<p class="admonition-title">Implementierung des Forward-Passes anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv3</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="aufgabe-4-das-training-des-netzwerks">
+<h2><strong>Aufgabe 4</strong>: Das Training des Netzwerks<a class="headerlink" href="#aufgabe-4-das-training-des-netzwerks" title="Link to this heading"></a></h2>
+<p>Dieses mal möchten wir das Training etwas ausführlicher gestalten.
+Insbesondere möchten wir den Fortschritt des Trainings in Form von Metriken wie der Genauigkeit und dem Verlust verfolgen.
+Ausserdem möchten wir sowohl den Trainings- als auch den Validierungsprozess in separaten Funktionen implementieren, um den Code übersichtlicher zu gestalten.</p>
+<p>Da einige Module sich während des Trainings anders verhalten als während der Validierung, wie z.B. die Dropout-Schichten, müssen wir das Netzwerk in den richtigen Modus versetzen.
+Rufen Sie dazu
+<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.train">model.train()</a>
+bzw.
+<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.eval">model.eval()</a>
+auf, um das Netzwerk in den Trainings- bzw. Validierungsmodus zu versetzen.</p>
+<p>Während des Trainings müssen die Gradienten berechnet und die Gewichte aktualisiert werden.
+Dazu müssen wie vorher mit <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.optim.Optimizer.zero_grad.html">optimizer.zero_grad()</a> die Gradienten auf Null gesetzt werden, bevor der Vorwärtsdurchlauf durchgeführt wird.
+Mit <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.Tensor.backward.html">loss.backward()</a> und <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.Tensor.backward.html">optimizer.step()</a> werden die Gradienten berechnet, und mit <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.optim.Optimizer.step.html">optimizer.step()</a> werden die Gewichte aktualisiert.</p>
+<p>Während der Validierung müssen die Gradienten nicht berechnet werden, da wir nur die Vorhersagen des Modells benötigen.
+Sie können dies erreichen, indem Sie den Kontextmanager <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.autograd.grad_mode.set_grad_enabled.html">torch.set_grad_enabled(train)</a> verwenden, der verhindert, dass PyTorch die Gradienten berechnet und speichert.</p>
+<p>Um den durchschnittlichen Verlust und die Genauigkeit während des Trainings und der Validierung zu berechnen, müssen Sie während der Epoche Statistiken sammeln.
+Summieren sie den Verlust und die Anzahl der korrekten Vorhersagen für jedes Batch auf.
+Zählen Sie zusätzlich die Anzahl der Bilder in jedem Batch, um die Gesamtzahl der Bilder zu erhalten.</p>
+<p>Nachdem das Netz eine Vorhesage für einen Batch gemacht hat stehen in</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+</pre></div>
+</div>
+<p>die s.g. <a class="reference external" href="https://wandb.ai/amanarora/Written-Reports/reports/Understanding-Logits-Sigmoid-Softmax-and-Cross-Entropy-Loss-in-Deep-Learning--Vmlldzo0NDMzNTU3">Logits</a>.
+Mit <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.argmax.html">torch.argmax(outputs, dim=1)</a> können Sie die Klasse mit der höchsten Wahrscheinlichkeit auswählen.
+Der <cite>dim=1</cite>-Parameter gibt an, dass die Argmax-Operation entlang der zweiten Dimension (der Klassen) durchgeführt wird. Sie erhalten damit zu jedem Bild die Klasse mit der höchsten Wahrscheinlichkeit.
+Über einen Vergleich mit den wahren Labels können Sie die Anzahl der korrekten Vorhersagen zählen.</p>
+<p>Implementieren Sie die Funktion <a class="reference internal" href="#pytorch.cifar100.epoch" title="pytorch.cifar100.epoch"><code class="xref py py-func docutils literal notranslate"><span class="pre">pytorch.cifar100.epoch()</span></code></a>, die das Netzwerk auf dem Trainingsset trainiert und den Fortschritt in Form von Metriken wie der Genauigkeit und dem Verlust verfolgt.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="pytorch.cifar100.epoch">
+<span class="sig-prename descclassname"><span class="pre">pytorch.cifar100.</span></span><span class="sig-name descname"><span class="pre">epoch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">criterion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pytorch/cifar100.html#epoch"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#pytorch.cifar100.epoch" title="Link to this definition"></a></dt>
+<dd><p>Führt eine einzelne Trainings- oder Evaluations-Epoche für das Modell aus.</p>
+<section id="parameters">
+<h3>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>model (nn.Module):</dt><dd><p>Das zu trainierende oder evaluierende Modell.</p>
+</dd>
+<dt>n (int):</dt><dd><p>Die aktuelle Epoche.</p>
+</dd>
+<dt>train (bool):</dt><dd><p>Gibt an, ob die Epoche im Trainingsmodus oder im Evaluationsmodus durchgeführt wird.</p>
+</dd>
+<dt>dataloader (DataLoader):</dt><dd><p>Der DataLoader, der die Daten für die Epoche bereitstellt.</p>
+</dd>
+<dt>criterion (nn.Module):</dt><dd><p>Das Loss-Kriterium, das zur Berechnung des Verlusts verwendet wird.</p>
+</dd>
+<dt>optimizer (torch.optim.Optimizer):</dt><dd><p>Der Optimierer, der zur Aktualisierung der Modellparameter verwendet wird.</p>
+</dd>
+</dl>
+<p><strong>TODO</strong>:</p>
+<ul class="simple">
+<li><p>Setzen Sie das Modell in den Trainingsmodus, wenn <cite>train=True</cite> ist, und in den Evaluationsmodus, wenn <cite>train=False</cite> ist. Rufen Sie dazu <cite>model.train()</cite> bzw. <cite>model.eval()</cite> auf.</p></li>
+<li><p>Initialisieren Sie <cite>total_loss</cite>, <cite>total_samples</cite> und <cite>total_correct</cite> auf 0.0, 0 und 0.</p></li>
+<li><p>Verwenden Sie <cite>tqdm</cite> für den Fortschrittsbalken, um den Fortschritt der Epoche anzuzeigen.
+Speichern Sie den Iterator in einer eigenen Variable damit er innerhalb der Schleife verwendet werden kann.</p></li>
+<li><p>Iterieren Sie über den <cite>dataloader</cite> und führen Sie die folgenden Schritte aus:</p></li>
+<li><p>Verschieben Sie die Daten und Labels auf das Gerät (<cite>DEVICE</cite>).</p></li>
+<li><p>Setzen Sie die Gradienten des Optimierers zurück, wenn <cite>train=True</cite> ist, indem Sie <cite>optimizer.zero_grad()</cite> aufrufen.</p></li>
+<li><p>Führen Sie den Vorwärtsdurchlauf des Modells aus, indem Sie <cite>model(data)</cite> aufrufen. Verwenden Sie <cite>torch.set_grad_enabled(train)</cite>, um den Gradientenfluss nur im Trainingsmodus zu aktivieren.</p></li>
+<li><p>Berechnen Sie den Verlust mit <cite>criterion(outputs, labels)</cite>.</p></li>
+<li><p>Wenn <cite>train=True</cite> ist, führen Sie den Rückwärtsdurchlauf aus, indem Sie <cite>loss.backward()</cite> aufrufen und die Parameter mit <cite>optimizer.step()</cite> aktualisieren.</p></li>
+<li><p>Aktualisieren Sie <cite>total_loss</cite>, <cite>total_samples</cite> und <cite>total_correct</cite> mit den entsprechenden Werten aus dem aktuellen Batch.
+Der <cite>total_loss</cite> sollte den Verlust des aktuellen Batches aufsummieren, <cite>total_samples</cite> die Anzahl der Samples im aktuellen Batch und
+<cite>total_correct</cite> die Anzahl der korrekt klassifizierten Samples. Die Anzahl der korrekt klassifizierten Samples kann mit <cite>(outputs.argmax(dim=1) == labels).sum()</cite> berechnet werden.</p></li>
+<li><p>Aktualisieren Sie den Fortschrittsbalken mit dem aktuellen Verlust und der Genauigkeit. Zeigen Sie auch an ob das Netz im Trainings- oder Validationsmodus betrieben wird.
+Rufen Sie dazu tqdm.set_description() auf und formatieren Sie die Ausgabe entsprechend.</p></li>
+</ul>
+</section>
+</dd></dl>
+
+<div class="toggle admonition">
+<p class="admonition-title">Implementierung der Funktion anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="c1"># Vorbereiten des Modells für Training oder Evaluation</span>
+<span class="k">if</span> <span class="n">train</span><span class="p">:</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+<span class="k">else</span><span class="p">:</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+<span class="c1"># Training des Modells</span>
+<span class="n">total_loss</span> <span class="o">=</span> <span class="mf">0.0</span>
+<span class="n">total_samples</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">total_correct</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="n">bar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">dataloader</span><span class="p">)</span>
+<span class="k">for</span> <span class="n">data</span><span class="p">,</span> <span class="n">labels</span> <span class="ow">in</span> <span class="n">bar</span><span class="p">:</span>
+    <span class="c1"># Daten und Labels auf das Gerät verschieben</span>
+    <span class="n">data</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">),</span> <span class="n">labels</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+
+    <span class="c1"># Gradienten zurücksetzen</span>
+    <span class="k">if</span> <span class="n">train</span><span class="p">:</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+
+    <span class="c1"># Vorwärtsdurchlauf</span>
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">set_grad_enabled</span><span class="p">(</span><span class="n">train</span><span class="p">):</span>
+        <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+    <span class="c1"># Verlust berechnen und Rückwärtsdurchlauf</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+
+    <span class="c1"># Gradienten berechnen</span>
+    <span class="k">if</span> <span class="n">train</span><span class="p">:</span>
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+    <span class="c1"># Aktualisieren der Metriken</span>
+    <span class="n">total_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+    <span class="n">total_samples</span> <span class="o">+=</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+    <span class="n">total_correct</span> <span class="o">+=</span> <span class="p">(</span><span class="n">outputs</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">labels</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+    <span class="n">bar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Epoch </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="s1">&#39;T&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">train</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;V&#39;</span><span class="si">}</span><span class="s2">), Loss: </span><span class="si">{</span><span class="n">total_loss</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">total_samples</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, Accuracy: </span><span class="si">{</span><span class="n">total_correct</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">total_samples</span><span class="si">:</span><span class="s2">.2%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Sobald Sie  die Funktion <a class="reference internal" href="#pytorch.cifar100.epoch" title="pytorch.cifar100.epoch"><code class="xref py py-func docutils literal notranslate"><span class="pre">pytorch.cifar100.epoch()</span></code></a> implementiert haben, können Sie das Netzwerk auf dem Trainingsset trainieren und auf dem Validierungsset evaluieren.
+Starten Sie dazu das Skript</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>pytorch/cifar100.py
+Downloading<span class="w"> </span>https://www.cs.toronto.edu/~kriz/cifar-100-python.tar.gz<span class="w"> </span>to<span class="w"> </span>./data<span class="se">\c</span>ifar-100-python.tar.gz
+<span class="m">100</span>%<span class="p">|</span>█████████████████████████████████████████████████████████████████████<span class="p">|</span><span class="w"> </span><span class="m">169001437</span>/169001437<span class="w"> </span><span class="o">[</span><span class="m">00</span>:22&lt;<span class="m">00</span>:00,<span class="w"> </span><span class="m">7650435</span>.65it/s<span class="o">]</span>
+Extracting<span class="w"> </span>./data<span class="se">\c</span>ifar-100-python.tar.gz<span class="w"> </span>to<span class="w"> </span>./data
+Files<span class="w"> </span>already<span class="w"> </span>downloaded<span class="w"> </span>and<span class="w"> </span>verified
+Epoch<span class="w"> </span><span class="m">1</span><span class="w"> </span><span class="o">(</span>T<span class="o">)</span>,<span class="w"> </span>Loss:<span class="w"> </span><span class="m">0</span>.0192,<span class="w"> </span>Accuracy:<span class="w"> </span><span class="m">1</span>.87%:<span class="w">  </span><span class="m">12</span>%<span class="p">|</span>█████<span class="w">                                      </span><span class="p">|</span><span class="w"> </span><span class="m">23</span>/196<span class="w"> </span><span class="o">[</span><span class="m">00</span>:18&lt;<span class="m">02</span>:20,<span class="w">  </span><span class="m">1</span>.23it/s<span class="o">]</span>
+</pre></div>
+</div>
+</section>
+<section id="aufgabe-5-batch-normalisierung-hinzufugen">
+<h2><strong>Aufgabe 5</strong>: Batch-Normalisierung hinzufügen<a class="headerlink" href="#aufgabe-5-batch-normalisierung-hinzufugen" title="Link to this heading"></a></h2>
+<p>Fügen Sie <a class="reference external" href="https://arxiv.org/abs/1502.03167">Batch-Normalisierungsschichten</a> nach jeder Convolutional-Schicht hinzu, um die Trainingsgeschwindigkeit zu erhöhen und die Leistung des Modells zu verbessern.
+Batch-Normalisierung normalisiert die Ausgaben der Convolutional-Schichten, um die Verteilung der Aktivierungen zu stabilisieren und die Trainingsgeschwindigkeit zu erhöhen.
+Verwenden Sie Batch-Normalisierung dazu nach der Aktivierungsfunktion (z.B. ReLU) jeder Convolutional-Schicht.+</p>
+<p>Sie können die Klasse <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.BatchNorm2d.html">torch.nn.BatchNorm2d</a> verwenden, um Batch-Normalisierung für 2D-Bilder zu implementieren.
+Diese muss wissen wieviele Kanäle die Convolutional-Schicht hat, daher müssen Sie die Anzahl der Kanäle als Argument übergeben.</p>
+<div class="toggle admonition">
+<p class="admonition-title">Implementierung der Batch-Normalisierung anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+  <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+  <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)</span>
+  <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
+  <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)</span>
+  <span class="bp">self</span><span class="o">.</span><span class="n">bn2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>
+  <span class="bp">self</span><span class="o">.</span><span class="n">conv3</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)</span>
+  <span class="bp">self</span><span class="o">.</span><span class="n">bn3</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
+  <span class="o">...</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn1</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">))))</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn2</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">))))</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn3</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv3</span><span class="p">(</span><span class="n">x</span><span class="p">))))</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+</div>
+<p>Beobachten sie den Effekt der Batch-Normalisierung auf die Trainingsgeschwindigkeit und die Leistung des Modells.</p>
+</section>
+<section id="aufgabe-6-dropout-hinzufugen">
+<h2><strong>Aufgabe 6</strong>: Dropout hinzufügen<a class="headerlink" href="#aufgabe-6-dropout-hinzufugen" title="Link to this heading"></a></h2>
+<p>Fügen Sie <a class="reference external" href="https://www.cs.toronto.edu/~rsalakhu/papers/srivastava14a.pdf">Dropout-Schichten</a> hinzu, um Overfitting zu reduzieren.
+Dropout ist eine Technik, bei der während des Trainings zufällig einige Neuronen deaktiviert.
+Dies hilft, Overfitting zu reduzieren, indem es das Modell zwingt, robuster zu werden und nicht von einzelnen Neuronen abhängig zu sein.
+Sie können die Klasse <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Dropout.html">torch.nn.Dropout</a> verwenden, um Dropout zu implementieren.
+Fügen Sie Dropout-Schichten nach den voll verbundenen Schichten hinzu, um Overfitting zu reduzieren.</p>
+<div class="toggle admonition">
+<p class="admonition-title">Implementierung des Dropouts anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+    <span class="o">...</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn1</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">))))</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn2</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">))))</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn3</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv3</span><span class="p">(</span><span class="n">x</span><span class="p">))))</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>  <span class="c1"># Dropout nach der voll verbundenen Schicht</span>
+    <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+    <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+</div>
+<p><strong>Musterlösung</strong>:</p>
+<p><a class="reference internal" href="cnn_source.html"><span class="doc">Ein einfaches Netzwerk trainieren - Musterlösung</span></a></p>
 </section>
 </section>
 

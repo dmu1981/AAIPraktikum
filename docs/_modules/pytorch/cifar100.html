@@ -99,29 +99,20 @@ window.addEventListener("load", () => mermaid.run());
 <span class="c1"># Hier definieren wir die Transformationspipeline für die Trainings- und Validierungsdaten.</span>
 <span class="c1"># Die Trainingsdaten werden mit verschiedenen Transformationen augmentiert, um die Robustheit des Modells   </span>
 <span class="c1"># zu erhöhen. Folgend Sie den Anweisungen in der Aufgabenstellung, um die Pipeline zu vervollständigen.</span>
-<span class="n">training_transform</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span>
-    <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
-    <span class="n">transforms</span><span class="o">.</span><span class="n">RandomHorizontalFlip</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">),</span>
-    <span class="n">transforms</span><span class="o">.</span><span class="n">RandomRotation</span><span class="p">(</span><span class="n">degrees</span><span class="o">=</span><span class="mi">15</span><span class="p">),</span>
-    <span class="n">transforms</span><span class="o">.</span><span class="n">RandomCrop</span><span class="p">(</span><span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">),</span> <span class="n">padding</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
-    <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">((</span><span class="mf">0.5</span><span class="p">,),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,))</span>
-<span class="p">])</span>
+<span class="n">training_transform</span> <span class="o">=</span> <span class="kc">None</span>
 
 <span class="c1"># TODO: Validation Pipeline</span>
 <span class="c1"># Definieren Sie hier eine zweite Transformationspipeline für die Validierungsdaten.</span>
 <span class="c1"># Folgend Sie den Anweisungen in der Aufgabenstellung, um die Pipeline zu vervollständigen.</span>
-<span class="n">validation_transform</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">([</span>
-    <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
-    <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">((</span><span class="mf">0.5</span><span class="p">,),</span> <span class="p">(</span><span class="mf">0.5</span><span class="p">,))</span>
-<span class="p">])</span>
+<span class="n">validation_transform</span> <span class="o">=</span> <span class="kc">None</span>
 
-<span class="c1"># TODO: Laden der CIFAR-100-Daten</span>
-<span class="n">training_data</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR100</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;./data&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">training_transform</span><span class="p">)</span>
-<span class="n">validation_data</span> <span class="o">=</span> <span class="n">datasets</span><span class="o">.</span><span class="n">CIFAR100</span><span class="p">(</span><span class="n">root</span><span class="o">=</span><span class="s1">&#39;./data&#39;</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">download</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">transform</span><span class="o">=</span><span class="n">validation_transform</span><span class="p">)</span>
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="c1"># TODO: Laden der CIFAR-100-Daten</span>
+    <span class="n">training_data</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">validation_data</span> <span class="o">=</span> <span class="kc">None</span>
 
-<span class="n">training_set</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">training_data</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="n">validation_set</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">DataLoader</span><span class="p">(</span><span class="n">validation_data</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-
+    <span class="n">training_set</span> <span class="o">=</span> <span class="kc">None</span>
+    <span class="n">validation_set</span> <span class="o">=</span> <span class="kc">None</span>
 
 <div class="viewcode-block" id="CNNNetwork">
 <a class="viewcode-back" href="../../pytorch/cnn.html#pytorch.cifar100.CNNNetwork">[Doku]</a>
@@ -148,20 +139,7 @@ window.addEventListener("load", () => mermaid.run());
 
 <span class="sd">        - Verwenden Sie `torch.relu &lt;https://pytorch.org/docs/stable/generated/torch.relu.html&gt;`_ für die Aktivierung.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">conv3</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)</span>
-
-        <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bn2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">32</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">bn3</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
-        
-        <span class="bp">self</span><span class="o">.</span><span class="n">fc1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">64</span> <span class="o">*</span> <span class="mi">4</span> <span class="o">*</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">512</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">100</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">flatten</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Flatten</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">pool</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MaxPool2d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="mf">0.5</span><span class="p">)</span></div>
+        <span class="k">pass</span></div>
 
 
 <div class="viewcode-block" id="CNNNetwork.forward">
@@ -179,56 +157,67 @@ window.addEventListener("load", () => mermaid.run());
 
 <span class="sd">        - Geben Sie die Ausgabe der letzten Schicht `fc2` zurück.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-
-        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn1</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">))))</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn2</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">))))</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn3</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv3</span><span class="p">(</span><span class="n">x</span><span class="p">))))</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">fc1</span><span class="p">(</span><span class="n">x</span><span class="p">))</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-        <span class="k">return</span> <span class="n">x</span></div>
+        <span class="k">pass</span></div>
 </div>
 
 
+<div class="viewcode-block" id="epoch">
+<a class="viewcode-back" href="../../pytorch/cnn.html#pytorch.cifar100.epoch">[Doku]</a>
 <span class="k">def</span><span class="w"> </span><span class="nf">epoch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">train</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">):</span>
-    <span class="c1"># Vorbereiten des Modells für Training oder Evaluation</span>
-    <span class="k">if</span> <span class="n">train</span><span class="p">:</span>
-        <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
-    <span class="k">else</span><span class="p">:</span>
-        <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">    Führt eine einzelne Trainings- oder Evaluations-Epoche für das Modell aus.</span>
 
-    <span class="c1"># Training des Modells</span>
-    <span class="n">total_loss</span> <span class="o">=</span> <span class="mf">0.0</span>
-    <span class="n">total_samples</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">total_correct</span> <span class="o">=</span> <span class="mi">0</span>
-    <span class="n">bar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">dataloader</span><span class="p">)</span>
-    <span class="k">for</span> <span class="n">data</span><span class="p">,</span> <span class="n">labels</span> <span class="ow">in</span> <span class="n">bar</span><span class="p">:</span>
-        <span class="c1"># Daten und Labels auf das Gerät verschieben</span>
-        <span class="n">data</span><span class="p">,</span> <span class="n">labels</span> <span class="o">=</span> <span class="n">data</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">),</span> <span class="n">labels</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
-        
-        <span class="c1"># Gradienten zurücksetzen</span>
-        <span class="k">if</span> <span class="n">train</span><span class="p">:</span>
-            <span class="n">optimizer</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+<span class="sd">    Parameters:</span>
+<span class="sd">    -----------</span>
 
-        <span class="c1"># Vorwärtsdurchlauf</span>
-        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">set_grad_enabled</span><span class="p">(</span><span class="n">train</span><span class="p">):</span>
-            <span class="n">outputs</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+<span class="sd">    model (nn.Module): </span>
+<span class="sd">        Das zu trainierende oder evaluierende Modell.</span>
 
-        <span class="c1"># Verlust berechnen und Rückwärtsdurchlauf</span>
-        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">outputs</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+<span class="sd">    n (int): </span>
+<span class="sd">        Die aktuelle Epoche.   </span>
 
-        <span class="c1"># Gradienten berechnen</span>
-        <span class="k">if</span> <span class="n">train</span><span class="p">:</span>
-            <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
-            <span class="n">optimizer</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+<span class="sd">    train (bool):</span>
+<span class="sd">        Gibt an, ob die Epoche im Trainingsmodus oder im Evaluationsmodus durchgeführt wird.</span>
 
-        <span class="c1"># Ausgabe des Verlusts alle 1000 Epochen</span>
-        <span class="n">total_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-        <span class="n">total_samples</span> <span class="o">+=</span> <span class="n">data</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
-        <span class="n">total_correct</span> <span class="o">+=</span> <span class="p">(</span><span class="n">outputs</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span> <span class="o">==</span> <span class="n">labels</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+<span class="sd">    dataloader (DataLoader):</span>
+<span class="sd">        Der DataLoader, der die Daten für die Epoche bereitstellt.</span>
 
-        <span class="n">bar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Epoch </span><span class="si">{</span><span class="n">n</span><span class="si">}</span><span class="s2"> (</span><span class="si">{</span><span class="s1">&#39;T&#39;</span><span class="w"> </span><span class="k">if</span><span class="w"> </span><span class="n">train</span><span class="w"> </span><span class="k">else</span><span class="w"> </span><span class="s1">&#39;V&#39;</span><span class="si">}</span><span class="s2">), Loss: </span><span class="si">{</span><span class="n">total_loss</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">total_samples</span><span class="si">:</span><span class="s2">.4f</span><span class="si">}</span><span class="s2">, Accuracy: </span><span class="si">{</span><span class="n">total_correct</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">total_samples</span><span class="si">:</span><span class="s2">.2%</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="sd">    criterion (nn.Module):</span>
+<span class="sd">        Das Loss-Kriterium, das zur Berechnung des Verlusts verwendet wird.</span>
+
+<span class="sd">    optimizer (torch.optim.Optimizer):</span>
+<span class="sd">        Der Optimierer, der zur Aktualisierung der Modellparameter verwendet wird.</span>
+
+<span class="sd">    **TODO**:</span>
+<span class="sd">    </span>
+<span class="sd">    - Setzen Sie das Modell in den Trainingsmodus, wenn `train=True` ist, und in den Evaluationsmodus, wenn `train=False` ist. Rufen Sie dazu `model.train()` bzw. `model.eval()` auf. </span>
+<span class="sd">    </span>
+<span class="sd">    - Initialisieren Sie `total_loss`, `total_samples` und `total_correct` auf 0.0, 0 und 0. </span>
+
+<span class="sd">    - Verwenden Sie `tqdm` für den Fortschrittsbalken, um den Fortschritt der Epoche anzuzeigen. </span>
+<span class="sd">      Speichern Sie den Iterator in einer eigenen Variable damit er innerhalb der Schleife verwendet werden kann.</span>
+
+<span class="sd">    - Iterieren Sie über den `dataloader` und führen Sie die folgenden Schritte aus:  </span>
+
+<span class="sd">    - Verschieben Sie die Daten und Labels auf das Gerät (`DEVICE`).</span>
+
+<span class="sd">    - Setzen Sie die Gradienten des Optimierers zurück, wenn `train=True` ist, indem Sie `optimizer.zero_grad()` aufrufen.</span>
+
+<span class="sd">    - Führen Sie den Vorwärtsdurchlauf des Modells aus, indem Sie `model(data)` aufrufen. Verwenden Sie `torch.set_grad_enabled(train)`, um den Gradientenfluss nur im Trainingsmodus zu aktivieren.</span>
+<span class="sd">    </span>
+<span class="sd">    - Berechnen Sie den Verlust mit `criterion(outputs, labels)`.</span>
+
+<span class="sd">    - Wenn `train=True` ist, führen Sie den Rückwärtsdurchlauf aus, indem Sie `loss.backward()` aufrufen und die Parameter mit `optimizer.step()` aktualisieren.</span>
+
+<span class="sd">    - Aktualisieren Sie `total_loss`, `total_samples` und `total_correct` mit den entsprechenden Werten aus dem aktuellen Batch.</span>
+<span class="sd">      Der `total_loss` sollte den Verlust des aktuellen Batches aufsummieren, `total_samples` die Anzahl der Samples im aktuellen Batch und </span>
+<span class="sd">      `total_correct` die Anzahl der korrekt klassifizierten Samples. Die Anzahl der korrekt klassifizierten Samples kann mit `(outputs.argmax(dim=1) == labels).sum()` berechnet werden.</span>
+
+<span class="sd">    - Aktualisieren Sie den Fortschrittsbalken mit dem aktuellen Verlust und der Genauigkeit. Zeigen Sie auch an ob das Netz im Trainings- oder Validationsmodus betrieben wird. </span>
+<span class="sd">      Rufen Sie dazu tqdm.set_description() auf und formatieren Sie die Ausgabe entsprechend.</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="c1"># Initialisierung des Modells, Loss-Kriteriums und Optimierers</span>

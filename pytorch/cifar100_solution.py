@@ -10,20 +10,29 @@ DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 # Hier definieren wir die Transformationspipeline für die Trainings- und Validierungsdaten.
 # Die Trainingsdaten werden mit verschiedenen Transformationen augmentiert, um die Robustheit des Modells   
 # zu erhöhen. Folgend Sie den Anweisungen in der Aufgabenstellung, um die Pipeline zu vervollständigen.
-training_transform = None
+training_transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.RandomHorizontalFlip(p=0.5),
+    transforms.RandomRotation(degrees=15),
+    transforms.RandomCrop(size=(32, 32), padding=4),
+    transforms.Normalize((0.5,), (0.5,))
+])
 
 # TODO: Validation Pipeline
 # Definieren Sie hier eine zweite Transformationspipeline für die Validierungsdaten.
 # Folgend Sie den Anweisungen in der Aufgabenstellung, um die Pipeline zu vervollständigen.
-validation_transform = None
+validation_transform = transforms.Compose([
+    transforms.ToTensor(),
+    transforms.Normalize((0.5,), (0.5,))
+])
 
 if __name__ == "__main__":
     # TODO: Laden der CIFAR-100-Daten
-    training_data = None
-    validation_data = None
+    training_data = datasets.CIFAR100(root='./data', train=True, download=True, transform=training_transform)
+    validation_data = datasets.CIFAR100(root='./data', train=False, download=True, transform=validation_transform)
 
-    training_set = None
-    validation_set = None
+    training_set = torch.utils.data.DataLoader(training_data, batch_size=256, shuffle=True)
+    validation_set = torch.utils.data.DataLoader(validation_data, batch_size=256, shuffle=False)
 
 class CNNNetwork(nn.Module):
     """Ein einfaches neuronales Netzwerk mit einer versteckten Schicht."""
@@ -46,7 +55,20 @@ class CNNNetwork(nn.Module):
 
         - Verwenden Sie `torch.relu <https://pytorch.org/docs/stable/generated/torch.relu.html>`_ für die Aktivierung.
         """
-        pass
+        super().__init__()
+        self.conv1 = nn.Conv2d(3, 16, kernel_size=3, padding="same")
+        self.conv2 = nn.Conv2d(16, 32, kernel_size=3, padding="same")
+        self.conv3 = nn.Conv2d(32, 64, kernel_size=3, padding="same")
+
+        self.bn1 = nn.BatchNorm2d(16)
+        self.bn2 = nn.BatchNorm2d(32)
+        self.bn3 = nn.BatchNorm2d(64)
+        
+        self.fc1 = nn.Linear(64 * 4 * 4, 512)
+        self.fc2 = nn.Linear(512, 100)
+        self.flatten = nn.Flatten()
+        self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
+        self.dropout = nn.Dropout(0.5)
 
     def forward(self, x):
         """Führt den Vorwärtsdurchlauf des Netzwerks aus.
@@ -61,7 +83,14 @@ class CNNNetwork(nn.Module):
 
         - Geben Sie die Ausgabe der letzten Schicht `fc2` zurück.
         """
-        pass
+        x = self.pool(self.bn1(torch.relu(self.conv1(x))))
+        x = self.pool(self.bn2(torch.relu(self.conv2(x))))
+        x = self.pool(self.bn3(torch.relu(self.conv3(x))))
+        x = self.flatten(x)
+        x = torch.relu(self.fc1(x))
+        x = self.dropout(x)
+        x = self.fc2(x)
+        return x
 
 def epoch(model, n, train, dataloader, criterion, optimizer):
     """
@@ -116,7 +145,43 @@ def epoch(model, n, train, dataloader, criterion, optimizer):
     - Aktualisieren Sie den Fortschrittsbalken mit dem aktuellen Verlust und der Genauigkeit. Zeigen Sie auch an ob das Netz im Trainings- oder Validationsmodus betrieben wird. 
       Rufen Sie dazu tqdm.set_description() auf und formatieren Sie die Ausgabe entsprechend.
     """
-    pass
+    # Vorbereiten des Modells für Training oder Evaluation
+    if train:
+        model.train()
+    else:
+        model.eval()
+
+    # Training des Modells
+    total_loss = 0.0
+    total_samples = 0
+    total_correct = 0
+    bar = tqdm(dataloader)
+    for data, labels in bar:
+        # Daten und Labels auf das Gerät verschieben
+        data, labels = data.to(DEVICE), labels.to(DEVICE)
+        
+        # Gradienten zurücksetzen
+        if train:
+            optimizer.zero_grad()
+
+        # Vorwärtsdurchlauf
+        with torch.set_grad_enabled(train):
+            outputs = model(data)
+
+        # Verlust berechnen und Rückwärtsdurchlauf
+        loss = criterion(outputs, labels)
+
+        # Gradienten berechnen
+        if train:
+            loss.backward()
+            optimizer.step()
+
+        # Aktualisieren der Metriken
+        total_loss += loss.item()
+        total_samples += data.size(0)
+        total_correct += (outputs.argmax(dim=1) == labels).sum().item()
+
+        bar.set_description(f"Epoch {n} ({'T' if train else 'V'}), Loss: {total_loss / total_samples:.4f}, Accuracy: {total_correct / total_samples:.2%}")
 
 if __name__ == "__main__":
     # Initialisierung des Modells, Loss-Kriteriums und Optimierers
