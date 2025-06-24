@@ -307,6 +307,7 @@ Fügen Sie Dropout-Schichten nach den voll verbundenen Schichten hinzu, um Overf
           return x
 
 
-**Musterlösung**:
+**Musterlösung**
+----------------
 
 :doc:`cnn_source`

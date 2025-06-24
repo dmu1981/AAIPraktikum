@@ -150,6 +150,7 @@ Starten Sie das Training des Netzwerks, indem Sie das Skript :file:`pytorch/simp
             [-2.5722,  4.1114],
             [ 3.9732, -2.6664]], device='cuda:0')
 
-**Musterlösung**:
+**Musterlösung**
+----------------
 
 :doc:`simple_source`

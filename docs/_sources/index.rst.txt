@@ -16,3 +16,4 @@ Das dazugehörige Repository finden Sie auf `GitHub <https://github.com/dmu1981/
 
    PyTorch - Grundlagen <../pytorch/index>
    Convolutional Neural Networks <../pytorch/cnn>
+   Checkpoints <../checkpoints/index>

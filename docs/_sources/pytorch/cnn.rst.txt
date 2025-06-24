@@ -280,7 +280,7 @@ Beobachten sie den Effekt der Batch-Normalisierung auf die Trainingsgeschwindigk
 
 **Aufgabe 6**: Dropout hinzufügen
 ---------------------------------
-Fügen Sie `Dropout-Schichten <https://www.cs.toronto.edu/~rsalakhu/papers/srivastava14a.pdf>`_ hinzu, um Overfitting zu reduzieren.
+Fügen Sie eine `Dropout-Schicht <https://www.cs.toronto.edu/~rsalakhu/papers/srivastava14a.pdf>`_ hinzu, um Overfitting zu reduzieren.
 Dropout ist eine Technik, bei der während des Trainings zufällig einige Neuronen deaktiviert.
 Dies hilft, Overfitting zu reduzieren, indem es das Modell zwingt, robuster zu werden und nicht von einzelnen Neuronen abhängig zu sein.
 Sie können die Klasse `torch.nn.Dropout <https://pytorch.org/docs/stable/generated/torch.nn.Dropout.html>`_ verwenden, um Dropout zu implementieren.
@@ -307,6 +307,7 @@ Fügen Sie Dropout-Schichten nach den voll verbundenen Schichten hinzu, um Overf
           return x
 
 
-**Musterlösung**:
+**Musterlösung**
+----------------
 
 :doc:`cnn_source`

@@ -1,0 +1,245 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Checkpoints &mdash; Advances in AI Praktikum  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+
+  
+    <link rel="canonical" href="https://dmu1981.github.io/MPTPraktikum/checkpoints/index.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=245627df"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script src="../_static/translations.js?v=79cc9f76"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../genindex.html" />
+    <link rel="search" title="Suche" href="../search.html" />
+    <link rel="prev" title="PyTorch - Convolutional Neural Networks" href="../pytorch/cnn.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Advances in AI Praktikum
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Aufgaben:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../pytorch/index.html">PyTorch - Grundlagen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pytorch/cnn.html">Convolutional Neural Networks</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Checkpoints</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-1-checkpoint-speichern"><strong>Aufgabe 1</strong>: Checkpoint speichern</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#checkpoints.save_checkpoint"><code class="docutils literal notranslate"><span class="pre">save_checkpoint()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-2-checkpoint-laden"><strong>Aufgabe 2</strong>: Checkpoint laden</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#checkpoints.load_checkpoint"><code class="docutils literal notranslate"><span class="pre">load_checkpoint()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#musterlosung"><strong>Musterlösung</strong></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Advances in AI Praktikum</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Checkpoints</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/checkpoints/index.rst.txt" rel="nofollow"> Quelltext anzeigen</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="checkpoints">
+<h1>Checkpoints<a class="headerlink" href="#checkpoints" title="Link to this heading"></a></h1>
+<p>Um Zwischenstände während des Trainings zu speichern und
+später wiederherzustellen, können Checkpoints verwendet werden.
+Diese ermöglichen es, den Trainingsprozess zu unterbrechen und später
+fortzusetzen, ohne von vorne beginnen zu müssen oder um den besten Zustand des
+Modells zu sichern. PyTorch bietet eine einfache Möglichkeit, Checkpoints zu erstellen.</p>
+<p>Alle Module in PyTorch erlauben es ihren internen Zustand zu speichern und später wiederherzustellen.
+Dies nennt man <a class="reference external" href="https://docs.pytorch.org/tutorials/recipes/recipes/what_is_state_dict.html">state_dict</a>.
+Die Menge aller relevanten state_dicts definiert dann einen Checkpoint. Der Checkpoint enthält also alle
+Informationen, die benötigt werden, um den Zustand des Modells und des Optimierers zu einem bestimmten Zeitpunkt
+wiederherzustellen.</p>
+<p>Um das <cite>state_dict</cite> abzurufen implementieren Modudle die Methode <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.state_dict">state_dict()</a>.
+Das Laden eines früheren <cite>state_dicts</cite> erfolgt dann über die Methode <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.load_state_dict">load_state_dict()</a>.</p>
+<p>Ein Checkpoint sollte mindestens folgende Informationen enthalten:</p>
+<ul class="simple">
+<li><p>Der Zustand des Modells (<cite>model.state_dict()</cite>)</p></li>
+<li><p>Der Zustand des Optimierers (<cite>optimizer.state_dict()</cite>)</p></li>
+<li><p>Die aktuelle Epoche (z.B. <cite>epoch</cite>)</p></li>
+</ul>
+<section id="aufgabe-1-checkpoint-speichern">
+<h2><strong>Aufgabe 1</strong>: Checkpoint speichern<a class="headerlink" href="#aufgabe-1-checkpoint-speichern" title="Link to this heading"></a></h2>
+<p>Implementiere die Funktion <cite>checkpoints.save_checkpoint(…)</cite>,
+die den aktuellen Zustand des Modells, des Optimierers und die aktuelle Epoche in einer Datei speichert.
+Verwende dazu die Funktion <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.save.html">torch.save(…)</a>.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="checkpoints.save_checkpoint">
+<span class="sig-prename descclassname"><span class="pre">checkpoints.</span></span><span class="sig-name descname"><span class="pre">save_checkpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'checkpoint.pth'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/checkpoints.html#save_checkpoint"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#checkpoints.save_checkpoint" title="Link to this definition"></a></dt>
+<dd><p>Speichert den aktuellen Zustand des Modells und des Optimierers in einer Datei.</p>
+<section id="parameters">
+<h3>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>model (nn.Module):</dt><dd><p>Das zu speichernde Modell.</p>
+</dd>
+<dt>optimizer (torch.optim.Optimizer):</dt><dd><p>Der Optimierer, dessen Zustand gespeichert werden soll.</p>
+</dd>
+<dt>epoch (int):</dt><dd><p>Die aktuelle Epoche, die im Checkpoint gespeichert wird.</p>
+</dd>
+<dt>filename (str):</dt><dd><p>Der Name der Datei, in der der Checkpoint gespeichert wird.</p>
+</dd>
+</dl>
+<p><strong>TODO</strong>:
+Erzeuge ein Dictionary, das den Zustand des Modells, des Optimierers und die aktuelle Epoche enthält.
+Den Zustand der Modells und des Optimierers kannst du mit <cite>model.state_dict()</cite> und <cite>optimizer.state_dict()</cite> erhalten.
+Speichere dieses Dictionary mit <cite>torch.save()</cite> unter dem angegebenen Dateinamen.</p>
+</section>
+</dd></dl>
+
+<div class="toggle admonition">
+<p class="admonition-title">Lösung anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">save_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;checkpoint.pth&#39;</span><span class="p">):</span>
+    <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">({</span>
+      <span class="s1">&#39;epoch&#39;</span><span class="p">:</span> <span class="n">epoch</span><span class="p">,</span>
+      <span class="s1">&#39;model_state_dict&#39;</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+      <span class="s1">&#39;optimizer_state_dict&#39;</span><span class="p">:</span> <span class="n">optimizer</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
+  <span class="p">},</span> <span class="n">filename</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="aufgabe-2-checkpoint-laden">
+<h2><strong>Aufgabe 2</strong>: Checkpoint laden<a class="headerlink" href="#aufgabe-2-checkpoint-laden" title="Link to this heading"></a></h2>
+<p>Implementiere die Funktion <cite>checkpoints.load_checkpoint(…)</cite>,
+die den gespeicherten Zustand des Modells, des Optimierers und die aktuelle Epoche aus einer Datei lädt.
+Verwende dazu die Funktion <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.load.html">torch.load(…)</a>.
+Es macht Sinn das Laden des Checkpoints sowie das Laden der <cite>state_dict</cite> in einem <cite>try</cite>-<cite>except</cite>-Block zu kapseln,
+um Fehler beim Laden zu behandeln. Wenn der Checkpoint nicht gefunden wird, sollte eine Fehlermeldung ausgegeben werden
+und das Training ohne gespeicherten Zustand fortgesetzt werden. Dieses Verhalten macht es elegant möglich das Training
+ohne Checkpoint zu starten, falls der Checkpoint nicht gefunden wird (oder inkompatibel ist), gleichzeitig aber auch
+den Checkpoint zu laden und von diesem aus fortzusetzen, wenn er vorhanden ist.</p>
+<dl class="py function">
+<dt class="sig sig-object py" id="checkpoints.load_checkpoint">
+<span class="sig-prename descclassname"><span class="pre">checkpoints.</span></span><span class="sig-name descname"><span class="pre">load_checkpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'checkpoint.pth'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/checkpoints.html#load_checkpoint"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#checkpoints.load_checkpoint" title="Link to this definition"></a></dt>
+<dd><p>Lädt den Zustand des Modells und des Optimierers aus einer Datei.</p>
+<section id="id2">
+<h3>Parameters:<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>model (nn.Module):</dt><dd><p>Das Modell, in das die gespeicherten Zustände geladen werden.</p>
+</dd>
+<dt>optimizer (torch.optim.Optimizer):</dt><dd><p>Der Optimierer, dessen Zustand geladen wird.</p>
+</dd>
+<dt>filename (str):</dt><dd><p>Der Name der Datei, aus der der Checkpoint geladen wird.</p>
+</dd>
+</dl>
+<p><strong>TODO</strong>:
+Versuche, den Checkpoint mit <cite>torch.load()</cite> zu laden.
+Wenn die Datei nicht gefunden wird, gib eine entsprechende Fehlermeldung aus und starte ohne gespeicherten Zustand.
+Wenn der Checkpoint geladen wird, versuche, den Zustand des Modells und des Optimizers zu laden.
+Du kannst <cite>model.load_state_dict()</cite> und <cite>optimizer.load_state_dict()</cite> verwenden um die Zustände ins Modell zu laden.
+Wenn ein Fehler beim Laden auftritt, gib eine Fehlermeldung aus und starte ohne gespeicherten Zustand.
+Gibt die aktuelle Epoche zurück, die im Checkpoint gespeichert ist.</p>
+</section>
+</dd></dl>
+
+<div class="toggle admonition">
+<p class="admonition-title">Lösung anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">load_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;checkpoint.pth&#39;</span><span class="p">):</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">checkpoint</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;model_state_dict&#39;</span><span class="p">])</span>
+        <span class="n">optimizer</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;optimizer_state_dict&#39;</span><span class="p">])</span>
+        <span class="n">epoch</span> <span class="o">=</span> <span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;epoch&#39;</span><span class="p">]</span>
+        <span class="k">return</span> <span class="n">epoch</span>
+    <span class="k">except</span> <span class="ne">FileNotFoundError</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Checkpoint-Datei </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2"> nicht gefunden. Starte ohne gespeicherten Zustand.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fehler beim Laden des Checkpoints </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starte ohne gespeicherten Zustand.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="musterlosung">
+<h2><strong>Musterlösung</strong><a class="headerlink" href="#musterlosung" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="checkpoints_source.html"><span class="doc">Checkpoints - Musterlösung</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../pytorch/cnn.html" class="btn btn-neutral float-left" title="PyTorch - Convolutional Neural Networks" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Prof. Dr. Dennis Müller.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

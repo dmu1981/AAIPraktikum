@@ -28,6 +28,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Stichwortverzeichnis" href="../genindex.html" />
     <link rel="search" title="Suche" href="../search.html" />
+    <link rel="next" title="Checkpoints" href="../checkpoints/index.html" />
     <link rel="prev" title="PyTorch - Grundlagen" href="index.html" /> 
 </head>
 
@@ -70,8 +71,10 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#aufgabe-5-batch-normalisierung-hinzufugen"><strong>Aufgabe 5</strong>: Batch-Normalisierung hinzufügen</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#aufgabe-6-dropout-hinzufugen"><strong>Aufgabe 6</strong>: Dropout hinzufügen</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#musterlosung"><strong>Musterlösung</strong></a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../checkpoints/index.html">Checkpoints</a></li>
 </ul>
 
         </div>
@@ -406,7 +409,7 @@ Diese muss wissen wieviele Kanäle die Convolutional-Schicht hat, daher müssen 
 </section>
 <section id="aufgabe-6-dropout-hinzufugen">
 <h2><strong>Aufgabe 6</strong>: Dropout hinzufügen<a class="headerlink" href="#aufgabe-6-dropout-hinzufugen" title="Link to this heading"></a></h2>
-<p>Fügen Sie <a class="reference external" href="https://www.cs.toronto.edu/~rsalakhu/papers/srivastava14a.pdf">Dropout-Schichten</a> hinzu, um Overfitting zu reduzieren.
+<p>Fügen Sie eine <a class="reference external" href="https://www.cs.toronto.edu/~rsalakhu/papers/srivastava14a.pdf">Dropout-Schicht</a> hinzu, um Overfitting zu reduzieren.
 Dropout ist eine Technik, bei der während des Trainings zufällig einige Neuronen deaktiviert.
 Dies hilft, Overfitting zu reduzieren, indem es das Modell zwingt, robuster zu werden und nicht von einzelnen Neuronen abhängig zu sein.
 Sie können die Klasse <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Dropout.html">torch.nn.Dropout</a> verwenden, um Dropout zu implementieren.
@@ -430,8 +433,10 @@ Fügen Sie Dropout-Schichten nach den voll verbundenen Schichten hinzu, um Overf
 </pre></div>
 </div>
 </div>
-<p><strong>Musterlösung</strong>:</p>
-<p><a class="reference internal" href="cnn_source.html"><span class="doc">Ein einfaches Netzwerk trainieren - Musterlösung</span></a></p>
+</section>
+<section id="musterlosung">
+<h2><strong>Musterlösung</strong><a class="headerlink" href="#musterlosung" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="cnn_source.html"><span class="doc">Convolutional Neural Network - Musterlösung</span></a></p>
 </section>
 </section>
 
@@ -440,6 +445,7 @@ Fügen Sie Dropout-Schichten nach den voll verbundenen Schichten hinzu, um Overf
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="index.html" class="btn btn-neutral float-left" title="PyTorch - Grundlagen" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
+        <a href="../checkpoints/index.html" class="btn btn-neutral float-right" title="Checkpoints" accesskey="n" rel="next">Weiter <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

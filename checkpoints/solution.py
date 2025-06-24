@@ -26,7 +26,11 @@ def save_checkpoint(model, optimizer, epoch, filename='checkpoint.pth'):
     Den Zustand der Modells und des Optimierers kannst du mit `model.state_dict()` und `optimizer.state_dict()` erhalten.
     Speichere dieses Dictionary mit `torch.save()` unter dem angegebenen Dateinamen.
     """
-    pass
+    torch.save({
+        'epoch': epoch,
+        'model_state_dict': model.state_dict(),
+        'optimizer_state_dict': optimizer.state_dict(),
+    }, filename)
 
 def load_checkpoint(model, optimizer, filename='checkpoint.pth'):
     """Lädt den Zustand des Modells und des Optimierers aus einer Datei.
@@ -50,7 +54,15 @@ def load_checkpoint(model, optimizer, filename='checkpoint.pth'):
     Wenn ein Fehler beim Laden auftritt, gib eine Fehlermeldung aus und starte ohne gespeicherten Zustand.
     Gibt die aktuelle Epoche zurück, die im Checkpoint gespeichert ist.
     """
-    pass
+    try:
+        checkpoint = torch.load(filename, weights_only=True)
+        model.load_state_dict(checkpoint['model_state_dict'])
+        optimizer.load_state_dict(checkpoint['optimizer_state_dict'])
+        return checkpoint['epoch']
+    except Exception as e:
+        print(f"Fehler beim Laden des Checkpoints {filename}: {e}")
+        print("Starte ohne gespeicherten Zustand.")
+        return 0
     
 if __name__ == "__main__":
     training_set, validation_set = load_data()
@@ -58,8 +70,8 @@ if __name__ == "__main__":
     # Initialisierung des Modells, Loss-Kriteriums und Optimierers
     model = CNNNetwork().to(DEVICE)
     criterion = nn.CrossEntropyLoss()
-    optimizer = torch.optim.Adam(model.parameters(), lr=LR)
-
+    optimizer = torch.optim.Adam(model.parameters(), lr=LR)    # Checkpoint laden, falls vorhanden
+    
     # Checkpoint laden, falls vorhanden
     ep = load_checkpoint(model, optimizer)
     if ep > 0:

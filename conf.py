@@ -11,6 +11,7 @@ import sys
 
 sys.path.insert(0, os.path.abspath("."))
 sys.path.insert(0, os.path.abspath("./pytorch"))
+sys.path.insert(0, os.path.abspath("./checkpoints"))
 
 project = 'Advances in AI Praktikum'
 copyright = '2025, Prof. Dr. Dennis Müller'
