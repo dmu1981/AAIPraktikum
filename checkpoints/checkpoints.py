@@ -1,3 +1,4 @@
+import os
 import torch
 from torch import nn
 from misc import DEVICE, CNNNetwork, load_data, epoch
@@ -61,7 +62,10 @@ if __name__ == "__main__":
     optimizer = torch.optim.Adam(model.parameters(), lr=LR)
 
     # Checkpoint laden, falls vorhanden
-    ep = load_checkpoint(model, optimizer)
+    dirname = os.path.dirname(os.path.abspath(__file__))
+    chkpt_path = os.path.join(dirname, 'checkpoint.pth')
+
+    ep = load_checkpoint(model, optimizer, chkpt_path)
     if ep > 0:
         print(f"Checkpoint geladen, fortsetzen bei Epoche {ep}.")
 
@@ -71,4 +75,4 @@ if __name__ == "__main__":
         epoch(model, n, False, validation_set, criterion, optimizer)
 
         # Checkpoint nach jeder Epoche speichern
-        save_checkpoint(model, optimizer, n + 1)
+        save_checkpoint(model, optimizer, n + 1, chkpt_path)

@@ -1,13 +1,13 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="de" data-content_root="../">
+<html class="writer-html5" lang="de">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Checkpoints &mdash; Advances in AI Praktikum  Dokumentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
 
@@ -15,15 +15,14 @@
     <link rel="canonical" href="https://dmu1981.github.io/MPTPraktikum/checkpoints/index.html" />
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=245627df"></script>
-      <script src="../_static/doctools.js?v=9a2dae69"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=cec59a4c"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
       <script>let toggleHintShow = 'Click to show';</script>
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../_static/translations.js?v=79cc9f76"></script>
-      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script src="../_static/translations.js?v=70a09b52"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Stichwortverzeichnis" href="../genindex.html" />
@@ -93,7 +92,7 @@
            <div itemprop="articleBody">
              
   <section id="checkpoints">
-<h1>Checkpoints<a class="headerlink" href="#checkpoints" title="Link to this heading"></a></h1>
+<h1>Checkpoints<a class="headerlink" href="#checkpoints" title="Permalink to this heading"></a></h1>
 <p>Um Zwischenstände während des Trainings zu speichern und
 später wiederherzustellen, können Checkpoints verwendet werden.
 Diese ermöglichen es, den Trainingsprozess zu unterbrechen und später
@@ -113,16 +112,16 @@ Das Laden eines früheren <cite>state_dicts</cite> erfolgt dann über die Method
 <li><p>Die aktuelle Epoche (z.B. <cite>epoch</cite>)</p></li>
 </ul>
 <section id="aufgabe-1-checkpoint-speichern">
-<h2><strong>Aufgabe 1</strong>: Checkpoint speichern<a class="headerlink" href="#aufgabe-1-checkpoint-speichern" title="Link to this heading"></a></h2>
+<h2><strong>Aufgabe 1</strong>: Checkpoint speichern<a class="headerlink" href="#aufgabe-1-checkpoint-speichern" title="Permalink to this heading"></a></h2>
 <p>Implementiere die Funktion <cite>checkpoints.save_checkpoint(…)</cite>,
 die den aktuellen Zustand des Modells, des Optimierers und die aktuelle Epoche in einer Datei speichert.
 Verwende dazu die Funktion <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.save.html">torch.save(…)</a>.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="checkpoints.save_checkpoint">
-<span class="sig-prename descclassname"><span class="pre">checkpoints.</span></span><span class="sig-name descname"><span class="pre">save_checkpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'checkpoint.pth'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/checkpoints.html#save_checkpoint"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#checkpoints.save_checkpoint" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">checkpoints.</span></span><span class="sig-name descname"><span class="pre">save_checkpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">epoch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'checkpoint.pth'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/checkpoints.html#save_checkpoint"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#checkpoints.save_checkpoint" title="Link zu dieser Definition"></a></dt>
 <dd><p>Speichert den aktuellen Zustand des Modells und des Optimierers in einer Datei.</p>
 <section id="parameters">
-<h3>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<h3>Parameters:<a class="headerlink" href="#parameters" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>model (nn.Module):</dt><dd><p>Das zu speichernde Modell.</p>
 </dd>
@@ -142,7 +141,7 @@ Speichere dieses Dictionary mit <cite>torch.save()</cite> unter dem angegebenen 
 
 <div class="toggle admonition">
 <p class="admonition-title">Lösung anzeigen</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">save_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;checkpoint.pth&#39;</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">save_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;checkpoint.pth&#39;</span><span class="p">):</span>
     <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">({</span>
       <span class="s1">&#39;epoch&#39;</span><span class="p">:</span> <span class="n">epoch</span><span class="p">,</span>
       <span class="s1">&#39;model_state_dict&#39;</span><span class="p">:</span> <span class="n">model</span><span class="o">.</span><span class="n">state_dict</span><span class="p">(),</span>
@@ -153,7 +152,7 @@ Speichere dieses Dictionary mit <cite>torch.save()</cite> unter dem angegebenen 
 </div>
 </section>
 <section id="aufgabe-2-checkpoint-laden">
-<h2><strong>Aufgabe 2</strong>: Checkpoint laden<a class="headerlink" href="#aufgabe-2-checkpoint-laden" title="Link to this heading"></a></h2>
+<h2><strong>Aufgabe 2</strong>: Checkpoint laden<a class="headerlink" href="#aufgabe-2-checkpoint-laden" title="Permalink to this heading"></a></h2>
 <p>Implementiere die Funktion <cite>checkpoints.load_checkpoint(…)</cite>,
 die den gespeicherten Zustand des Modells, des Optimierers und die aktuelle Epoche aus einer Datei lädt.
 Verwende dazu die Funktion <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.load.html">torch.load(…)</a>.
@@ -164,10 +163,10 @@ ohne Checkpoint zu starten, falls der Checkpoint nicht gefunden wird (oder inkom
 den Checkpoint zu laden und von diesem aus fortzusetzen, wenn er vorhanden ist.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="checkpoints.load_checkpoint">
-<span class="sig-prename descclassname"><span class="pre">checkpoints.</span></span><span class="sig-name descname"><span class="pre">load_checkpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'checkpoint.pth'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/checkpoints.html#load_checkpoint"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#checkpoints.load_checkpoint" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">checkpoints.</span></span><span class="sig-name descname"><span class="pre">load_checkpoint</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">filename</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">'checkpoint.pth'</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/checkpoints.html#load_checkpoint"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#checkpoints.load_checkpoint" title="Link zu dieser Definition"></a></dt>
 <dd><p>Lädt den Zustand des Modells und des Optimierers aus einer Datei.</p>
 <section id="id2">
-<h3>Parameters:<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<h3>Parameters:<a class="headerlink" href="#id2" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>model (nn.Module):</dt><dd><p>Das Modell, in das die gespeicherten Zustände geladen werden.</p>
 </dd>
@@ -188,7 +187,7 @@ Gibt die aktuelle Epoche zurück, die im Checkpoint gespeichert ist.</p>
 
 <div class="toggle admonition">
 <p class="admonition-title">Lösung anzeigen</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">load_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;checkpoint.pth&#39;</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">load_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;checkpoint.pth&#39;</span><span class="p">):</span>
     <span class="k">try</span><span class="p">:</span>
         <span class="n">checkpoint</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="s1">&#39;model_state_dict&#39;</span><span class="p">])</span>
@@ -207,7 +206,7 @@ Gibt die aktuelle Epoche zurück, die im Checkpoint gespeichert ist.</p>
 </div>
 </section>
 <section id="musterlosung">
-<h2><strong>Musterlösung</strong><a class="headerlink" href="#musterlosung" title="Link to this heading"></a></h2>
+<h2><strong>Musterlösung</strong><a class="headerlink" href="#musterlosung" title="Permalink to this heading"></a></h2>
 <p><a class="reference internal" href="checkpoints_source.html"><span class="doc">Checkpoints - Musterlösung</span></a></p>
 </section>
 </section>

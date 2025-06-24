@@ -1,13 +1,13 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="de" data-content_root="../">
+<html class="writer-html5" lang="de">
 <head>
   <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
 
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>PyTorch - Convolutional Neural Networks &mdash; Advances in AI Praktikum  Dokumentation</title>
-      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=92fd9be5" />
       <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
 
@@ -15,15 +15,14 @@
     <link rel="canonical" href="https://dmu1981.github.io/MPTPraktikum/pytorch/cnn.html" />
       <script src="../_static/jquery.js?v=5d32c60e"></script>
       <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script src="../_static/documentation_options.js?v=245627df"></script>
-      <script src="../_static/doctools.js?v=9a2dae69"></script>
-      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script data-url_root="../" id="documentation_options" src="../_static/documentation_options.js?v=cec59a4c"></script>
+      <script src="../_static/doctools.js?v=888ff710"></script>
+      <script src="../_static/sphinx_highlight.js?v=4825356b"></script>
       <script>let toggleHintShow = 'Click to show';</script>
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../_static/translations.js?v=79cc9f76"></script>
-      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script src="../_static/translations.js?v=70a09b52"></script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Stichwortverzeichnis" href="../genindex.html" />
@@ -102,20 +101,18 @@
            <div itemprop="articleBody">
              
   <section id="pytorch-convolutional-neural-networks">
-<h1>PyTorch - Convolutional Neural Networks<a class="headerlink" href="#pytorch-convolutional-neural-networks" title="Link to this heading"></a></h1>
+<h1>PyTorch - Convolutional Neural Networks<a class="headerlink" href="#pytorch-convolutional-neural-networks" title="Permalink to this heading"></a></h1>
 <p>Im Jahr 1998 veröffentlichte
 <a class="reference external" href="https://de.wikipedia.org/wiki/Yann_LeCun">Yann LeCun</a> das erste Convolutional Neural Network (CNN) mit dem Namen <a class="reference external" href="http://vision.stanford.edu/cs598_spring07/papers/Lecun98.pdf">LeNet-5</a>.</p>
 <p>Er war der erste, der die Architektur eines CNNs definierte und es erfolgreich auf die Erkennung von handgeschriebenen Ziffern
 anwandte.</p>
-<a class="reference internal image-reference" href="../_images/YannLeCun.jpg"><img alt="Yann LeCun (Quelle: `https://de.wikipedia.org/wiki/Yann_LeCun`_)" class="align-center" src="../_images/YannLeCun.jpg" style="width: 300px;" />
-</a>
+<a class="reference internal image-reference" href="../_images/YannLeCun.jpg"><img alt="Yann LeCun (Quelle: `https://de.wikipedia.org/wiki/Yann_LeCun`_)" class="align-center" src="../_images/YannLeCun.jpg" style="width: 300px;" /></a>
 <p>In dieser Aufgabe werden Sie ein Convolutional Neural Network (CNN) mit PyTorch erstellen, das auf dem CIFAR-100-Datensatz trainiert wird.</p>
 <p><a class="reference external" href="https://www.kaggle.com/datasets/fedesoriano/cifar100">CIFAR-100</a> ist ein Datensatz, der 100 verschiedene Klassen von Bildern enthält, darunter Tiere, Fahrzeuge und alltägliche Objekte.</p>
-<a class="reference internal image-reference" href="../_images/cifar100.png"><img alt="CIFAR-100" class="align-center" src="../_images/cifar100.png" style="width: 600px;" />
-</a>
+<a class="reference internal image-reference" href="../_images/cifar100.png"><img alt="CIFAR-100" class="align-center" src="../_images/cifar100.png" style="width: 600px;" /></a>
 <p>In dieser Aufgabe arbeiten Sie in der Datei <code class="file docutils literal notranslate"><span class="pre">pytorch/cifar100.py</span></code>.</p>
 <section id="aufgabe-1-data-augmentation-pipeline">
-<h2><strong>Aufgabe 1</strong>: Data Augmentation Pipeline<a class="headerlink" href="#aufgabe-1-data-augmentation-pipeline" title="Link to this heading"></a></h2>
+<h2><strong>Aufgabe 1</strong>: Data Augmentation Pipeline<a class="headerlink" href="#aufgabe-1-data-augmentation-pipeline" title="Permalink to this heading"></a></h2>
 <p>In dieser Aufgabe werden Sie eine Data Augmentation Pipeline für den CIFAR-100-Datensatz erstellen.
 Data Augmentation ist eine Technik, die verwendet wird, um die Vielfalt der Trainingsdaten zu erhöhen, indem verschiedene Transformationen auf die Bilder angewendet werden.
 Dies kann helfen, die Generalisierungsfähigkeit des Modells zu verbessern und Overfitting zu reduzieren.
@@ -150,7 +147,7 @@ Sie sollten eine Pipeline erstellen, die mindestens folgende Transformationen en
 </div>
 </section>
 <section id="aufgabe-2-der-datensatz-laden">
-<h2><strong>Aufgabe 2</strong>: Der Datensatz laden<a class="headerlink" href="#aufgabe-2-der-datensatz-laden" title="Link to this heading"></a></h2>
+<h2><strong>Aufgabe 2</strong>: Der Datensatz laden<a class="headerlink" href="#aufgabe-2-der-datensatz-laden" title="Permalink to this heading"></a></h2>
 <p>Nun müssen Sie den CIFAR-100-Datensatz laden. PyTorch bietet eine einfache Möglichkeit, diesen Datensatz zu laden und in Trainings- und Validierungssets zu unterteilen.
 Sie können den Datensatz mit der Klasse <cite>torchvision.datasets.CIFAR100</cite> laden.</p>
 <p>Instantieren Sie zwei <a class="reference external" href="https://docs.pytorch.org/vision/main/generated/torchvision.datasets.CIFAR100.html">torchvision.datasets.CIFAR100</a>-Objekte: eines für das Training und eines für die Validierung.
@@ -187,15 +184,15 @@ Wählen Sie eine Batch-Größe zwischen 32 und 256, abhängig von Ihrer Hardware
 </div>
 </section>
 <section id="aufgabe-3-das-netzwerk-definieren">
-<h2><strong>Aufgabe 3</strong>: Das Netzwerk definieren<a class="headerlink" href="#aufgabe-3-das-netzwerk-definieren" title="Link to this heading"></a></h2>
+<h2><strong>Aufgabe 3</strong>: Das Netzwerk definieren<a class="headerlink" href="#aufgabe-3-das-netzwerk-definieren" title="Permalink to this heading"></a></h2>
 <p>Implementieren Sie nun die Klasse <code class="xref py py-class docutils literal notranslate"><span class="pre">CNNNetwork</span></code>, die ein einfaches Convolutional Neural Network (CNN) mit mehreren Convolutional-Schichten und voll verbundenen Schichten definiert.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="pytorch.cifar100.CNNNetwork">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytorch.cifar100.</span></span><span class="sig-name descname"><span class="pre">CNNNetwork</span></span><a class="reference internal" href="../_modules/pytorch/cifar100.html#CNNNetwork"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#pytorch.cifar100.CNNNetwork" title="Link to this definition"></a></dt>
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">pytorch.cifar100.</span></span><span class="sig-name descname"><span class="pre">CNNNetwork</span></span><a class="reference internal" href="../_modules/pytorch/cifar100.html#CNNNetwork"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#pytorch.cifar100.CNNNetwork" title="Link zu dieser Definition"></a></dt>
 <dd><p>Ein einfaches neuronales Netzwerk mit einer versteckten Schicht.</p>
 <dl class="py method">
 <dt class="sig sig-object py" id="pytorch.cifar100.CNNNetwork.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pytorch/cifar100.html#CNNNetwork.__init__"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#pytorch.cifar100.CNNNetwork.__init__" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pytorch/cifar100.html#CNNNetwork.__init__"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#pytorch.cifar100.CNNNetwork.__init__" title="Link zu dieser Definition"></a></dt>
 <dd><p>Initialisiert das Netzwerk mit mehreren Convolutional-Schichten und voll verbundenen Schichten.</p>
 <p><strong>TODO</strong>:</p>
 <ul class="simple">
@@ -211,7 +208,7 @@ Verwenden Sie jeweils 16, 32 und 64 Ausgänge für <cite>conv1</cite>, <cite>con
 
 <dl class="py method">
 <dt class="sig sig-object py" id="pytorch.cifar100.CNNNetwork.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pytorch/cifar100.html#CNNNetwork.forward"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#pytorch.cifar100.CNNNetwork.forward" title="Link to this definition"></a></dt>
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pytorch/cifar100.html#CNNNetwork.forward"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#pytorch.cifar100.CNNNetwork.forward" title="Link zu dieser Definition"></a></dt>
 <dd><p>Führt den Vorwärtsdurchlauf des Netzwerks aus.</p>
 <p><strong>TODO</strong>:</p>
 <ul class="simple">
@@ -226,7 +223,7 @@ Verwenden Sie jeweils 16, 32 und 64 Ausgänge für <cite>conv1</cite>, <cite>con
 
 <div class="toggle admonition">
 <p class="admonition-title">Implementierung des Konstruktors anzeigen</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
   <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
   <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)</span>
   <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)</span>
@@ -241,7 +238,7 @@ Verwenden Sie jeweils 16, 32 und 64 Ausgänge für <cite>conv1</cite>, <cite>con
 </div>
 <div class="toggle admonition">
 <p class="admonition-title">Implementierung des Forward-Passes anzeigen</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
   <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
   <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
   <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv3</span><span class="p">(</span><span class="n">x</span><span class="p">)))</span>
@@ -254,7 +251,7 @@ Verwenden Sie jeweils 16, 32 und 64 Ausgänge für <cite>conv1</cite>, <cite>con
 </div>
 </section>
 <section id="aufgabe-4-das-training-des-netzwerks">
-<h2><strong>Aufgabe 4</strong>: Das Training des Netzwerks<a class="headerlink" href="#aufgabe-4-das-training-des-netzwerks" title="Link to this heading"></a></h2>
+<h2><strong>Aufgabe 4</strong>: Das Training des Netzwerks<a class="headerlink" href="#aufgabe-4-das-training-des-netzwerks" title="Permalink to this heading"></a></h2>
 <p>Dieses mal möchten wir das Training etwas ausführlicher gestalten.
 Insbesondere möchten wir den Fortschritt des Trainings in Form von Metriken wie der Genauigkeit und dem Verlust verfolgen.
 Ausserdem möchten wir sowohl den Trainings- als auch den Validierungsprozess in separaten Funktionen implementieren, um den Code übersichtlicher zu gestalten.</p>
@@ -283,10 +280,10 @@ Der <cite>dim=1</cite>-Parameter gibt an, dass die Argmax-Operation entlang der 
 <p>Implementieren Sie die Funktion <a class="reference internal" href="#pytorch.cifar100.epoch" title="pytorch.cifar100.epoch"><code class="xref py py-func docutils literal notranslate"><span class="pre">pytorch.cifar100.epoch()</span></code></a>, die das Netzwerk auf dem Trainingsset trainiert und den Fortschritt in Form von Metriken wie der Genauigkeit und dem Verlust verfolgt.</p>
 <dl class="py function">
 <dt class="sig sig-object py" id="pytorch.cifar100.epoch">
-<span class="sig-prename descclassname"><span class="pre">pytorch.cifar100.</span></span><span class="sig-name descname"><span class="pre">epoch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">criterion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pytorch/cifar100.html#epoch"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#pytorch.cifar100.epoch" title="Link to this definition"></a></dt>
+<span class="sig-prename descclassname"><span class="pre">pytorch.cifar100.</span></span><span class="sig-name descname"><span class="pre">epoch</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">n</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">dataloader</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">criterion</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">optimizer</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/pytorch/cifar100.html#epoch"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#pytorch.cifar100.epoch" title="Link zu dieser Definition"></a></dt>
 <dd><p>Führt eine einzelne Trainings- oder Evaluations-Epoche für das Modell aus.</p>
 <section id="parameters">
-<h3>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<h3>Parameters:<a class="headerlink" href="#parameters" title="Permalink to this heading"></a></h3>
 <dl class="simple">
 <dt>model (nn.Module):</dt><dd><p>Das zu trainierende oder evaluierende Modell.</p>
 </dd>
@@ -376,7 +373,7 @@ Epoch<span class="w"> </span><span class="m">1</span><span class="w"> </span><sp
 </div>
 </section>
 <section id="aufgabe-5-batch-normalisierung-hinzufugen">
-<h2><strong>Aufgabe 5</strong>: Batch-Normalisierung hinzufügen<a class="headerlink" href="#aufgabe-5-batch-normalisierung-hinzufugen" title="Link to this heading"></a></h2>
+<h2><strong>Aufgabe 5</strong>: Batch-Normalisierung hinzufügen<a class="headerlink" href="#aufgabe-5-batch-normalisierung-hinzufugen" title="Permalink to this heading"></a></h2>
 <p>Fügen Sie <a class="reference external" href="https://arxiv.org/abs/1502.03167">Batch-Normalisierungsschichten</a> nach jeder Convolutional-Schicht hinzu, um die Trainingsgeschwindigkeit zu erhöhen und die Leistung des Modells zu verbessern.
 Batch-Normalisierung normalisiert die Ausgaben der Convolutional-Schichten, um die Verteilung der Aktivierungen zu stabilisieren und die Trainingsgeschwindigkeit zu erhöhen.
 Verwenden Sie Batch-Normalisierung dazu nach der Aktivierungsfunktion (z.B. ReLU) jeder Convolutional-Schicht.+</p>
@@ -384,7 +381,7 @@ Verwenden Sie Batch-Normalisierung dazu nach der Aktivierungsfunktion (z.B. ReLU
 Diese muss wissen wieviele Kanäle die Convolutional-Schicht hat, daher müssen Sie die Anzahl der Kanäle als Argument übergeben.</p>
 <div class="toggle admonition">
 <p class="admonition-title">Implementierung der Batch-Normalisierung anzeigen</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
   <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
   <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="s2">&quot;same&quot;</span><span class="p">)</span>
   <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">16</span><span class="p">)</span>
@@ -394,7 +391,7 @@ Diese muss wissen wieviele Kanäle die Convolutional-Schicht hat, daher müssen 
   <span class="bp">self</span><span class="o">.</span><span class="n">bn3</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">64</span><span class="p">)</span>
   <span class="o">...</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
     <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn1</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">))))</span>
     <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn2</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">))))</span>
     <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn3</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv3</span><span class="p">(</span><span class="n">x</span><span class="p">))))</span>
@@ -408,7 +405,7 @@ Diese muss wissen wieviele Kanäle die Convolutional-Schicht hat, daher müssen 
 <p>Beobachten sie den Effekt der Batch-Normalisierung auf die Trainingsgeschwindigkeit und die Leistung des Modells.</p>
 </section>
 <section id="aufgabe-6-dropout-hinzufugen">
-<h2><strong>Aufgabe 6</strong>: Dropout hinzufügen<a class="headerlink" href="#aufgabe-6-dropout-hinzufugen" title="Link to this heading"></a></h2>
+<h2><strong>Aufgabe 6</strong>: Dropout hinzufügen<a class="headerlink" href="#aufgabe-6-dropout-hinzufugen" title="Permalink to this heading"></a></h2>
 <p>Fügen Sie eine <a class="reference external" href="https://www.cs.toronto.edu/~rsalakhu/papers/srivastava14a.pdf">Dropout-Schicht</a> hinzu, um Overfitting zu reduzieren.
 Dropout ist eine Technik, bei der während des Trainings zufällig einige Neuronen deaktiviert.
 Dies hilft, Overfitting zu reduzieren, indem es das Modell zwingt, robuster zu werden und nicht von einzelnen Neuronen abhängig zu sein.
@@ -416,12 +413,12 @@ Sie können die Klasse <a class="reference external" href="https://pytorch.org/d
 Fügen Sie Dropout-Schichten nach den voll verbundenen Schichten hinzu, um Overfitting zu reduzieren.</p>
 <div class="toggle admonition">
 <p class="admonition-title">Implementierung des Dropouts anzeigen</p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
     <span class="nb">super</span><span class="p">()</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
     <span class="o">...</span>
     <span class="bp">self</span><span class="o">.</span><span class="n">dropout</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Dropout</span><span class="p">(</span><span class="n">p</span><span class="o">=</span><span class="mf">0.5</span><span class="p">)</span>
 
-<span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
     <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn1</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">))))</span>
     <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn2</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">x</span><span class="p">))))</span>
     <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">pool</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">bn3</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">conv3</span><span class="p">(</span><span class="n">x</span><span class="p">))))</span>
@@ -435,7 +432,7 @@ Fügen Sie Dropout-Schichten nach den voll verbundenen Schichten hinzu, um Overf
 </div>
 </section>
 <section id="musterlosung">
-<h2><strong>Musterlösung</strong><a class="headerlink" href="#musterlosung" title="Link to this heading"></a></h2>
+<h2><strong>Musterlösung</strong><a class="headerlink" href="#musterlosung" title="Permalink to this heading"></a></h2>
 <p><a class="reference internal" href="cnn_source.html"><span class="doc">Convolutional Neural Network - Musterlösung</span></a></p>
 </section>
 </section>

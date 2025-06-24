@@ -1,3 +1,4 @@
 __pycache__
 data
 *.pth
+tensorboard/runs
