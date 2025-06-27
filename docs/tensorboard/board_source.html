@@ -1,0 +1,414 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TensorBoard - Musterlösung &mdash; Advances in AI Praktikum  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+
+  
+    <link rel="canonical" href="https://dmu1981.github.io/MPTPraktikum/tensorboard/board_source.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=245627df"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script src="../_static/translations.js?v=79cc9f76"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../genindex.html" />
+    <link rel="search" title="Suche" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Advances in AI Praktikum
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Aufgaben:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pytorch/index.html">PyTorch - Grundlagen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pytorch/cnn.html">Convolutional Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../checkpoints/index.html">Checkpoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Tensor Board</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Advances in AI Praktikum</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">TensorBoard - Musterlösung</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tensorboard/board_source.rst.txt" rel="nofollow"> Quelltext anzeigen</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tensorboard-musterlosung">
+<h1>TensorBoard - Musterlösung<a class="headerlink" href="#tensorboard-musterlosung" title="Link to this heading"></a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="linenos">  2</span><span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
+<span class="linenos">  3</span><span class="kn">import</span><span class="w"> </span><span class="nn">torchvision</span>
+<span class="linenos">  4</span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="linenos">  5</span><span class="kn">from</span><span class="w"> </span><span class="nn">misc</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="linenos">  6</span>    <span class="n">CNNNetwork</span><span class="p">,</span>
+<span class="linenos">  7</span>    <span class="n">load_data</span><span class="p">,</span>
+<span class="linenos">  8</span>    <span class="n">epoch</span><span class="p">,</span>
+<span class="linenos">  9</span>    <span class="n">save_checkpoint</span><span class="p">,</span>
+<span class="linenos"> 10</span>    <span class="n">load_checkpoint</span><span class="p">,</span>
+<span class="linenos"> 11</span>    <span class="n">DEVICE</span><span class="p">,</span>
+<span class="linenos"> 12</span>    <span class="n">LR</span><span class="p">,</span>
+<span class="linenos"> 13</span><span class="p">)</span>
+<span class="linenos"> 14</span>
+<span class="linenos"> 15</span><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.tensorboard</span><span class="w"> </span><span class="kn">import</span> <span class="n">SummaryWriter</span>
+<span class="linenos"> 16</span>
+<span class="linenos"> 17</span>
+<span class="linenos"> 18</span><span class="k">class</span><span class="w"> </span><span class="nc">TensorBoardLogger</span><span class="p">:</span>
+<span class="linenos"> 19</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos"> 20</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 21</span><span class="sd">        Initialisiert den TensorBoard-Logger.</span>
+<span class="linenos"> 22</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos"> 23</span>        <span class="bp">self</span><span class="o">.</span><span class="n">create_writer</span><span class="p">()</span>
+<span class="linenos"> 24</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_reset_samples_statistics</span><span class="p">()</span>
+<span class="linenos"> 25</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_reset_metrics</span><span class="p">()</span>
+<span class="linenos"> 26</span>
+<span class="linenos"> 27</span>    <span class="k">def</span><span class="w"> </span><span class="nf">create_writer</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos"> 28</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos"> 29</span><span class="sd">        Erstellt einen TensorBoard-SummaryWriter, der die Logs in einem Verzeichnis speichert.</span>
+<span class="linenos"> 30</span>
+<span class="linenos"> 31</span><span class="sd">        **TODO**:</span>
+<span class="linenos"> 32</span><span class="sd">        Erstellen Sie einen `SummaryWriter &lt;https://docs.pytorch.org/docs/stable/tensorboard.html#torch.utils.tensorboard.writer.SummaryWriter&gt;`_, der die Logs in einem Verzeichnis namens &quot;runs&quot;</span>
+<span class="linenos"> 33</span><span class="sd">        speichert. Das Verzeichnis sollte im gleichen Verzeichnis wie dieses Skript liegen.</span>
+<span class="linenos"> 34</span><span class="sd">        Verwenden Sie `os.path.dirname &lt;https://www.tutorialspoint.com/python/os_path_dirname.htm#:~:text=The%20Python%20os.,the%20specified%20file%20or%20directory.&gt;`_ `(os.path.abspath &lt;https://www.geeksforgeeks.org/python/python-os-path-abspath-method-with-example/&gt;`_ `(__file__))`, um den Pfad zum aktuellen Verzeichnis zu erhalten,</span>
+<span class="linenos"> 35</span><span class="sd">        und `os.path.join() &lt;https://www.geeksforgeeks.org/python/python-os-path-join-method/&gt;`_, um den Pfad zum &quot;runs&quot;-Verzeichnis zu erstellen.</span>
+<span class="linenos"> 36</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos"> 37</span>        <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+<span class="linenos"> 38</span>        <span class="n">board_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="s2">&quot;runs&quot;</span><span class="p">)</span>
+<span class="linenos"> 39</span>
+<span class="linenos"> 40</span>        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span> <span class="o">=</span> <span class="n">SummaryWriter</span><span class="p">(</span><span class="n">log_dir</span><span class="o">=</span><span class="n">board_path</span><span class="p">)</span>
+<span class="linenos"> 41</span>
+<span class="linenos"> 42</span>    <span class="k">def</span><span class="w"> </span><span class="nf">_reset_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos"> 43</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Setzt die Metriken zurück.&quot;&quot;&quot;</span>
+<span class="linenos"> 44</span>        <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;total_loss&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;total_correct&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;total_samples&quot;</span><span class="p">:</span> <span class="mi">0</span> <span class="p">}</span>
+<span class="linenos"> 45</span>
+<span class="linenos"> 46</span>    <span class="k">def</span><span class="w"> </span><span class="nf">_reset_samples_statistics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos"> 47</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Setzt die Statistik der Samples zurück.&quot;&quot;&quot;</span>
+<span class="linenos"> 48</span>        <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span> <span class="o">=</span> <span class="p">{}</span>
+<span class="linenos"> 49</span>        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+<span class="linenos"> 50</span>            <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span><span class="p">[</span><span class="n">i</span><span class="p">]</span> <span class="o">=</span> <span class="p">{</span>
+<span class="linenos"> 51</span>                <span class="s2">&quot;samples&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([],</span> <span class="n">device</span><span class="o">=</span><span class="n">DEVICE</span><span class="p">),</span>
+<span class="linenos"> 52</span>                <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([],</span> <span class="n">device</span><span class="o">=</span><span class="n">DEVICE</span><span class="p">),</span>
+<span class="linenos"> 53</span>            <span class="p">}</span>
+<span class="linenos"> 54</span>
+<span class="linenos"> 55</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_graph</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">input_tensor</span><span class="p">):</span>
+<span class="linenos"> 56</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Loggt den Graphen des Modells in TensorBoard.</span>
+<span class="linenos"> 57</span>
+<span class="linenos"> 58</span><span class="sd">        Parameters:</span>
+<span class="linenos"> 59</span><span class="sd">        -----------</span>
+<span class="linenos"> 60</span><span class="sd">        model (nn.Module):</span>
+<span class="linenos"> 61</span><span class="sd">          Das Modell, dessen Graph geloggt werden soll.</span>
+<span class="linenos"> 62</span>
+<span class="linenos"> 63</span><span class="sd">        input_tensor (torch.Tensor):</span>
+<span class="linenos"> 64</span><span class="sd">          Ein Beispiel-Eingabetensor, der die Form des Eingabedaten repräsentiert.</span>
+<span class="linenos"> 65</span>
+<span class="linenos"> 66</span><span class="sd">        **TODO**:</span>
+<span class="linenos"> 67</span><span class="sd">        Verwenden Sie `writer.add_graph() &lt;https://pytorch.org/docs/stable/tensorboard.html#torch.utils.tensorboard.writer.SummaryWriter.add_graph&gt;`_, um den Graphen</span>
+<span class="linenos"> 68</span><span class="sd">        des Modells zu loggen.</span>
+<span class="linenos"> 69</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos"> 70</span>        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_graph</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">input_tensor</span><span class="p">)</span>
+<span class="linenos"> 71</span>
+<span class="linenos"> 72</span>    <span class="k">def</span><span class="w"> </span><span class="nf">update_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logits</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+<span class="linenos"> 73</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Aktualisiert die Metriken für Trainings- oder Validierungsdaten.</span>
+<span class="linenos"> 74</span>
+<span class="linenos"> 75</span><span class="sd">        Parameters:</span>
+<span class="linenos"> 76</span><span class="sd">        -----------</span>
+<span class="linenos"> 77</span><span class="sd">        logits (torch.Tensor):</span>
+<span class="linenos"> 78</span><span class="sd">          Die zum aktuell verarbeiteten Batch gehörenden Logits (Vorhersagen) des Modells.</span>
+<span class="linenos"> 79</span>
+<span class="linenos"> 80</span><span class="sd">        labels (torch.Tensor):</span>
+<span class="linenos"> 81</span><span class="sd">          Die zugehörigen Labels für den Batch.</span>
+<span class="linenos"> 82</span>
+<span class="linenos"> 83</span><span class="sd">        Updates:</span>
+<span class="linenos"> 84</span><span class="sd">        --------</span>
+<span class="linenos"> 85</span><span class="sd">        self.metrics (dict):</span>
+<span class="linenos"> 86</span><span class="sd">          Diese Variable speichert die Metriken `total_loss`, `total_correct` und `total_samples`.</span>
+<span class="linenos"> 87</span>
+<span class="linenos"> 88</span><span class="sd">        self.metrics[&quot;total_loss&quot;] (float):</span>
+<span class="linenos"> 89</span><span class="sd">          Der kumulierte summarische Verlust über alle bisherigen Batches.</span>
+<span class="linenos"> 90</span>
+<span class="linenos"> 91</span><span class="sd">        self.metrics[&quot;total_correct&quot;] (int):</span>
+<span class="linenos"> 92</span><span class="sd">          Die Anzahl der korrekten Vorhersagen über alle bisherigen Batches.</span>
+<span class="linenos"> 93</span>
+<span class="linenos"> 94</span><span class="sd">        self.metrics[&quot;total_samples&quot;] (int):</span>
+<span class="linenos"> 95</span><span class="sd">          Die Gesamtzahl der verarbeiteten Samples über alle bisherigen Batches.</span>
+<span class="linenos"> 96</span>
+<span class="linenos"> 97</span><span class="sd">        **TODO**:</span>
+<span class="linenos"> 98</span><span class="sd">        Aktualisiere die Metriken `total_loss`, `total_correct` und `total_samples` für den aktuellen Batch.</span>
+<span class="linenos"> 99</span><span class="sd">        - Berechne den Verlust für den Batch mit `nn.CrossEntropyLoss()`.</span>
+<span class="linenos">100</span><span class="sd">        - Zähle die Anzahl der korrekten Vorhersagen im Batch. Hinweis: Verwende `torch.argmax(logits, 1) &lt;https://docs.pytorch.org/docs/stable/generated/torch.argmax.html&gt;`_ um die Vorhersagen zu erhalten und vergleiche sie mit den Labels.</span>
+<span class="linenos">101</span><span class="sd">        - Aktualisiere die Metriken in `self.metrics[&quot;total_loss&quot;]`, `self.metrics[&quot;total_correct&quot;]` und `self.metrics[&quot;total_samples&quot;]` entsprechend.</span>
+<span class="linenos">102</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">103</span>        <span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span>
+<span class="linenos">104</span>        <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+<span class="linenos">105</span>
+<span class="linenos">106</span>        <span class="c1"># Berechne die Anzahl der korrekten Vorhersagen</span>
+<span class="linenos">107</span>        <span class="n">predicted</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+<span class="linenos">108</span>        <span class="n">correct</span> <span class="o">=</span> <span class="p">(</span><span class="n">predicted</span> <span class="o">==</span> <span class="n">labels</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+<span class="linenos">109</span>
+<span class="linenos">110</span>        <span class="c1"># Aktualisiere die Metriken</span>
+<span class="linenos">111</span>        <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;total_loss&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+<span class="linenos">112</span>        <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;total_correct&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">correct</span>
+<span class="linenos">113</span>        <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;total_samples&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">labels</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="linenos">114</span>
+<span class="linenos">115</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+<span class="linenos">116</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Loggt Metriken in TensorBoard.</span>
+<span class="linenos">117</span>
+<span class="linenos">118</span><span class="sd">        Parameters:</span>
+<span class="linenos">119</span><span class="sd">        -----------</span>
+<span class="linenos">120</span><span class="sd">        step (int):</span>
+<span class="linenos">121</span><span class="sd">          Der aktuelle Schritt, der für das Logging verwendet wird.</span>
+<span class="linenos">122</span>
+<span class="linenos">123</span><span class="sd">        train (bool):</span>
+<span class="linenos">124</span><span class="sd">          Gibt an, ob die Metriken aus dem Trainings- oder Validierungsdatensatz stammen.</span>
+<span class="linenos">125</span>
+<span class="linenos">126</span><span class="sd">        **TODO**:</span>
+<span class="linenos">127</span><span class="sd">        Logge die skalaren Metriken `loss` und `accuracy` über den `SummaryWriter` ins TensorBoard.</span>
+<span class="linenos">128</span><span class="sd">        Die Metriken sollten in zwei verschiedenen Tags gespeichert werden: &quot;train&quot; für Trainingsmetriken und &quot;validation&quot; für</span>
+<span class="linenos">129</span><span class="sd">        Validierungsmetriken. Überprüfe, ob `train` wahr ist, um zu entscheiden, ob es sich um Trainings- oder Validierungsmetriken handelt.</span>
+<span class="linenos">130</span>
+<span class="linenos">131</span><span class="sd">        Die Metriken sollten mit dem aktuellen Schritt `step` geloggt werden.</span>
+<span class="linenos">132</span><span class="sd">        - Berechnen Sie den Verlust als `self.metrics[&quot;total_loss&quot;] / self.metrics[&quot;total_samples&quot;]`.</span>
+<span class="linenos">133</span><span class="sd">        - Berechnen Sie die Genauigkeit als `self.metrics[&quot;total_correct&quot;] / self.metrics[&quot;total_samples&quot;]`.</span>
+<span class="linenos">134</span><span class="sd">        - Verwenden Sie `self.writer.add_scalar() &lt;https://docs.pytorch.org/docs/stable/tensorboard.html#torch.utils.tensorboard.writer.SummaryWriter.add_scalar&gt;`_ um die Metriken zu loggen.</span>
+<span class="linenos">135</span><span class="sd">        - Rufen Sie zum Schluß `self._reset_metrics()` auf, um die Metriken zurückzusetzen.</span>
+<span class="linenos">136</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">137</span>        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;total_loss&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;total_samples&quot;</span><span class="p">]</span>
+<span class="linenos">138</span>        <span class="n">accuracy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;total_correct&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;total_samples&quot;</span><span class="p">]</span>
+<span class="linenos">139</span>
+<span class="linenos">140</span>        <span class="n">tag</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span> <span class="k">if</span> <span class="n">train</span> <span class="k">else</span> <span class="s2">&quot;validation&quot;</span>        
+<span class="linenos">141</span>        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">/loss&quot;</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+<span class="linenos">142</span>        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">/accuracy&quot;</span><span class="p">,</span> <span class="n">accuracy</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+<span class="linenos">143</span>        
+<span class="linenos">144</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_reset_metrics</span><span class="p">()</span>
+<span class="linenos">145</span>
+<span class="linenos">146</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_sample_statistics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+<span class="linenos">147</span><span class="w">        </span><span class="sd">&quot;&quot;&quot; Loggt die am schlechtesten klassifizierten Samples in TensorBoard.</span>
+<span class="linenos">148</span>
+<span class="linenos">149</span><span class="sd">        Parameters:</span>
+<span class="linenos">150</span><span class="sd">        -----------</span>
+<span class="linenos">151</span><span class="sd">        train (bool):</span>
+<span class="linenos">152</span><span class="sd">          Gibt an, ob die Samples aus dem Trainings- oder Validierungsdatensatz stammen.</span>
+<span class="linenos">153</span>
+<span class="linenos">154</span><span class="sd">        step (int):</span>
+<span class="linenos">155</span><span class="sd">          Der aktuelle Schritt, der für das Logging verwendet wird.</span>
+<span class="linenos">156</span>
+<span class="linenos">157</span><span class="sd">        **TODO**:</span>
+<span class="linenos">158</span><span class="sd">        Logge die am schlechtesten klassifizierten Samples für jede Klasse in TensorBoard.</span>
+<span class="linenos">159</span><span class="sd">        Die Samples sollten in einem Grid-Format geloggt werden, wobei jede Klasse in einem eigenen Tag gespeichert wird.</span>
+<span class="linenos">160</span><span class="sd">        </span>
+<span class="linenos">161</span><span class="sd">        - Iteriere über die Klassen-IDs (0-9) und logge die Samples für jede Klasse.</span>
+<span class="linenos">162</span><span class="sd">        - Verwende `self.sample_statistics[cls_id][&quot;samples&quot;]` um die Samples für die Klasse `cls_id` zu erhalten.</span>
+<span class="linenos">163</span><span class="sd">        - Verwende `torchvision.utils.make_grid() &lt;https://docs.pytorch.org/vision/stable/generated/torchvision.utils.make_grid.html&gt;`_ um die Samples in einem Grid zu formatieren</span>
+<span class="linenos">164</span><span class="sd">        - Übergeben Sie `normalize=True` um die Samples zu normalisieren.</span>
+<span class="linenos">165</span><span class="sd">        - Logge die Samples mit `self.writer.add_image() &lt;https://docs.pytorch.org/docs/stable//tensorboard.html#torch.utils.tensorboard.writer.SummaryWriter.add_image&gt;`_ unter dem Tag `f&quot;{tag}/worst_samples/class_{cls_id}&quot;`, wobei `tag` entweder &quot;train&quot; oder &quot;validation&quot; ist.</span>
+<span class="linenos">166</span><span class="sd">        - Rufen Sie ganz zum Schluß `self._reset_samples_statistics()` auf, um die Statistik der Samples zurückzusetzen, nachdem die Samples geloggt wurden.</span>
+<span class="linenos">167</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">168</span>        <span class="c1"># Logge die schlechtesten Samples, wenn die Epoche abgeschlossen ist</span>
+<span class="linenos">169</span>        <span class="n">tag</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span> <span class="k">if</span> <span class="n">train</span> <span class="k">else</span> <span class="s2">&quot;validation&quot;</span>
+<span class="linenos">170</span>
+<span class="linenos">171</span>        <span class="c1"># Iteriere über die Klassen-IDs (0-9) und logge die Samples für jede Klasse</span>
+<span class="linenos">172</span>        <span class="k">for</span> <span class="n">cls_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+<span class="linenos">173</span>            <span class="c1"># Erstelle ein Grid aus den Samples der Klasse</span>
+<span class="linenos">174</span>            <span class="n">grid</span> <span class="o">=</span> <span class="n">torchvision</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">make_grid</span><span class="p">(</span>
+<span class="linenos">175</span>                <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span><span class="p">[</span><span class="n">cls_id</span><span class="p">][</span><span class="s2">&quot;samples&quot;</span><span class="p">],</span>
+<span class="linenos">176</span>                <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="linenos">177</span>            <span class="p">)</span>
+<span class="linenos">178</span>
+<span class="linenos">179</span>            <span class="c1"># Logge das Grid der Samples in TensorBoard</span>
+<span class="linenos">180</span>            <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_image</span><span class="p">(</span>
+<span class="linenos">181</span>                <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">/worst_samples/class_</span><span class="si">{</span><span class="n">cls_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+<span class="linenos">182</span>                <span class="n">grid</span><span class="p">,</span>
+<span class="linenos">183</span>                <span class="n">global_step</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
+<span class="linenos">184</span>            <span class="p">)</span>
+<span class="linenos">185</span>        
+<span class="linenos">186</span>        <span class="c1"># Setze die Statistik der Samples zurück</span>
+<span class="linenos">187</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_reset_samples_statistics</span><span class="p">()</span>
+<span class="linenos">188</span>
+<span class="linenos">189</span>    <span class="k">def</span><span class="w"> </span><span class="nf">update_sample_statistics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">loss</span><span class="p">):</span>
+<span class="linenos">190</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Aggregiere die am schlechtesten klassifizierten Samples für jede Klasse.</span>
+<span class="linenos">191</span>
+<span class="linenos">192</span><span class="sd">        Parameters:</span>
+<span class="linenos">193</span><span class="sd">        -----------</span>
+<span class="linenos">194</span><span class="sd">        batch (torch.Tensor):</span>
+<span class="linenos">195</span><span class="sd">          Der Batch von Eingabedaten.</span>
+<span class="linenos">196</span>
+<span class="linenos">197</span><span class="sd">        labels (torch.Tensor):</span>
+<span class="linenos">198</span><span class="sd">          Die zugehörigen Labels für den Batch.</span>
+<span class="linenos">199</span>
+<span class="linenos">200</span><span class="sd">        loss (torch.Tensor):</span>
+<span class="linenos">201</span><span class="sd">          Der Verlust für den Batch, berechnet mit `nn.CrossEntropyLoss(reduction=&quot;none&quot;)`.</span>
+<span class="linenos">202</span>
+<span class="linenos">203</span><span class="sd">        Updates:</span>
+<span class="linenos">204</span><span class="sd">        --------</span>
+<span class="linenos">205</span><span class="sd">        self.sample_statistics (dict):</span>
+<span class="linenos">206</span><span class="sd">          Diese Variable speichert die Samples und deren zugehörigen Verlusten für jede Klasse.</span>
+<span class="linenos">207</span>
+<span class="linenos">208</span><span class="sd">        self.sample_statistics[cls_id][&quot;samples&quot;] (torch.Tensor):</span>
+<span class="linenos">209</span><span class="sd">          Enthält die bisher schwierigsten Samples für die Klasse `cls_id`.</span>
+<span class="linenos">210</span>
+<span class="linenos">211</span><span class="sd">        self.sample_statistics[cls_id][&quot;loss&quot;] (torch.Tensor):</span>
+<span class="linenos">212</span><span class="sd">          Enthält die bisher größten Loss-Werte für die Klasse `cls_id`.</span>
+<span class="linenos">213</span>
+<span class="linenos">214</span><span class="sd">        Diese Methode aggregiert die am schlechtesten klassifizierten Samples für jede Klasse.</span>
+<span class="linenos">215</span><span class="sd">        Die Samples werden in `self.sample_statistics` gespeichert, die für jede Klasse eine Liste von Samples</span>
+<span class="linenos">216</span><span class="sd">        und deren zugehörigen Verlusten enthält.</span>
+<span class="linenos">217</span><span class="sd">        Die Methode iteriert über die Klassen-IDs (0-9) und speichert die 64 Samples mit dem höchsten Verlust</span>
+<span class="linenos">218</span><span class="sd">        für jede Klasse.</span>
+<span class="linenos">219</span>
+<span class="linenos">220</span><span class="sd">        **TODO**:</span>
+<span class="linenos">221</span><span class="sd">        - Iterieren Sie über die Klassen-IDs (0-9) und speichern Sie die 64 Samples mit dem höchsten Verlust für jede Klasse.</span>
+<span class="linenos">222</span><span class="sd">        - Verwenden Sie `torch.cat() &lt;https://docs.pytorch.org/docs/stable/generated/torch.cat.html&gt;`_ um die Samples und Verluste für jede Klasse zu aggregieren.</span>
+<span class="linenos">223</span><span class="sd">          Verwenden Sie `torch.clone() &lt;https://docs.pytorch.org/docs/stable/generated/torch.clone.html&gt;`_ `.detach() &lt;https://docs.pytorch.org/docs/stable/generated/torch.Tensor.detach.html&gt;`_ um sicherzustellen, dass die Samples und Verluste nicht mehr mit der</span>
+<span class="linenos">224</span><span class="sd">           Gradientenberechnung von AutoGrad verbunden sind.</span>
+<span class="linenos">225</span><span class="sd">        - Sortieren Sie die Samples nach Verlust in absteigender Reihenfolge und behalten Sie nur die 64 schlechtesten Samples.</span>
+<span class="linenos">226</span><span class="sd">          Verwenden Sie `torch.argsort() &lt;https://docs.pytorch.org/docs/stable/generated/torch.argsort.html&gt;`_ um die Indizes der Samples nach Verlust zu sortieren.</span>
+<span class="linenos">227</span><span class="sd">        - Aktualisieren Sie `self.sample_statistics` für jede Klasse mit den aggregierten Samples und Verlusten.</span>
+<span class="linenos">228</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">229</span>        <span class="c1"># Iteriert über die Klassen-IDs (0-9) und speichert die schlechtesten Samples</span>
+<span class="linenos">230</span>        <span class="k">for</span> <span class="n">cls_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+<span class="linenos">231</span>            <span class="c1"># Filtere die Samples für die aktuelle Klasse</span>
+<span class="linenos">232</span>            <span class="n">ids</span> <span class="o">=</span> <span class="n">labels</span> <span class="o">==</span> <span class="n">cls_id</span>
+<span class="linenos">233</span>
+<span class="linenos">234</span>            <span class="c1"># Konkatenieren der Samples und Verluste für die aktuelle Klasse</span>
+<span class="linenos">235</span>            <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span><span class="p">[</span><span class="n">cls_id</span><span class="p">][</span><span class="s2">&quot;samples&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+<span class="linenos">236</span>                <span class="p">[</span>
+<span class="linenos">237</span>                    <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span><span class="p">[</span><span class="n">cls_id</span><span class="p">][</span><span class="s2">&quot;samples&quot;</span><span class="p">],</span>
+<span class="linenos">238</span>                    <span class="n">batch</span><span class="p">[</span><span class="n">ids</span><span class="p">]</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
+<span class="linenos">239</span>                <span class="p">]</span>
+<span class="linenos">240</span>            <span class="p">)</span>
+<span class="linenos">241</span>            <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span><span class="p">[</span><span class="n">cls_id</span><span class="p">][</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+<span class="linenos">242</span>                <span class="p">[</span>
+<span class="linenos">243</span>                    <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span><span class="p">[</span><span class="n">cls_id</span><span class="p">][</span><span class="s2">&quot;loss&quot;</span><span class="p">],</span>
+<span class="linenos">244</span>                    <span class="n">loss</span><span class="p">[</span><span class="n">ids</span><span class="p">]</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
+<span class="linenos">245</span>                <span class="p">]</span>
+<span class="linenos">246</span>            <span class="p">)</span>
+<span class="linenos">247</span>
+<span class="linenos">248</span>            <span class="c1"># Sortiere die Samples nach Verlust in absteigender Reihenfolge</span>
+<span class="linenos">249</span>            <span class="n">sorted_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span>
+<span class="linenos">250</span>                <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span><span class="p">[</span><span class="n">cls_id</span><span class="p">][</span><span class="s2">&quot;loss&quot;</span><span class="p">],</span> <span class="n">descending</span><span class="o">=</span><span class="kc">True</span>
+<span class="linenos">251</span>            <span class="p">)</span>
+<span class="linenos">252</span>
+<span class="linenos">253</span>            <span class="c1"># Behalte nur die 64 schlechtesten Samples</span>
+<span class="linenos">254</span>            <span class="n">sorted_indices</span> <span class="o">=</span> <span class="n">sorted_indices</span><span class="p">[:</span><span class="mi">64</span><span class="p">]</span>
+<span class="linenos">255</span>
+<span class="linenos">256</span>            <span class="c1"># Aktualisiere die Samples und Verluste für die aktuelle Klasse</span>
+<span class="linenos">257</span>            <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span><span class="p">[</span><span class="n">cls_id</span><span class="p">][</span><span class="s2">&quot;samples&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span><span class="p">[</span><span class="n">cls_id</span><span class="p">][</span>
+<span class="linenos">258</span>                <span class="s2">&quot;samples&quot;</span>
+<span class="linenos">259</span>            <span class="p">][</span><span class="n">sorted_indices</span><span class="p">]</span>
+<span class="linenos">260</span>
+<span class="linenos">261</span>            <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span><span class="p">[</span><span class="n">cls_id</span><span class="p">][</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span><span class="p">[</span><span class="n">cls_id</span><span class="p">][</span>
+<span class="linenos">262</span>                <span class="s2">&quot;loss&quot;</span>
+<span class="linenos">263</span>            <span class="p">][</span><span class="n">sorted_indices</span><span class="p">]</span>
+<span class="linenos">264</span>
+<span class="linenos">265</span>
+<span class="linenos">266</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">267</span>    <span class="n">training_set</span><span class="p">,</span> <span class="n">validation_set</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">()</span>
+<span class="linenos">268</span>
+<span class="linenos">269</span>    <span class="c1"># Initialisierung des Modells, Loss-Kriteriums und Optimierers</span>
+<span class="linenos">270</span>    <span class="n">model</span> <span class="o">=</span> <span class="n">CNNNetwork</span><span class="p">()</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+<span class="linenos">271</span>    <span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">(</span><span class="n">reduction</span><span class="o">=</span><span class="s2">&quot;none&quot;</span><span class="p">)</span>
+<span class="linenos">272</span>    <span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span>
+<span class="linenos">273</span>        <span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">LR</span>
+<span class="linenos">274</span>    <span class="p">)</span>  <span class="c1"># Checkpoint laden, falls vorhanden</span>
+<span class="linenos">275</span>
+<span class="linenos">276</span>    <span class="c1"># Checkpoint laden, falls vorhanden</span>
+<span class="linenos">277</span>    <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+<span class="linenos">278</span>    <span class="n">chkpt_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="s2">&quot;checkpoint.pth&quot;</span><span class="p">)</span>
+<span class="linenos">279</span>
+<span class="linenos">280</span>    <span class="n">ep</span> <span class="o">=</span> <span class="n">load_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">chkpt_path</span><span class="p">)</span>
+<span class="linenos">281</span>    <span class="k">if</span> <span class="n">ep</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+<span class="linenos">282</span>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Checkpoint geladen, fortsetzen bei Epoche </span><span class="si">{</span><span class="n">ep</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
+<span class="linenos">283</span>
+<span class="linenos">284</span>    <span class="c1"># Das Modell trainieren</span>
+<span class="linenos">285</span>    <span class="n">logger</span> <span class="o">=</span> <span class="n">TensorBoardLogger</span><span class="p">()</span>
+<span class="linenos">286</span>
+<span class="linenos">287</span>    <span class="c1"># Logge den Graphen des Modells</span>
+<span class="linenos">288</span>    <span class="n">input_tensor</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">)</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>  <span class="c1"># Beispiel-Eingabetensor</span>
+<span class="linenos">289</span>    <span class="n">logger</span><span class="o">.</span><span class="n">log_graph</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">input_tensor</span><span class="p">)</span>
+<span class="linenos">290</span>
+<span class="linenos">291</span>    <span class="k">for</span> <span class="n">n</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ep</span><span class="p">,</span> <span class="n">ep</span> <span class="o">+</span> <span class="mi">30</span><span class="p">):</span>
+<span class="linenos">292</span>        <span class="n">epoch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="kc">True</span><span class="p">,</span> <span class="n">training_set</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
+<span class="linenos">293</span>        <span class="n">epoch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">validation_set</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">logger</span><span class="o">=</span><span class="n">logger</span><span class="p">)</span>
+<span class="linenos">294</span>
+<span class="linenos">295</span>        <span class="c1"># Checkpoint nach jeder Epoche speichern</span>
+<span class="linenos">296</span>        <span class="n">save_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">chkpt_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Prof. Dr. Dennis Müller.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

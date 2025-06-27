@@ -88,29 +88,31 @@ window.addEventListener("load", () => mermaid.run());
            <div itemprop="articleBody">
              
   <h1>Quellcode für checkpoints</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">DEVICE</span><span class="p">,</span> <span class="n">CNNNetwork</span><span class="p">,</span> <span class="n">load_data</span><span class="p">,</span> <span class="n">epoch</span>
 
-<span class="n">LR</span> <span class="o">=</span> <span class="mf">0.001</span> <span class="c1"># Lernrate</span>
+<span class="n">LR</span> <span class="o">=</span> <span class="mf">0.001</span>  <span class="c1"># Lernrate</span>
+
 
 <div class="viewcode-block" id="save_checkpoint">
 <a class="viewcode-back" href="../checkpoints/index.html#checkpoints.save_checkpoint">[Doku]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">save_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;checkpoint.pth&#39;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">save_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;checkpoint.pth&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Speichert den aktuellen Zustand des Modells und des Optimierers in einer Datei.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">    -----------</span>
-<span class="sd">    model (nn.Module): </span>
+<span class="sd">    model (nn.Module):</span>
 <span class="sd">        Das zu speichernde Modell.</span>
 
-<span class="sd">    optimizer (torch.optim.Optimizer): </span>
+<span class="sd">    optimizer (torch.optim.Optimizer):</span>
 <span class="sd">        Der Optimierer, dessen Zustand gespeichert werden soll.</span>
 
-<span class="sd">    epoch (int): </span>
+<span class="sd">    epoch (int):</span>
 <span class="sd">        Die aktuelle Epoche, die im Checkpoint gespeichert wird.</span>
 
-<span class="sd">    filename (str): </span>
+<span class="sd">    filename (str):</span>
 <span class="sd">        Der Name der Datei, in der der Checkpoint gespeichert wird.</span>
 
 <span class="sd">    **TODO**:</span>
@@ -121,20 +123,21 @@ window.addEventListener("load", () => mermaid.run());
     <span class="k">pass</span></div>
 
 
+
 <div class="viewcode-block" id="load_checkpoint">
 <a class="viewcode-back" href="../checkpoints/index.html#checkpoints.load_checkpoint">[Doku]</a>
-<span class="k">def</span><span class="w"> </span><span class="nf">load_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s1">&#39;checkpoint.pth&#39;</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">load_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;checkpoint.pth&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Lädt den Zustand des Modells und des Optimierers aus einer Datei.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">    -----------</span>
-<span class="sd">    model (nn.Module): </span>
+<span class="sd">    model (nn.Module):</span>
 <span class="sd">        Das Modell, in das die gespeicherten Zustände geladen werden.</span>
 
-<span class="sd">    optimizer (torch.optim.Optimizer): </span>
+<span class="sd">    optimizer (torch.optim.Optimizer):</span>
 <span class="sd">        Der Optimierer, dessen Zustand geladen wird.</span>
 
-<span class="sd">    filename (str): </span>
+<span class="sd">    filename (str):</span>
 <span class="sd">        Der Name der Datei, aus der der Checkpoint geladen wird.</span>
 
 <span class="sd">    **TODO**:</span>
@@ -147,7 +150,8 @@ window.addEventListener("load", () => mermaid.run());
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span></div>
 
-    
+
+
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="n">training_set</span><span class="p">,</span> <span class="n">validation_set</span> <span class="o">=</span> <span class="n">load_data</span><span class="p">()</span>
 
@@ -157,7 +161,10 @@ window.addEventListener("load", () => mermaid.run());
     <span class="n">optimizer</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="n">LR</span><span class="p">)</span>
 
     <span class="c1"># Checkpoint laden, falls vorhanden</span>
-    <span class="n">ep</span> <span class="o">=</span> <span class="n">load_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">)</span>
+    <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+    <span class="n">chkpt_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="s2">&quot;checkpoint.pth&quot;</span><span class="p">)</span>
+
+    <span class="n">ep</span> <span class="o">=</span> <span class="n">load_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">chkpt_path</span><span class="p">)</span>
     <span class="k">if</span> <span class="n">ep</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Checkpoint geladen, fortsetzen bei Epoche </span><span class="si">{</span><span class="n">ep</span><span class="si">}</span><span class="s2">.&quot;</span><span class="p">)</span>
 
@@ -167,7 +174,7 @@ window.addEventListener("load", () => mermaid.run());
         <span class="n">epoch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="kc">False</span><span class="p">,</span> <span class="n">validation_set</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">)</span>
 
         <span class="c1"># Checkpoint nach jeder Epoche speichern</span>
-        <span class="n">save_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">save_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">n</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">chkpt_path</span><span class="p">)</span>
 </pre></div>
 
            </div>

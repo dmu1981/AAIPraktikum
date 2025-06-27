@@ -34,7 +34,10 @@ class TensorBoardLogger:
         Verwenden Sie `os.path.dirname <https://www.tutorialspoint.com/python/os_path_dirname.htm#:~:text=The%20Python%20os.,the%20specified%20file%20or%20directory.>`_ `(os.path.abspath <https://www.geeksforgeeks.org/python/python-os-path-abspath-method-with-example/>`_ `(__file__))`, um den Pfad zum aktuellen Verzeichnis zu erhalten,
         und `os.path.join() <https://www.geeksforgeeks.org/python/python-os-path-join-method/>`_, um den Pfad zum "runs"-Verzeichnis zu erstellen.
         """
-        pass
+        dirname = os.path.dirname(os.path.abspath(__file__))
+        board_path = os.path.join(dirname, "runs")
+
+        self.writer = SummaryWriter(log_dir=board_path)
 
     def _reset_metrics(self):
         """Setzt die Metriken zurück."""
@@ -64,7 +67,7 @@ class TensorBoardLogger:
         Verwenden Sie `writer.add_graph() <https://pytorch.org/docs/stable/tensorboard.html#torch.utils.tensorboard.writer.SummaryWriter.add_graph>`_, um den Graphen
         des Modells zu loggen.
         """
-        pass
+        self.writer.add_graph(model, input_tensor)
 
     def update_metrics(self, logits, labels):
         """Aktualisiert die Metriken für Trainings- oder Validierungsdaten.
@@ -97,7 +100,17 @@ class TensorBoardLogger:
         - Zähle die Anzahl der korrekten Vorhersagen im Batch. Hinweis: Verwende `torch.argmax(logits, 1) <https://docs.pytorch.org/docs/stable/generated/torch.argmax.html>`_ um die Vorhersagen zu erhalten und vergleiche sie mit den Labels.
         - Aktualisiere die Metriken in `self.metrics["total_loss"]`, `self.metrics["total_correct"]` und `self.metrics["total_samples"]` entsprechend.
         """
-        pass
+        criterion = nn.CrossEntropyLoss()
+        loss = criterion(logits, labels)
+
+        # Berechne die Anzahl der korrekten Vorhersagen
+        predicted = torch.argmax(logits, 1)
+        correct = (predicted == labels).sum().item()
+
+        # Aktualisiere die Metriken
+        self.metrics["total_loss"] += loss.item()
+        self.metrics["total_correct"] += correct
+        self.metrics["total_samples"] += labels.size(0)
 
     def log_metrics(self, step, train=True):
         """Loggt Metriken in TensorBoard.
@@ -121,7 +134,14 @@ class TensorBoardLogger:
         - Verwenden Sie `self.writer.add_scalar() <https://docs.pytorch.org/docs/stable/tensorboard.html#torch.utils.tensorboard.writer.SummaryWriter.add_scalar>`_ um die Metriken zu loggen.
         - Rufen Sie zum Schluß `self._reset_metrics()` auf, um die Metriken zurückzusetzen.
         """
-        pass
+        loss = self.metrics["total_loss"] / self.metrics["total_samples"]
+        accuracy = self.metrics["total_correct"] / self.metrics["total_samples"]
+
+        tag = "train" if train else "validation"        
+        self.writer.add_scalar(f"{tag}/loss", loss, step)
+        self.writer.add_scalar(f"{tag}/accuracy", accuracy, step)
+        
+        self._reset_metrics()
 
     def log_sample_statistics(self, train, step):
         """ Loggt die am schlechtesten klassifizierten Samples in TensorBoard.
@@ -145,7 +165,26 @@ class TensorBoardLogger:
         - Logge die Samples mit `self.writer.add_image() <https://docs.pytorch.org/docs/stable//tensorboard.html#torch.utils.tensorboard.writer.SummaryWriter.add_image>`_ unter dem Tag `f"{tag}/worst_samples/class_{cls_id}"`, wobei `tag` entweder "train" oder "validation" ist.
         - Rufen Sie ganz zum Schluß `self._reset_samples_statistics()` auf, um die Statistik der Samples zurückzusetzen, nachdem die Samples geloggt wurden.
         """
-        pass
+        # Logge die schlechtesten Samples, wenn die Epoche abgeschlossen ist
+        tag = "train" if train else "validation"
+
+        # Iteriere über die Klassen-IDs (0-9) und logge die Samples für jede Klasse
+        for cls_id in range(10):
+            # Erstelle ein Grid aus den Samples der Klasse
+            grid = torchvision.utils.make_grid(
+                self.sample_statistics[cls_id]["samples"],
+                normalize=True,
+            )
+
+            # Logge das Grid der Samples in TensorBoard
+            self.writer.add_image(
+                f"{tag}/worst_samples/class_{cls_id}",
+                grid,
+                global_step=step,
+            )
+        
+        # Setze die Statistik der Samples zurück
+        self._reset_samples_statistics()
 
     def update_sample_statistics(self, batch, labels, loss):
         """Aggregiere die am schlechtesten klassifizierten Samples für jede Klasse.
@@ -187,7 +226,41 @@ class TensorBoardLogger:
           Verwenden Sie `torch.argsort() <https://docs.pytorch.org/docs/stable/generated/torch.argsort.html>`_ um die Indizes der Samples nach Verlust zu sortieren.
         - Aktualisieren Sie `self.sample_statistics` für jede Klasse mit den aggregierten Samples und Verlusten.
         """
-        pass
+        # Iteriert über die Klassen-IDs (0-9) und speichert die schlechtesten Samples
+        for cls_id in range(10):
+            # Filtere die Samples für die aktuelle Klasse
+            ids = labels == cls_id
+
+            # Konkatenieren der Samples und Verluste für die aktuelle Klasse
+            self.sample_statistics[cls_id]["samples"] = torch.cat(
+                [
+                    self.sample_statistics[cls_id]["samples"],
+                    batch[ids].clone().detach(),
+                ]
+            )
+            self.sample_statistics[cls_id]["loss"] = torch.cat(
+                [
+                    self.sample_statistics[cls_id]["loss"],
+                    loss[ids].clone().detach(),
+                ]
+            )
+
+            # Sortiere die Samples nach Verlust in absteigender Reihenfolge
+            sorted_indices = torch.argsort(
+                self.sample_statistics[cls_id]["loss"], descending=True
+            )
+
+            # Behalte nur die 64 schlechtesten Samples
+            sorted_indices = sorted_indices[:64]
+
+            # Aktualisiere die Samples und Verluste für die aktuelle Klasse
+            self.sample_statistics[cls_id]["samples"] = self.sample_statistics[cls_id][
+                "samples"
+            ][sorted_indices]
+
+            self.sample_statistics[cls_id]["loss"] = self.sample_statistics[cls_id][
+                "loss"
+            ][sorted_indices]
 
 
 if __name__ == "__main__":

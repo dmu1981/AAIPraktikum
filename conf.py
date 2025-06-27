@@ -12,10 +12,11 @@ import sys
 sys.path.insert(0, os.path.abspath("."))
 sys.path.insert(0, os.path.abspath("./pytorch"))
 sys.path.insert(0, os.path.abspath("./checkpoints"))
+sys.path.insert(0, os.path.abspath("./tensorboard"))
 
-project = 'Advances in AI Praktikum'
-copyright = '2025, Prof. Dr. Dennis Müller'
-author = 'Prof. Dr. Dennis Müller'
+project = "Advances in AI Praktikum"
+copyright = "2025, Prof. Dr. Dennis Müller"
+author = "Prof. Dr. Dennis Müller"
 
 # -- General configuration ---------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#general-configuration
@@ -32,10 +33,10 @@ extensions = [
     "sphinx.ext.napoleon",
 ]
 
-templates_path = ['_templates']
-exclude_patterns = ['_build', 'Thumbs.db', '.DS_Store']
+templates_path = ["_templates"]
+exclude_patterns = ["_build", "Thumbs.db", ".DS_Store"]
 
-language = 'de'
+language = "de"
 
 # -- Options for HTML output -------------------------------------------------
 # https://www.sphinx-doc.org/en/master/usage/configuration.html#options-for-html-output

@@ -1,0 +1,490 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>TensorBoard &mdash; Advances in AI Praktikum  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+
+  
+    <link rel="canonical" href="https://dmu1981.github.io/MPTPraktikum/tensorboard/index.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=245627df"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script src="../_static/translations.js?v=79cc9f76"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../genindex.html" />
+    <link rel="search" title="Suche" href="../search.html" />
+    <link rel="prev" title="Checkpoints" href="../checkpoints/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Advances in AI Praktikum
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Aufgaben:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../pytorch/index.html">PyTorch - Grundlagen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pytorch/cnn.html">Convolutional Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../checkpoints/index.html">Checkpoints</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Tensor Board</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-1-tensorboard-in-pytorch-einrichten"><strong>Aufgabe 1</strong>: TensorBoard in PyTorch einrichten</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-2-tensorboard-logger-erstellen"><strong>Aufgabe 2</strong>: TensorBoard-Logger erstellen</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#board.TensorBoardLogger.create_writer"><code class="docutils literal notranslate"><span class="pre">TensorBoardLogger.create_writer()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-3-das-modell-visualisieren"><strong>Aufgabe 3</strong>: Das Modell visualisieren</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#board.TensorBoardLogger.log_graph"><code class="docutils literal notranslate"><span class="pre">TensorBoardLogger.log_graph()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-4-metriken-protokollieren"><strong>Aufgabe 4</strong>: Metriken protokollieren</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#board.TensorBoardLogger.update_metrics"><code class="docutils literal notranslate"><span class="pre">TensorBoardLogger.update_metrics()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#board.TensorBoardLogger.log_metrics"><code class="docutils literal notranslate"><span class="pre">TensorBoardLogger.log_metrics()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-5-die-schwierigsten-beispiele-visualisieren"><strong>Aufgabe 5</strong>: Die schwierigsten Beispiele visualisieren</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#board.TensorBoardLogger.update_sample_statistics"><code class="docutils literal notranslate"><span class="pre">TensorBoardLogger.update_sample_statistics()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#board.TensorBoardLogger.log_sample_statistics"><code class="docutils literal notranslate"><span class="pre">TensorBoardLogger.log_sample_statistics()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#musterlosung"><strong>Musterlösung</strong></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Advances in AI Praktikum</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">TensorBoard</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/tensorboard/index.rst.txt" rel="nofollow"> Quelltext anzeigen</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="tensorboard">
+<h1>TensorBoard<a class="headerlink" href="#tensorboard" title="Link to this heading"></a></h1>
+<p>Zur Visualsierung der Trainingsfortschritte und der Modellarchitektur in PyTorch verwenden wir TensorBoard.
+TensorBoard ist ein leistungsstarkes Tool, das es ermöglicht, verschiedene Aspekte des Trainingsprozesses zu überwachen,
+wie z.B. den Verlust, die Genauigkeit und die Modellarchitektur.</p>
+<p>Ursprünglich wurde TensorBoard für TensorFlow entwickelt, aber es gibt eine PyTorch-kompatible Version, die es ermöglicht,
+TensorBoard in PyTorch-Projekten zu verwenden.</p>
+<a class="reference internal image-reference" href="../_images/tensorboard.gif"><img alt="../_images/tensorboard.gif" class="align-center" src="../_images/tensorboard.gif" style="width: 600px;" />
+</a>
+<section id="aufgabe-1-tensorboard-in-pytorch-einrichten">
+<h2><strong>Aufgabe 1</strong>: TensorBoard in PyTorch einrichten<a class="headerlink" href="#aufgabe-1-tensorboard-in-pytorch-einrichten" title="Link to this heading"></a></h2>
+<p>Um TensorBoard in PyTorch zu verwenden, müssen Sie zunächst das <cite>tensorboard</cite>-Paket installieren.
+Dies kann über <cite>pip</cite> erfolgen:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>pip<span class="w"> </span>install<span class="w"> </span>tensorboard
+</pre></div>
+</div>
+<p>Starten Sie anschließend TensorBoard in Ihrem Terminal mit dem folgenden Befehl:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tensorboard<span class="w"> </span>--logdir<span class="o">=</span>runs
+</pre></div>
+</div>
+<p>Das TensorBoard-Interface ist dann unter <a class="reference external" href="http://localhost:6006">http://localhost:6006</a> erreichbar.</p>
+</section>
+<section id="aufgabe-2-tensorboard-logger-erstellen">
+<h2><strong>Aufgabe 2</strong>: TensorBoard-Logger erstellen<a class="headerlink" href="#aufgabe-2-tensorboard-logger-erstellen" title="Link to this heading"></a></h2>
+<p>TensorBoard benötigt einen Logger, um die Trainingsdaten zu protokollieren.
+Dieser Logger wird verwendet, um verschiedene Metriken während des Trainings zu speichern,
+wie z.B. den Verlust, die Genauigkeit und andere relevante Informationen.
+Um einen TensorBoard-Logger zu erstellen, verwenden wir die Klasse <cite>SummaryWriter</cite> aus dem <cite>torch.utils.tensorboard</cite>-Modul.</p>
+<p>Öffnen Sie nun die Datei <cite>board.py</cite> und implementieren Sie die Methode <cite>TensorBoardLogger.create_writer</cite>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="board.TensorBoardLogger.create_writer">
+<span class="sig-prename descclassname"><span class="pre">TensorBoardLogger.</span></span><span class="sig-name descname"><span class="pre">create_writer</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/board.html#TensorBoardLogger.create_writer"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#board.TensorBoardLogger.create_writer" title="Link to this definition"></a></dt>
+<dd><p>Erstellt einen TensorBoard-SummaryWriter, der die Logs in einem Verzeichnis speichert.</p>
+<p><strong>TODO</strong>:
+Erstellen Sie einen <a class="reference external" href="https://docs.pytorch.org/docs/stable/tensorboard.html#torch.utils.tensorboard.writer.SummaryWriter">SummaryWriter</a>, der die Logs in einem Verzeichnis namens „runs“
+speichert. Das Verzeichnis sollte im gleichen Verzeichnis wie dieses Skript liegen.
+Verwenden Sie <a class="reference external" href="https://www.tutorialspoint.com/python/os_path_dirname.htm#:~:text=The%20Python%20os.,the%20specified%20file%20or%20directory.">os.path.dirname</a> <a class="reference external" href="https://www.geeksforgeeks.org/python/python-os-path-abspath-method-with-example/">(os.path.abspath</a> <cite>(__file__))</cite>, um den Pfad zum aktuellen Verzeichnis zu erhalten,
+und <a class="reference external" href="https://www.geeksforgeeks.org/python/python-os-path-join-method/">os.path.join()</a>, um den Pfad zum „runs“-Verzeichnis zu erstellen.</p>
+</dd></dl>
+
+<div class="toggle admonition">
+<p class="admonition-title">Lösung anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">create_writer</span><span class="p">():</span>
+    <span class="n">dirname</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">abspath</span><span class="p">(</span><span class="vm">__file__</span><span class="p">))</span>
+    <span class="n">board_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">dirname</span><span class="p">,</span> <span class="s2">&quot;runs&quot;</span><span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">SummaryWriter</span><span class="p">(</span><span class="n">log_dir</span><span class="o">=</span><span class="n">board_path</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="aufgabe-3-das-modell-visualisieren">
+<h2><strong>Aufgabe 3</strong>: Das Modell visualisieren<a class="headerlink" href="#aufgabe-3-das-modell-visualisieren" title="Link to this heading"></a></h2>
+<p>Es kann sinnvoll sein, die Architektur des Modells in TensorBoard zu visualisieren.
+Dazu verwenden wir die Methode <a class="reference external" href="https://pytorch.org/docs/stable/tensorboard.html#torch.utils.tensorboard.writer.SummaryWriter.add_graph">add_graph</a> des <cite>SummaryWriter</cite>.</p>
+<p>Öffnen Sie nun die Datei <cite>board.py</cite> und implementieren Sie die Methode <cite>TensorBoardLogger.log_graph</cite>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="board.TensorBoardLogger.log_graph">
+<span class="sig-prename descclassname"><span class="pre">TensorBoardLogger.</span></span><span class="sig-name descname"><span class="pre">log_graph</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">input_tensor</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/board.html#TensorBoardLogger.log_graph"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#board.TensorBoardLogger.log_graph" title="Link to this definition"></a></dt>
+<dd><p>Loggt den Graphen des Modells in TensorBoard.</p>
+<section id="parameters">
+<h3>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>model (nn.Module):</dt><dd><p>Das Modell, dessen Graph geloggt werden soll.</p>
+</dd>
+<dt>input_tensor (torch.Tensor):</dt><dd><p>Ein Beispiel-Eingabetensor, der die Form des Eingabedaten repräsentiert.</p>
+</dd>
+</dl>
+<p><strong>TODO</strong>:
+Verwenden Sie <a class="reference external" href="https://pytorch.org/docs/stable/tensorboard.html#torch.utils.tensorboard.writer.SummaryWriter.add_graph">writer.add_graph()</a>, um den Graphen
+des Modells zu loggen.</p>
+</section>
+</dd></dl>
+
+<div class="toggle admonition">
+<p class="admonition-title">Lösung anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">metrics</span><span class="p">):</span>
+    <span class="n">tag</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span> <span class="k">if</span> <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;train&quot;</span><span class="p">]</span> <span class="k">else</span> <span class="s2">&quot;validation&quot;</span>
+    <span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">/loss&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">],</span> <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;step&quot;</span><span class="p">])</span>
+    <span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">/accuracy&quot;</span><span class="p">,</span> <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;accuracy&quot;</span><span class="p">],</span> <span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;step&quot;</span><span class="p">])</span>
+</pre></div>
+</div>
+</div>
+<p>Das Graph dieses Netzwerkes sieht dann wie folgt aus:</p>
+<a class="reference internal image-reference" href="../_images/graph.png"><img alt="../_images/graph.png" class="align-center" src="../_images/graph.png" style="width: 600px;" />
+</a>
+</section>
+<section id="aufgabe-4-metriken-protokollieren">
+<h2><strong>Aufgabe 4</strong>: Metriken protokollieren<a class="headerlink" href="#aufgabe-4-metriken-protokollieren" title="Link to this heading"></a></h2>
+<p>Während der Trainings- und Evaluierungsphasen ist es wichtig, verschiedene Metriken zu protokollieren,
+um den Fortschritt des Modells zu überwachen.</p>
+<p>Wir müssen zunächst für jeden Batch die Metriken wie Verlust und Genauigkeit aktualisieren.
+Diese Metriken werden dann in TensorBoard protokolliert, um den Trainingsfortschritt zu visualisieren.</p>
+<p>Öffnen Sie nun die Datei <cite>board.py</cite> und implementieren Sie die Methode <cite>TensorBoardLogger.update_metrics</cite>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="board.TensorBoardLogger.update_metrics">
+<span class="sig-prename descclassname"><span class="pre">TensorBoardLogger.</span></span><span class="sig-name descname"><span class="pre">update_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">logits</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/board.html#TensorBoardLogger.update_metrics"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#board.TensorBoardLogger.update_metrics" title="Link to this definition"></a></dt>
+<dd><p>Aktualisiert die Metriken für Trainings- oder Validierungsdaten.</p>
+<section id="id1">
+<h3>Parameters:<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>logits (torch.Tensor):</dt><dd><p>Die zum aktuell verarbeiteten Batch gehörenden Logits (Vorhersagen) des Modells.</p>
+</dd>
+<dt>labels (torch.Tensor):</dt><dd><p>Die zugehörigen Labels für den Batch.</p>
+</dd>
+</dl>
+</section>
+<section id="updates">
+<h3>Updates:<a class="headerlink" href="#updates" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>self.metrics (dict):</dt><dd><p>Diese Variable speichert die Metriken <cite>total_loss</cite>, <cite>total_correct</cite> und <cite>total_samples</cite>.</p>
+</dd>
+<dt>self.metrics[„total_loss“] (float):</dt><dd><p>Der kumulierte summarische Verlust über alle bisherigen Batches.</p>
+</dd>
+<dt>self.metrics[„total_correct“] (int):</dt><dd><p>Die Anzahl der korrekten Vorhersagen über alle bisherigen Batches.</p>
+</dd>
+<dt>self.metrics[„total_samples“] (int):</dt><dd><p>Die Gesamtzahl der verarbeiteten Samples über alle bisherigen Batches.</p>
+</dd>
+</dl>
+<p><strong>TODO</strong>:
+Aktualisiere die Metriken <cite>total_loss</cite>, <cite>total_correct</cite> und <cite>total_samples</cite> für den aktuellen Batch.
+- Berechne den Verlust für den Batch mit <cite>nn.CrossEntropyLoss()</cite>.
+- Zähle die Anzahl der korrekten Vorhersagen im Batch. Hinweis: Verwende <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.argmax.html">torch.argmax(logits, 1)</a> um die Vorhersagen zu erhalten und vergleiche sie mit den Labels.
+- Aktualisiere die Metriken in <cite>self.metrics[„total_loss“]</cite>, <cite>self.metrics[„total_correct“]</cite> und <cite>self.metrics[„total_samples“]</cite> entsprechend.</p>
+</section>
+</dd></dl>
+
+<div class="toggle admonition">
+<p class="admonition-title">Lösung anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">update_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">logits</span><span class="p">,</span> <span class="n">labels</span><span class="p">):</span>
+  <span class="n">criterion</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">CrossEntropyLoss</span><span class="p">()</span>
+  <span class="n">loss</span> <span class="o">=</span> <span class="n">criterion</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="n">labels</span><span class="p">)</span>
+
+  <span class="c1"># Berechne die Anzahl der korrekten Vorhersagen</span>
+  <span class="n">predicted</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argmax</span><span class="p">(</span><span class="n">logits</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+  <span class="n">correct</span> <span class="o">=</span> <span class="p">(</span><span class="n">predicted</span> <span class="o">==</span> <span class="n">labels</span><span class="p">)</span><span class="o">.</span><span class="n">sum</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+
+  <span class="c1"># Aktualisiere die Metriken</span>
+  <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;total_loss&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+  <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;total_correct&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">correct</span>
+  <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;total_samples&quot;</span><span class="p">]</span> <span class="o">+=</span> <span class="n">labels</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Implementieren Sie anschließend die Methode <cite>TensorBoardLogger.log_metrics</cite>,
+die die Metriken in TensorBoard protokolliert.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="board.TensorBoardLogger.log_metrics">
+<span class="sig-prename descclassname"><span class="pre">TensorBoardLogger.</span></span><span class="sig-name descname"><span class="pre">log_metrics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">step</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">train</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">True</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/board.html#TensorBoardLogger.log_metrics"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#board.TensorBoardLogger.log_metrics" title="Link to this definition"></a></dt>
+<dd><p>Loggt Metriken in TensorBoard.</p>
+<section id="id2">
+<h3>Parameters:<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>step (int):</dt><dd><p>Der aktuelle Schritt, der für das Logging verwendet wird.</p>
+</dd>
+<dt>train (bool):</dt><dd><p>Gibt an, ob die Metriken aus dem Trainings- oder Validierungsdatensatz stammen.</p>
+</dd>
+</dl>
+<p><strong>TODO</strong>:
+Logge die skalaren Metriken <cite>loss</cite> und <cite>accuracy</cite> über den <cite>SummaryWriter</cite> ins TensorBoard.
+Die Metriken sollten in zwei verschiedenen Tags gespeichert werden: „train“ für Trainingsmetriken und „validation“ für
+Validierungsmetriken. Überprüfe, ob <cite>train</cite> wahr ist, um zu entscheiden, ob es sich um Trainings- oder Validierungsmetriken handelt.</p>
+<p>Die Metriken sollten mit dem aktuellen Schritt <cite>step</cite> geloggt werden.
+- Berechnen Sie den Verlust als <cite>self.metrics[„total_loss“] / self.metrics[„total_samples“]</cite>.
+- Berechnen Sie die Genauigkeit als <cite>self.metrics[„total_correct“] / self.metrics[„total_samples“]</cite>.
+- Verwenden Sie <a class="reference external" href="https://docs.pytorch.org/docs/stable/tensorboard.html#torch.utils.tensorboard.writer.SummaryWriter.add_scalar">self.writer.add_scalar()</a> um die Metriken zu loggen.
+- Rufen Sie zum Schluß <cite>self._reset_metrics()</cite> auf, um die Metriken zurückzusetzen.</p>
+</section>
+</dd></dl>
+
+<div class="toggle admonition">
+<p class="admonition-title">Lösung anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">train</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+    <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;total_loss&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;total_samples&quot;</span><span class="p">]</span>
+    <span class="n">accuracy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;total_correct&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;total_samples&quot;</span><span class="p">]</span>
+
+    <span class="n">tag</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span> <span class="k">if</span> <span class="n">train</span> <span class="k">else</span> <span class="s2">&quot;validation&quot;</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">/loss&quot;</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">/accuracy&quot;</span><span class="p">,</span> <span class="n">accuracy</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">_reset_metrics</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Sie sollten dann stabile Loss- und Accuracy-Werte während des Trainings sehen.</p>
+<a class="reference internal image-reference" href="../_images/lossacc.png"><img alt="../_images/lossacc.png" class="align-center" src="../_images/lossacc.png" style="width: 600px;" />
+</a>
+</section>
+<section id="aufgabe-5-die-schwierigsten-beispiele-visualisieren">
+<h2><strong>Aufgabe 5</strong>: Die schwierigsten Beispiele visualisieren<a class="headerlink" href="#aufgabe-5-die-schwierigsten-beispiele-visualisieren" title="Link to this heading"></a></h2>
+<p>Um die schwierigsten Beispiele während des Trainings zu visualisieren sammeln wir diese zunächst
+während der Trainings- und Evaluierungsphasen.</p>
+<p>Dazu aggregieren wir die Trainingsbeispiele sowie die zugehörigen Loss-Werte in einer laufenden Statistik.
+Diese besteht zu jedem Zeitpunkt aus den bis dahin gesammelten schlechtesten Beispielen, also denjenigen mit
+dem höchsten Loss-Wert. Diese Statistik sammlen wir jede der 10 Klassen getrennt, um die schwierigsten Beispiele für jede Klasse zu visualisieren.</p>
+<p>Mittels <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.cat.html">torch.cat</a> können wir die aktuellen Trainingsbeispiele
+und die zugehörigen Vorhersagen mit den bisher gesammelten Beispielen zu einem Tensor zusammenfassen. Es ist wichtig
+die Samples zu klonen und vom AutoGrad-Graphen zu entfernen. Dazu verwenden wir
+<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.Tensor.detach.html">detach()</a> und
+<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.clone.html">clone()</a>.</p>
+<p>Mittels <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.argsort.html">torch.argsort()</a> können wir die Samples nach ihrem Loss-Wert sortieren.
+Anschließend behalten wir nur die 64 Samples mit dem höchsten Loss-Wert für jede Klasse.</p>
+<p>Öffnen Sie nun die Datei <cite>board.py</cite> und implementieren Sie die Methode <cite>TensorBoardLogger.update_sample_statistics</cite>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="board.TensorBoardLogger.update_sample_statistics">
+<span class="sig-prename descclassname"><span class="pre">TensorBoardLogger.</span></span><span class="sig-name descname"><span class="pre">update_sample_statistics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">batch</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">loss</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/board.html#TensorBoardLogger.update_sample_statistics"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#board.TensorBoardLogger.update_sample_statistics" title="Link to this definition"></a></dt>
+<dd><p>Aggregiere die am schlechtesten klassifizierten Samples für jede Klasse.</p>
+<section id="id3">
+<h3>Parameters:<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>batch (torch.Tensor):</dt><dd><p>Der Batch von Eingabedaten.</p>
+</dd>
+<dt>labels (torch.Tensor):</dt><dd><p>Die zugehörigen Labels für den Batch.</p>
+</dd>
+<dt>loss (torch.Tensor):</dt><dd><p>Der Verlust für den Batch, berechnet mit <cite>nn.CrossEntropyLoss(reduction=“none“)</cite>.</p>
+</dd>
+</dl>
+</section>
+<section id="id4">
+<h3>Updates:<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>self.sample_statistics (dict):</dt><dd><p>Diese Variable speichert die Samples und deren zugehörigen Verlusten für jede Klasse.</p>
+</dd>
+<dt>self.sample_statistics[cls_id][„samples“] (torch.Tensor):</dt><dd><p>Enthält die bisher schwierigsten Samples für die Klasse <cite>cls_id</cite>.</p>
+</dd>
+<dt>self.sample_statistics[cls_id][„loss“] (torch.Tensor):</dt><dd><p>Enthält die bisher größten Loss-Werte für die Klasse <cite>cls_id</cite>.</p>
+</dd>
+</dl>
+<p>Diese Methode aggregiert die am schlechtesten klassifizierten Samples für jede Klasse.
+Die Samples werden in <cite>self.sample_statistics</cite> gespeichert, die für jede Klasse eine Liste von Samples
+und deren zugehörigen Verlusten enthält.
+Die Methode iteriert über die Klassen-IDs (0-9) und speichert die 64 Samples mit dem höchsten Verlust
+für jede Klasse.</p>
+<p><strong>TODO</strong>:
+- Iterieren Sie über die Klassen-IDs (0-9) und speichern Sie die 64 Samples mit dem höchsten Verlust für jede Klasse.
+- Verwenden Sie <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.cat.html">torch.cat()</a> um die Samples und Verluste für jede Klasse zu aggregieren.</p>
+<blockquote>
+<div><dl class="simple">
+<dt>Verwenden Sie <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.clone.html">torch.clone()</a> <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.Tensor.detach.html">.detach()</a> um sicherzustellen, dass die Samples und Verluste nicht mehr mit der</dt><dd><p>Gradientenberechnung von AutoGrad verbunden sind.</p>
+</dd>
+</dl>
+</div></blockquote>
+<ul class="simple">
+<li><p>Sortieren Sie die Samples nach Verlust in absteigender Reihenfolge und behalten Sie nur die 64 schlechtesten Samples.
+Verwenden Sie <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.argsort.html">torch.argsort()</a> um die Indizes der Samples nach Verlust zu sortieren.</p></li>
+<li><p>Aktualisieren Sie <cite>self.sample_statistics</cite> für jede Klasse mit den aggregierten Samples und Verlusten.</p></li>
+</ul>
+</section>
+</dd></dl>
+
+<div class="toggle admonition">
+<p class="admonition-title">Lösung anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">update_sample_statistics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">batch</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">loss</span><span class="p">):</span>
+  <span class="k">for</span> <span class="n">cls_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+      <span class="c1"># Filtere die Samples für die aktuelle Klasse</span>
+      <span class="n">ids</span> <span class="o">=</span> <span class="n">labels</span> <span class="o">==</span> <span class="n">cls_id</span>
+
+      <span class="c1"># Konkatenieren der Samples und Verluste für die aktuelle Klasse</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span><span class="p">[</span><span class="n">cls_id</span><span class="p">][</span><span class="s2">&quot;samples&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+          <span class="p">[</span>
+              <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span><span class="p">[</span><span class="n">cls_id</span><span class="p">][</span><span class="s2">&quot;samples&quot;</span><span class="p">],</span>
+              <span class="n">batch</span><span class="p">[</span><span class="n">ids</span><span class="p">]</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
+          <span class="p">]</span>
+      <span class="p">)</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span><span class="p">[</span><span class="n">cls_id</span><span class="p">][</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span>
+          <span class="p">[</span>
+              <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span><span class="p">[</span><span class="n">cls_id</span><span class="p">][</span><span class="s2">&quot;loss&quot;</span><span class="p">],</span>
+              <span class="n">loss</span><span class="p">[</span><span class="n">ids</span><span class="p">]</span><span class="o">.</span><span class="n">clone</span><span class="p">()</span><span class="o">.</span><span class="n">detach</span><span class="p">(),</span>
+          <span class="p">]</span>
+      <span class="p">)</span>
+
+      <span class="c1"># Sortiere die Samples nach Verlust in absteigender Reihenfolge</span>
+      <span class="n">sorted_indices</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">argsort</span><span class="p">(</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span><span class="p">[</span><span class="n">cls_id</span><span class="p">][</span><span class="s2">&quot;loss&quot;</span><span class="p">],</span> <span class="n">descending</span><span class="o">=</span><span class="kc">True</span>
+      <span class="p">)</span>
+
+      <span class="c1"># Behalte nur die 64 schlechtesten Samples</span>
+      <span class="n">sorted_indices</span> <span class="o">=</span> <span class="n">sorted_indices</span><span class="p">[:</span><span class="mi">64</span><span class="p">]</span>
+
+      <span class="c1"># Aktualisiere die Samples und Verluste für die aktuelle Klasse</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span><span class="p">[</span><span class="n">cls_id</span><span class="p">][</span><span class="s2">&quot;samples&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span><span class="p">[</span><span class="n">cls_id</span><span class="p">][</span>
+          <span class="s2">&quot;samples&quot;</span>
+      <span class="p">][</span><span class="n">sorted_indices</span><span class="p">]</span>
+
+      <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span><span class="p">[</span><span class="n">cls_id</span><span class="p">][</span><span class="s2">&quot;loss&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span><span class="p">[</span><span class="n">cls_id</span><span class="p">][</span>
+          <span class="s2">&quot;loss&quot;</span>
+      <span class="p">][</span><span class="n">sorted_indices</span><span class="p">]</span>
+</pre></div>
+</div>
+</div>
+<p>Implementiere Sie anschließend noch die Methode <cite>TensorBoardLogger.log_sample_statistics</cite>.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="board.TensorBoardLogger.log_sample_statistics">
+<span class="sig-prename descclassname"><span class="pre">TensorBoardLogger.</span></span><span class="sig-name descname"><span class="pre">log_sample_statistics</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">train</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/board.html#TensorBoardLogger.log_sample_statistics"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#board.TensorBoardLogger.log_sample_statistics" title="Link to this definition"></a></dt>
+<dd><p>Loggt die am schlechtesten klassifizierten Samples in TensorBoard.</p>
+<section id="id8">
+<h3>Parameters:<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>train (bool):</dt><dd><p>Gibt an, ob die Samples aus dem Trainings- oder Validierungsdatensatz stammen.</p>
+</dd>
+<dt>step (int):</dt><dd><p>Der aktuelle Schritt, der für das Logging verwendet wird.</p>
+</dd>
+</dl>
+<p><strong>TODO</strong>:
+Logge die am schlechtesten klassifizierten Samples für jede Klasse in TensorBoard.
+Die Samples sollten in einem Grid-Format geloggt werden, wobei jede Klasse in einem eigenen Tag gespeichert wird.</p>
+<ul class="simple">
+<li><p>Iteriere über die Klassen-IDs (0-9) und logge die Samples für jede Klasse.</p></li>
+<li><p>Verwende <cite>self.sample_statistics[cls_id][„samples“]</cite> um die Samples für die Klasse <cite>cls_id</cite> zu erhalten.</p></li>
+<li><p>Verwende <a class="reference external" href="https://docs.pytorch.org/vision/stable/generated/torchvision.utils.make_grid.html">torchvision.utils.make_grid()</a> um die Samples in einem Grid zu formatieren</p></li>
+<li><p>Übergeben Sie <cite>normalize=True</cite> um die Samples zu normalisieren.</p></li>
+<li><p>Logge die Samples mit <a class="reference external" href="https://docs.pytorch.org/docs/stable//tensorboard.html#torch.utils.tensorboard.writer.SummaryWriter.add_image">self.writer.add_image()</a> unter dem Tag <cite>f“{tag}/worst_samples/class_{cls_id}“</cite>, wobei <cite>tag</cite> entweder „train“ oder „validation“ ist.</p></li>
+<li><p>Rufen Sie ganz zum Schluß <cite>self._reset_samples_statistics()</cite> auf, um die Statistik der Samples zurückzusetzen, nachdem die Samples geloggt wurden.</p></li>
+</ul>
+</section>
+</dd></dl>
+
+<div class="toggle admonition">
+<p class="admonition-title">Lösung anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">log_sample_statistics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
+  <span class="c1"># Logge die schlechtesten Samples, wenn die Epoche abgeschlossen ist</span>
+  <span class="n">tag</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span> <span class="k">if</span> <span class="n">train</span> <span class="k">else</span> <span class="s2">&quot;validation&quot;</span>
+
+  <span class="c1"># Iteriere über die Klassen-IDs (0-9) und logge die Samples für jede Klasse</span>
+  <span class="k">for</span> <span class="n">cls_id</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="mi">10</span><span class="p">):</span>
+      <span class="c1"># Erstelle ein Grid aus den Samples der Klasse</span>
+      <span class="n">grid</span> <span class="o">=</span> <span class="n">torchvision</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">make_grid</span><span class="p">(</span>
+          <span class="bp">self</span><span class="o">.</span><span class="n">sample_statistics</span><span class="p">[</span><span class="n">cls_id</span><span class="p">][</span><span class="s2">&quot;samples&quot;</span><span class="p">],</span>
+          <span class="n">normalize</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+      <span class="p">)</span>
+
+      <span class="c1"># Logge das Grid der Samples in TensorBoard</span>
+      <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_image</span><span class="p">(</span>
+          <span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">/worst_samples/class_</span><span class="si">{</span><span class="n">cls_id</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">,</span>
+          <span class="n">grid</span><span class="p">,</span>
+          <span class="n">global_step</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
+      <span class="p">)</span>
+
+  <span class="c1"># Setze die Statistik der Samples zurück</span>
+  <span class="bp">self</span><span class="o">.</span><span class="n">_reset_samples_statistics</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<p>Beispiel für schwierige Hunde-Samples aus dem Validationsset:</p>
+<a class="reference internal image-reference" href="../_images/worst.png"><img alt="../_images/worst.png" class="align-center" src="../_images/worst.png" style="width: 600px;" />
+</a>
+</section>
+<section id="musterlosung">
+<h2><strong>Musterlösung</strong><a class="headerlink" href="#musterlosung" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="board_source.html"><span class="doc">TensorBoard - Musterlösung</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../checkpoints/index.html" class="btn btn-neutral float-left" title="Checkpoints" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Prof. Dr. Dennis Müller.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

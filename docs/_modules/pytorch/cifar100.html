@@ -1,12 +1,12 @@
 
 
 <!DOCTYPE html>
-<html class="writer-html5" lang="de">
+<html class="writer-html5" lang="de" data-content_root="../../">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>pytorch.cifar100 &mdash; Advances in AI Praktikum  Dokumentation</title>
-      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=92fd9be5" />
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
       <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
       <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
 
@@ -14,14 +14,15 @@
     <link rel="canonical" href="https://dmu1981.github.io/MPTPraktikum/_modules/pytorch/cifar100.html" />
       <script src="../../_static/jquery.js?v=5d32c60e"></script>
       <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
-      <script data-url_root="../../" id="documentation_options" src="../../_static/documentation_options.js?v=cec59a4c"></script>
-      <script src="../../_static/doctools.js?v=888ff710"></script>
-      <script src="../../_static/sphinx_highlight.js?v=4825356b"></script>
+      <script src="../../_static/documentation_options.js?v=245627df"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
       <script>let toggleHintShow = 'Click to show';</script>
       <script>let toggleHintHide = 'Click to hide';</script>
       <script>let toggleOpenOnPrint = 'true';</script>
       <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
-      <script src="../../_static/translations.js?v=70a09b52"></script>
+      <script src="../../_static/translations.js?v=79cc9f76"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
       <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
       <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
       <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
@@ -87,17 +88,17 @@ window.addEventListener("load", () => mermaid.run());
            <div itemprop="articleBody">
              
   <h1>Quellcode für pytorch.cifar100</h1><div class="highlight"><pre>
-<span></span><span class="kn">import</span> <span class="nn">torch</span>
-<span class="kn">import</span> <span class="nn">torch.nn</span> <span class="k">as</span> <span class="nn">nn</span>
-<span class="kn">from</span> <span class="nn">torchvision</span> <span class="kn">import</span> <span class="n">transforms</span><span class="p">,</span> <span class="n">datasets</span>
-<span class="kn">from</span> <span class="nn">tqdm</span> <span class="kn">import</span> <span class="n">tqdm</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchvision</span><span class="w"> </span><span class="kn">import</span> <span class="n">transforms</span><span class="p">,</span> <span class="n">datasets</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
 
-<span class="n">LR</span> <span class="o">=</span> <span class="mf">0.01</span> <span class="c1"># Lernrate</span>
+<span class="n">LR</span> <span class="o">=</span> <span class="mf">0.01</span>  <span class="c1"># Lernrate</span>
 <span class="n">DEVICE</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">device</span><span class="p">(</span><span class="s2">&quot;cuda&quot;</span> <span class="k">if</span> <span class="n">torch</span><span class="o">.</span><span class="n">cuda</span><span class="o">.</span><span class="n">is_available</span><span class="p">()</span> <span class="k">else</span> <span class="s2">&quot;cpu&quot;</span><span class="p">)</span>
 
 <span class="c1"># TODO: Data Augmentation Pipeline</span>
 <span class="c1"># Hier definieren wir die Transformationspipeline für die Trainings- und Validierungsdaten.</span>
-<span class="c1"># Die Trainingsdaten werden mit verschiedenen Transformationen augmentiert, um die Robustheit des Modells   </span>
+<span class="c1"># Die Trainingsdaten werden mit verschiedenen Transformationen augmentiert, um die Robustheit des Modells</span>
 <span class="c1"># zu erhöhen. Folgend Sie den Anweisungen in der Aufgabenstellung, um die Pipeline zu vervollständigen.</span>
 <span class="n">training_transform</span> <span class="o">=</span> <span class="kc">None</span>
 
@@ -114,17 +115,22 @@ window.addEventListener("load", () => mermaid.run());
     <span class="n">training_set</span> <span class="o">=</span> <span class="kc">None</span>
     <span class="n">validation_set</span> <span class="o">=</span> <span class="kc">None</span>
 
-<div class="viewcode-block" id="CNNNetwork"><a class="viewcode-back" href="../../pytorch/cnn.html#pytorch.cifar100.CNNNetwork">[Doku]</a><span class="k">class</span> <span class="nc">CNNNetwork</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CNNNetwork">
+<a class="viewcode-back" href="../../pytorch/cnn.html#pytorch.cifar100.CNNNetwork">[Doku]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">CNNNetwork</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Ein einfaches neuronales Netzwerk mit einer versteckten Schicht.&quot;&quot;&quot;</span>
 
-<div class="viewcode-block" id="CNNNetwork.__init__"><a class="viewcode-back" href="../../pytorch/cnn.html#pytorch.cifar100.CNNNetwork.__init__">[Doku]</a>    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CNNNetwork.__init__">
+<a class="viewcode-back" href="../../pytorch/cnn.html#pytorch.cifar100.CNNNetwork.__init__">[Doku]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialisiert das Netzwerk mit mehreren Convolutional-Schichten und voll verbundenen Schichten.</span>
 
 <span class="sd">        **TODO**:</span>
 
 <span class="sd">        - Rufen Sie die Methode `super().__init__()` auf, um die Basisklasse zu initialisieren.</span>
 
-<span class="sd">        - Definieren Sie die Faltungs-Schichten `conv1`, `conv2`, `conv3` mit den entsprechenden Eingangs- und Ausgangskanälen. Verwenden Sie `nn.Conv2d(...) &lt;https://pytorch.org/docs/stable/generated/torch.nn.Conv2d.html&gt;`_. Setzen Sie `kernel_size=3` und `padding=&quot;same&quot;` für alle Schichten. </span>
+<span class="sd">        - Definieren Sie die Faltungs-Schichten `conv1`, `conv2`, `conv3` mit den entsprechenden Eingangs- und Ausgangskanälen. Verwenden Sie `nn.Conv2d(...) &lt;https://pytorch.org/docs/stable/generated/torch.nn.Conv2d.html&gt;`_. Setzen Sie `kernel_size=3` und `padding=&quot;same&quot;` für alle Schichten.</span>
 <span class="sd">          Verwenden Sie jeweils 16, 32 und 64 Ausgänge für `conv1`, `conv2` und `conv3`.</span>
 
 <span class="sd">        - Definieren Sie die voll verbundenen Schichten `fc1` und `fc2` mit den entsprechenden Eingangs- und Ausgangsgrößen. Verwenden Sie `nn.Linear(...) &lt;https://pytorch.org/docs/stable/generated/torch.nn.Linear.html&gt;`_. Setzen Sie `fc1` auf 512 Ausgänge und `fc2` auf 100 Ausgänge.</span>
@@ -137,7 +143,10 @@ window.addEventListener("load", () => mermaid.run());
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="k">pass</span></div>
 
-<div class="viewcode-block" id="CNNNetwork.forward"><a class="viewcode-back" href="../../pytorch/cnn.html#pytorch.cifar100.CNNNetwork.forward">[Doku]</a>    <span class="k">def</span> <span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CNNNetwork.forward">
+<a class="viewcode-back" href="../../pytorch/cnn.html#pytorch.cifar100.CNNNetwork.forward">[Doku]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Führt den Vorwärtsdurchlauf des Netzwerks aus.</span>
 
 <span class="sd">        **TODO**:</span>
@@ -150,20 +159,25 @@ window.addEventListener("load", () => mermaid.run());
 
 <span class="sd">        - Geben Sie die Ausgabe der letzten Schicht `fc2` zurück.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
-        <span class="k">pass</span></div></div>
+        <span class="k">pass</span></div>
+</div>
 
-<div class="viewcode-block" id="epoch"><a class="viewcode-back" href="../../pytorch/cnn.html#pytorch.cifar100.epoch">[Doku]</a><span class="k">def</span> <span class="nf">epoch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">train</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">):</span>
+
+
+<div class="viewcode-block" id="epoch">
+<a class="viewcode-back" href="../../pytorch/cnn.html#pytorch.cifar100.epoch">[Doku]</a>
+<span class="k">def</span><span class="w"> </span><span class="nf">epoch</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">n</span><span class="p">,</span> <span class="n">train</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">,</span> <span class="n">criterion</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;</span>
 <span class="sd">    Führt eine einzelne Trainings- oder Evaluations-Epoche für das Modell aus.</span>
 
 <span class="sd">    Parameters:</span>
 <span class="sd">    -----------</span>
 
-<span class="sd">    model (nn.Module): </span>
+<span class="sd">    model (nn.Module):</span>
 <span class="sd">        Das zu trainierende oder evaluierende Modell.</span>
 
-<span class="sd">    n (int): </span>
-<span class="sd">        Die aktuelle Epoche.   </span>
+<span class="sd">    n (int):</span>
+<span class="sd">        Die aktuelle Epoche.</span>
 
 <span class="sd">    train (bool):</span>
 <span class="sd">        Gibt an, ob die Epoche im Trainingsmodus oder im Evaluationsmodus durchgeführt wird.</span>
@@ -178,34 +192,36 @@ window.addEventListener("load", () => mermaid.run());
 <span class="sd">        Der Optimierer, der zur Aktualisierung der Modellparameter verwendet wird.</span>
 
 <span class="sd">    **TODO**:</span>
-<span class="sd">    </span>
-<span class="sd">    - Setzen Sie das Modell in den Trainingsmodus, wenn `train=True` ist, und in den Evaluationsmodus, wenn `train=False` ist. Rufen Sie dazu `model.train()` bzw. `model.eval()` auf. </span>
-<span class="sd">    </span>
-<span class="sd">    - Initialisieren Sie `total_loss`, `total_samples` und `total_correct` auf 0.0, 0 und 0. </span>
 
-<span class="sd">    - Verwenden Sie `tqdm` für den Fortschrittsbalken, um den Fortschritt der Epoche anzuzeigen. </span>
+<span class="sd">    - Setzen Sie das Modell in den Trainingsmodus, wenn `train=True` ist, und in den Evaluationsmodus, wenn `train=False` ist. Rufen Sie dazu `model.train()` bzw. `model.eval()` auf.</span>
+
+<span class="sd">    - Initialisieren Sie `total_loss`, `total_samples` und `total_correct` auf 0.0, 0 und 0.</span>
+
+<span class="sd">    - Verwenden Sie `tqdm` für den Fortschrittsbalken, um den Fortschritt der Epoche anzuzeigen.</span>
 <span class="sd">      Speichern Sie den Iterator in einer eigenen Variable damit er innerhalb der Schleife verwendet werden kann.</span>
 
-<span class="sd">    - Iterieren Sie über den `dataloader` und führen Sie die folgenden Schritte aus:  </span>
+<span class="sd">    - Iterieren Sie über den `dataloader` und führen Sie die folgenden Schritte aus:</span>
 
 <span class="sd">    - Verschieben Sie die Daten und Labels auf das Gerät (`DEVICE`).</span>
 
 <span class="sd">    - Setzen Sie die Gradienten des Optimierers zurück, wenn `train=True` ist, indem Sie `optimizer.zero_grad()` aufrufen.</span>
 
 <span class="sd">    - Führen Sie den Vorwärtsdurchlauf des Modells aus, indem Sie `model(data)` aufrufen. Verwenden Sie `torch.set_grad_enabled(train)`, um den Gradientenfluss nur im Trainingsmodus zu aktivieren.</span>
-<span class="sd">    </span>
+
 <span class="sd">    - Berechnen Sie den Verlust mit `criterion(outputs, labels)`.</span>
 
 <span class="sd">    - Wenn `train=True` ist, führen Sie den Rückwärtsdurchlauf aus, indem Sie `loss.backward()` aufrufen und die Parameter mit `optimizer.step()` aktualisieren.</span>
 
 <span class="sd">    - Aktualisieren Sie `total_loss`, `total_samples` und `total_correct` mit den entsprechenden Werten aus dem aktuellen Batch.</span>
-<span class="sd">      Der `total_loss` sollte den Verlust des aktuellen Batches aufsummieren, `total_samples` die Anzahl der Samples im aktuellen Batch und </span>
+<span class="sd">      Der `total_loss` sollte den Verlust des aktuellen Batches aufsummieren, `total_samples` die Anzahl der Samples im aktuellen Batch und</span>
 <span class="sd">      `total_correct` die Anzahl der korrekt klassifizierten Samples. Die Anzahl der korrekt klassifizierten Samples kann mit `(outputs.argmax(dim=1) == labels).sum()` berechnet werden.</span>
 
-<span class="sd">    - Aktualisieren Sie den Fortschrittsbalken mit dem aktuellen Verlust und der Genauigkeit. Zeigen Sie auch an ob das Netz im Trainings- oder Validationsmodus betrieben wird. </span>
+<span class="sd">    - Aktualisieren Sie den Fortschrittsbalken mit dem aktuellen Verlust und der Genauigkeit. Zeigen Sie auch an ob das Netz im Trainings- oder Validationsmodus betrieben wird.</span>
 <span class="sd">      Rufen Sie dazu tqdm.set_description() auf und formatieren Sie die Ausgabe entsprechend.</span>
 <span class="sd">    &quot;&quot;&quot;</span>
     <span class="k">pass</span></div>
+
+
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
     <span class="c1"># Initialisierung des Modells, Loss-Kriteriums und Optimierers</span>

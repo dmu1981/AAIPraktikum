@@ -1,10 +1,10 @@
 import torch
 import torch.nn as nn
 
-LR = 0.04 # Lernrate
+LR = 0.04  # Lernrate
 DEVICE = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-# TODO: 
+# TODO:
 # Legen Sie die Trainingsdaten und Labels fest.
 # Die Trainingsdaten repräsentieren die Eingaben für ein XOR-Problem.
 # Die Labels repräsentieren die erwarteten Ausgaben für diese Eingaben.
@@ -16,14 +16,15 @@ training_data = torch.tensor(
 )
 labels = torch.tensor([0, 1, 1, 0], dtype=torch.long, device=DEVICE)
 
+
 class SimpleNetwork(nn.Module):
     """Ein einfaches neuronales Netzwerk mit einer versteckten Schicht."""
 
     def __init__(self):
         """Initialisiert das Netzwerk mit einer versteckten Schicht.
-        
+
         **TODO**:
-        
+
         - Rufen Sie die Methode `super().__init__()` auf, um die Basisklasse zu initialisieren.
 
         - Definieren Sie die erste voll verbundene Schicht `fc1` mit 2 Eingängen und 8 Ausgängen.
@@ -67,9 +68,10 @@ class SimpleNetwork(nn.Module):
         # Ausgabe zurückgeben
         return x
 
+
 def train_model(model, data, labels, criterion, optimizer, epochs=8000):
     """Trainiert das Modell mit den gegebenen Daten und Labels.
-    
+
     Diese Funktion führt das Training des Modells durch, indem sie die Eingabedaten und Labels verwendet,
     um die Gewichte des Modells zu aktualisieren. Der Verlust wird in jeder 1000. Epoche ausgegeben.
 
@@ -95,13 +97,13 @@ def train_model(model, data, labels, criterion, optimizer, epochs=8000):
         Die Anzahl der Epochen, die das Modell trainiert werden soll (Standard: 8000).
 
     **TODO**:
-    
+
     Iterieren Sie über die Anzahl der Epochen und führen Sie in jeder Epoche die folgenden Schritte aus:
 
     - Setzen Sie die Gradienten des Optimierers zurück. (`optimizer.zero_grad() <https://pytorch.org/docs/stable/generated/torch.optim.Optimizer.zero_grad.html>`_)
 
     - Führen Sie einen Vorwärtsdurchlauf des Modells mit den Eingabedaten `data` durch.
-    
+
     - Berechnen Sie den Verlust zwischen den Modell-Ausgaben und den Labels mit dem Kriterium `criterion`.
 
     - Führen Sie den Rückwärtsdurchlauf durch, um die Gradienten zu berechnen. (`loss.backward() <https://pytorch.org/docs/stable/generated/torch.Tensor.backward.html>`_)
@@ -131,6 +133,7 @@ def train_model(model, data, labels, criterion, optimizer, epochs=8000):
         # Optimierungsschritt
         optimizer.step()
 
+
 if __name__ == "__main__":
     # Initialisierung des Modells, Loss-Kriteriums und Optimierers
     model = SimpleNetwork().to(DEVICE)
@@ -144,7 +147,7 @@ if __name__ == "__main__":
     # Nach dem Training das Modell verwenden
     model.eval()
     with torch.no_grad():
-      outputs = model(training_data)
+        outputs = model(training_data)
 
     print("Training complete.")
     print(outputs)
