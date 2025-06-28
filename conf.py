@@ -13,6 +13,8 @@ sys.path.insert(0, os.path.abspath("."))
 sys.path.insert(0, os.path.abspath("./pytorch"))
 sys.path.insert(0, os.path.abspath("./checkpoints"))
 sys.path.insert(0, os.path.abspath("./tensorboard"))
+sys.path.insert(0, os.path.abspath("./resnet"))
+sys.path.insert(0, os.path.abspath("./embeddings"))
 
 project = "Advances in AI Praktikum"
 copyright = "2025, Prof. Dr. Dennis Müller"

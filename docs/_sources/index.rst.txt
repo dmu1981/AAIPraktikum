@@ -18,3 +18,4 @@ Das dazugehörige Repository finden Sie auf `GitHub <https://github.com/dmu1981/
    Convolutional Neural Networks <../pytorch/cnn>
    Checkpoints <../checkpoints/index>
    Tensor Board <../tensorboard/index>
+   ResNet <../resnet/index>
