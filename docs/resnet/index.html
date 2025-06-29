@@ -67,8 +67,10 @@
 </li>
 <li class="toctree-l2"><a class="reference internal" href="#aufgabe-2-ein-einfaches-resnet-modell-implementieren"><strong>Aufgabe 2</strong>: Ein einfaches ResNet-Modell implementieren</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#resnet.ResNet.make_layer"><code class="docutils literal notranslate"><span class="pre">ResNet.make_layer()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#resnet.ResNet.__init__"><code class="docutils literal notranslate"><span class="pre">ResNet.__init__()</span></code></a></li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#musterlosung"><strong>Musterlösung</strong>:</a></li>
 </ul>
 </li>
 </ul>
@@ -144,12 +146,12 @@ Sie verwenden ausserdem keinen Bias.</p>
 <ul class="simple">
 <li><p>Rufen Sie die <cite>__init__</cite> Methode der Basisklasse <cite>nn.Module</cite> auf.</p></li>
 <li><p>Initialisieren Sie dann die Schichten des Residual Blocks.</p></li>
-<li><p>Verwenden Sie <cite>nn.Conv2d</cite> für die Faltungsschichten. Setzen Sie <cite>kernel_size=3</cite>, <cite>padding=1</cite> und <cite>bias=False</cite>.</p></li>
+<li><p>Verwenden Sie <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.html">nn.Conv2d</a> für die Faltungsschichten. Setzen Sie <cite>kernel_size=3</cite>, <cite>padding=1</cite> und <cite>bias=False</cite>.</p></li>
 <li><p>Die erste Faltungsschicht sollte <cite>in_channels</cite> zu <cite>out_channels</cite> transformieren, die zweite Faltungsschicht sollte <cite>out_channels</cite> zu <cite>out_channels</cite> transformieren.</p></li>
 <li><p>Die ersten Faltungsschicht sollte <cite>stride</cite> als Schrittweite verwenden.</p></li>
-<li><p>Fügen Sie <cite>nn.BatchNorm2d</cite> nach jeder Faltungsschicht hinzu. Achten Sie darauf, dass die Batch-Normalisierung die gleiche Anzahl an Ausgabekanälen wie die Faltungsschicht hat.</p></li>
-<li><p>Verwenden Sie <cite>nn.ReLU</cite> als Aktivierungsfunktion.</p></li>
-<li><p>Implementieren Sie die Shortcut-Verbindung. Wenn <cite>stride</cite> nicht 1 ist oder <cite>in_channels</cite> nicht gleich <cite>out_channels</cite>, verwenden Sie eine 1x1 Faltung, um die Dimensionen anzupassen. Andernfalls verwenden Sie <cite>nn.Identity()</cite>.</p></li>
+<li><p>Fügen Sie <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm2d.html">nn.BatchNorm2d</a> nach jeder Faltungsschicht hinzu. Achten Sie darauf, dass die Batch-Normalisierung die gleiche Anzahl an Ausgabekanälen wie die Faltungsschicht hat.</p></li>
+<li><p>Verwenden Sie <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.ReLU.html">nn.ReLU</a> als Aktivierungsfunktion.</p></li>
+<li><p>Implementieren Sie die Shortcut-Verbindung. Wenn <cite>stride</cite> nicht 1 ist oder <cite>in_channels</cite> nicht gleich <cite>out_channels</cite>, verwenden Sie eine 1x1 Faltung, um die Dimensionen anzupassen. Andernfalls verwenden Sie <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Identity.html">nn.Identity()</a>.</p></li>
 </ul>
 </section>
 </dd></dl>
@@ -264,7 +266,7 @@ CIFAR-10-Datensatzes zu klassifizieren.</p>
 <p><strong>Hinweis</strong>:</p>
 <ul class="simple">
 <li><p>Die erste Schicht sollte die Schrittweite <cite>stride</cite> verwenden, während die anderen Schichten eine Schrittweite von 1 haben.</p></li>
-<li><p>Sie können die gewünschten Layer mit <cite>nn.Sequential</cite> kombinieren.</p></li>
+<li><p>Sie können die gewünschten Layer mit <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Sequential.html">nn.Sequential</a> kombinieren.</p></li>
 <li><p>Dazu können Sie die Blöcke zunächst in einer Liste (z.B. <cite>layers</cite>) sammeln und dann <cite>nn.Sequential(*layers)</cite> verwenden, um sie zu kombinieren.</p></li>
 </ul>
 </section>
@@ -283,6 +285,85 @@ CIFAR-10-Datensatzes zu klassifizieren.</p>
 </pre></div>
 </div>
 </div>
+<p><strong>Implementieren</strong> Sie anschließend den Konstruktor der Klasse <cite>ResNet</cite> in der Datei <cite>resnet/resnet.py</cite>, die das gesamte ResNet-Modell definiert.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="resnet.ResNet.__init__">
+<span class="sig-prename descclassname"><span class="pre">ResNet.</span></span><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_classes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/resnet.html#ResNet.__init__"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#resnet.ResNet.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialisiert das ResNet Modell.</p>
+<section id="id3">
+<h3>Parameters:<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>num_classes (int):</dt><dd><p>Anzahl der Klassen für die Klassifikation.</p>
+</dd>
+</dl>
+<p><strong>TODO</strong>:</p>
+<ul class="simple">
+<li><p>Rufen Sie die <cite>__init__</cite> Methode der Basisklasse <cite>nn.Module</cite> auf.</p></li>
+<li><p>Definieren Sie dann die Schichten des ResNet Modells.</p></li>
+<li><p>Verwenden Sie <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.html">nn.Conv2d</a> für die erste Faltungsschichten um von 3 auf 32 Kanäle zu transformieren. Setzen Sie <cite>kernel_size=7</cite>, <cite>padding=3</cite> und <cite>stride=2</cite> für diese Schicht.</p></li>
+<li><p>Fügen Sie <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm2d.html">nn.BatchNorm2d</a> und <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.ReLU.html">nn.ReLU</a> nach der ersten Faltungsschicht hinzu.</p></li>
+<li><p>Hinweis: Sie können die <cite>nn.Sequential</cite> Klasse verwenden, um mehrere Schichten zu kombinieren.</p></li>
+<li><p>Erstellen Sie dann drei Ebenen mit der Methode <cite>make_layer</cite>.</p></li>
+<li><p>Die erste Ebene sollte 6 Residual Blocks mit <cite>in_channels=32</cite>, <cite>out_channels=32</cite> und <cite>stride=1</cite> enthalten.</p></li>
+<li><p>Die zweite Ebene sollte 6 Residual Blocks mit <cite>in_channels=32</cite>, <cite>out_channels=64</cite> und <cite>stride=2</cite> enthalten.</p></li>
+<li><p>Die dritte Ebene sollte 12 Residual Blocks mit <cite>in_channels=64</cite>, <cite>out_channels=128</cite> und <cite>stride=2</cite> enthalten.</p></li>
+<li><p>Fügen Sie eine <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.AvgPool2d.html">nn.AvgPool2d</a> Schicht mit einem Kernel von (4, 4) hinzu, um die räumliche Dimension der Feature-Maps zu reduzieren.</p></li>
+<li><p>Fügen Sie eine voll verbundene Schicht <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Linear.html">nn.Linear</a> hinzu, die die Ausgabe der Durchschnittspooling-Schicht auf <cite>num_classes</cite> transformiert.</p></li>
+<li><p>Die Eingabegröße für die voll verbundene Schicht sollte 128 sein, da die letzte Residual Block Schicht 128 Kanäle hat.</p></li>
+<li><p>Verwenden Sie <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.flatten.html">torch.flatten</a> um die Ausgabe der Durchschnittspooling-Schicht in einen Vektor umzuwandeln, bevor Sie sie an die voll verbundene Schicht weitergeben.</p></li>
+</ul>
+</section>
+</dd></dl>
+
+<div class="toggle admonition">
+<p class="admonition-title">Musterlösung anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ResNet</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">num_classes</span><span class="o">=</span><span class="mi">10</span><span class="p">):</span>
+       <span class="nb">super</span><span class="p">(</span><span class="n">ResNet</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+       <span class="c1"># Initlal block</span>
+       <span class="bp">self</span><span class="o">.</span><span class="n">layer0</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+           <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">3</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+           <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="mi">32</span><span class="p">),</span>
+           <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+       <span class="p">)</span>
+
+       <span class="c1"># Residual blocks</span>
+       <span class="bp">self</span><span class="o">.</span><span class="n">layer1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_layer</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+       <span class="bp">self</span><span class="o">.</span><span class="n">layer2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_layer</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="mi">6</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+       <span class="bp">self</span><span class="o">.</span><span class="n">layer3</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">make_layer</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="mi">12</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+
+       <span class="c1"># Average pooling and fully connected layer</span>
+       <span class="bp">self</span><span class="o">.</span><span class="n">avgpool</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">AvgPool2d</span><span class="p">((</span><span class="mi">4</span><span class="p">,</span><span class="mi">4</span><span class="p">))</span>
+       <span class="bp">self</span><span class="o">.</span><span class="n">fc</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="n">num_classes</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p><strong>Implementieren</strong> Sie zuletzt noch den Forward-Pass des ResNet-Modells in der Datei <cite>resnet/resnet.py</cite>,</p>
+<div class="toggle admonition">
+<p class="admonition-title">Musterlösung anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer0</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer2</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layer3</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">avgpool</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">flatten</span><span class="p">(</span><span class="n">x</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+  <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">fc</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+  <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+</div>
+<p>Starten Sie das Training des ResNet-Modells, indem Sie das Skript <code class="file docutils literal notranslate"><span class="pre">resnet/resnet.py</span></code> ausführen.
+Starten Sie parallel das TensorBoard, um den Trainingsfortschritt zu überwachen.
+Sie sollten eine stabil steigende Genauigkeit sowie einen stabil sinkenden Loss sehen:</p>
+<a class="reference internal image-reference" href="../_images/trainingcurve.png"><img alt="../_images/trainingcurve.png" class="align-center" src="../_images/trainingcurve.png" style="width: 600px;" />
+</a>
+</section>
+<section id="musterlosung">
+<h2><strong>Musterlösung</strong>:<a class="headerlink" href="#musterlosung" title="Link to this heading"></a></h2>
+<p>Die vollständige Implementierung des ResNet-Modells finden Sie in der Datei <code class="file docutils literal notranslate"><span class="pre">resnet/resnet.py</span></code>.</p>
+<p><a class="reference internal" href="resnet_source.html"><span class="doc">ResNet - Musterlösung</span></a></p>
 </section>
 </section>
 

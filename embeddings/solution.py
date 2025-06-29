@@ -72,7 +72,22 @@ class EmbeddingLogger(TensorBoardLogger):
 
         -  Geben Sie die berechneten Embeddings und Labels zurück.
         """
-        pass
+        model.eval()
+        embeddings = []
+        labels = []
+        bar = tqdm(self.validation_set, desc="Berechne Embeddings")
+        with torch.no_grad():
+            for inputs, l in bar:
+                inputs = inputs.to(DEVICE)
+                _, emb = model(inputs)
+                embeddings.append(emb.cpu())
+                labels.append(l.cpu())
+
+        bar.close()
+        
+        model.train()
+
+        return torch.cat(embeddings, dim=0).numpy(), torch.cat(labels, dim=0).numpy()
 
     def calculate_tsne(self, embeddings, previous_embeddings_2d=None):
         """Berechnet das t-SNE-Modell für die Embeddings.
@@ -104,7 +119,19 @@ class EmbeddingLogger(TensorBoardLogger):
         
         -  Geben Sie die normalisierten 2D-Embeddings zurück.
         """
-        pass
+        if previous_embeddings_2d is not None:
+            tsne_model = TSNE(n_components=2, init=previous_embeddings_2d)
+        else:
+            tsne_model = TSNE(n_components=2, init="pca")
+
+        embeddings_2d = tsne_model.fit_transform(embeddings)
+
+        embeddings_2d = np.array(embeddings_2d, dtype=np.float32)
+        m = np.mean(embeddings_2d, axis=0, keepdims=True)  # Normalize to zero mean
+        s = np.std(embeddings_2d, axis=0, keepdims=True)  # Normalize to unit variance
+        embeddings_2d = (embeddings_2d - m) / s  # Normalize the embeddings
+
+        return embeddings_2d
 
     def register_embeddings_2d(self, embeddings_2d, previous_embeddings_2d=None):
         """Registriert die 2D-Embeddings, um sie mit den vorherigen Embeddings zu vergleichen.
@@ -133,7 +160,11 @@ class EmbeddingLogger(TensorBoardLogger):
 
         - Geben Sie die transformierten 2D-Embeddings zurück.
         """
-        pass
+        if previous_embeddings_2d is not None:
+            R, _ = orthogonal_procrustes(embeddings_2d, previous_embeddings_2d)
+            embeddings_2d = embeddings_2d @ R
+
+        return embeddings_2d
 
     def visualize_embeddings(self, embeddings_2d, labels, step, axs):
         """Visualisiert die 2D-Embeddings mit t-SNE und speichert das Bild.
@@ -165,7 +196,15 @@ class EmbeddingLogger(TensorBoardLogger):
         
         - Setzen Sie den Titel des Plots sinnvoll.            
         """
-        pass
+        df = pd.DataFrame(
+            {"x": embeddings_2d[:, 0], "y": embeddings_2d[:, 1], "label": labels}
+        )
+
+        sns.scatterplot(data=df, x="x", y="y", hue="label", palette="muted", ax=axs)
+        axs.set_xlim(-3.0, 3.0)
+        axs.set_ylim(-3.0, 3.0)
+        axs.get_legend().remove()
+        axs.set_title(f"t-SNE Embedding Projection - Step {step}")
 
         
 

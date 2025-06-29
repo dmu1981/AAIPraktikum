@@ -1,4 +1,3 @@
-embeddings_*.png
-*.gif
 *.pth
 runs
+images

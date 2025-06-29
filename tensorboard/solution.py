@@ -41,7 +41,7 @@ class TensorBoardLogger:
 
     def _reset_metrics(self):
         """Setzt die Metriken zurück."""
-        self.metrics = { "total_loss": 0.0, "total_correct": 0.0, "total_samples": 0 }
+        self.metrics = {"total_loss": 0.0, "total_correct": 0.0, "total_samples": 0}
 
     def _reset_samples_statistics(self):
         """Setzt die Statistik der Samples zurück."""
@@ -137,14 +137,14 @@ class TensorBoardLogger:
         loss = self.metrics["total_loss"] / self.metrics["total_samples"]
         accuracy = self.metrics["total_correct"] / self.metrics["total_samples"]
 
-        tag = "train" if train else "validation"        
+        tag = "train" if train else "validation"
         self.writer.add_scalar(f"{tag}/loss", loss, step)
         self.writer.add_scalar(f"{tag}/accuracy", accuracy, step)
-        
+
         self._reset_metrics()
 
     def log_sample_statistics(self, train, step):
-        """ Loggt die am schlechtesten klassifizierten Samples in TensorBoard.
+        """Loggt die am schlechtesten klassifizierten Samples in TensorBoard.
 
         Parameters:
         -----------
@@ -157,7 +157,7 @@ class TensorBoardLogger:
         **TODO**:
         Logge die am schlechtesten klassifizierten Samples für jede Klasse in TensorBoard.
         Die Samples sollten in einem Grid-Format geloggt werden, wobei jede Klasse in einem eigenen Tag gespeichert wird.
-        
+
         - Iteriere über die Klassen-IDs (0-9) und logge die Samples für jede Klasse.
         - Verwende `self.sample_statistics[cls_id]["samples"]` um die Samples für die Klasse `cls_id` zu erhalten.
         - Verwende `torchvision.utils.make_grid() <https://docs.pytorch.org/vision/stable/generated/torchvision.utils.make_grid.html>`_ um die Samples in einem Grid zu formatieren
@@ -182,7 +182,7 @@ class TensorBoardLogger:
                 grid,
                 global_step=step,
             )
-        
+
         # Setze die Statistik der Samples zurück
         self._reset_samples_statistics()
 

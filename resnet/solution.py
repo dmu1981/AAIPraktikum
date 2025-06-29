@@ -43,9 +43,33 @@ class ResidualBlock(nn.Module):
 
         - Verwenden Sie `nn.ReLU <https://docs.pytorch.org/docs/stable/generated/torch.nn.ReLU.html>`_ als Aktivierungsfunktion.
 
-        - Implementieren Sie die Shortcut-Verbindung. Wenn `stride` nicht 1 ist oder `in_channels` nicht gleich `out_channels`, verwenden Sie eine 1x1 Faltung, um die Dimensionen anzupassen. Andernfalls verwenden Sie `nn.Identity() <https://pytorch.org/docs/stable/generated/torch.nn.Identity.html>`_.
+        - Implementieren Sie die Shortcut-Verbindung. Wenn `stride` nicht 1 ist oder `in_channels` nicht gleich `out_channels`, verwenden Sie eine 1x1 Faltung, um die Dimensionen anzupassen. Andernfalls verwenden Sie `nn.Identity()`.
         """
-        pass
+        super(ResidualBlock, self).__init__()
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(
+                in_channels,
+                out_channels,
+                kernel_size=3,
+                padding=1,
+                stride=stride,
+                bias=False,
+            ),
+            nn.BatchNorm2d(out_channels),
+        )
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1, bias=False),
+            nn.BatchNorm2d(out_channels),
+        )
+        self.relu = nn.ReLU(inplace=True)
+
+        # Shortcut connection
+        if stride != 1 or in_channels != out_channels:
+            self.shortcut = nn.Conv2d(
+                in_channels, out_channels, kernel_size=1, stride=stride, bias=False
+            )
+        else:
+            self.shortcut = nn.Identity()
 
     def forward(self, x):
         """Führt den Vorwärtsdurchlauf des Residual Blocks aus.
@@ -59,7 +83,10 @@ class ResidualBlock(nn.Module):
         Implementieren Sie den Vorwärtsdurchlauf des Residual Blocks.
         Orientieren Sie sich an der in der Aufgabenstellung gegebenen Beschreibung sowie der Grafik.
         """
-        pass
+        residual = self.shortcut(x)
+        out = self.relu(self.conv1(x))
+        out = self.relu(self.conv2(out) + residual)
+        return out
 
 
 class ResNet(nn.Module):
@@ -99,7 +126,23 @@ class ResNet(nn.Module):
 
         - Verwenden Sie `torch.flatten <https://pytorch.org/docs/stable/generated/torch.flatten.html>`_ um die Ausgabe der Durchschnittspooling-Schicht in einen Vektor umzuwandeln, bevor Sie sie an die voll verbundene Schicht weitergeben.
         """
-        pass
+        super(ResNet, self).__init__()
+
+        # Initlal block
+        self.layer0 = nn.Sequential(
+            nn.Conv2d(3, 32, kernel_size=7, padding=3, stride=2, bias=False),
+            nn.BatchNorm2d(32),
+            nn.ReLU(inplace=True),
+        )
+
+        # Residual blocks
+        self.layer1 = self.make_layer(32, 32, 6, 1)
+        self.layer2 = self.make_layer(32, 64, 6, 2)
+        self.layer3 = self.make_layer(64, 128, 12, 2)
+
+        # Average pooling and fully connected layer
+        self.avgpool = nn.AvgPool2d((4, 4))
+        self.fc = nn.Linear(128, num_classes)
 
     def make_layer(self, in_channels, out_channels, num_blocks, stride):
         """Erstellt eine Sequenz von Residual Blocks.
@@ -141,7 +184,13 @@ class ResNet(nn.Module):
 
         - Dazu können Sie die Blöcke zunächst in einer Liste (z.B. `layers`) sammeln und dann `nn.Sequential(*layers)` verwenden, um sie zu kombinieren.
         """
-        pass
+        strides = [stride] + [1] * (num_blocks - 1)
+        layers = []
+        for s in strides:
+            layers.append(ResidualBlock(in_channels, out_channels, s))
+            in_channels = out_channels
+
+        return nn.Sequential(*layers)
 
     def forward(self, x):
         """Führt den Vorwärtsdurchlauf des ResNet Modells aus.
@@ -155,7 +204,14 @@ class ResNet(nn.Module):
         Implementieren Sie den Vorwärtsdurchlauf des ResNet Modells.
         Orientieren Sie sich an der in der Aufgabenstellung gegebenen Beschreibung sowie der Grafik.
         """
-        pass
+        x = self.layer0(x)
+        x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.avgpool(x)
+        x = torch.flatten(x, 1)
+        x = self.fc(x)
+        return x
 
 
 if __name__ == "__main__":

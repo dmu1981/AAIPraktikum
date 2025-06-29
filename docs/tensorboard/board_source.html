@@ -55,6 +55,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../pytorch/cnn.html">Convolutional Neural Networks</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../checkpoints/index.html">Checkpoints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="index.html">Tensor Board</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resnet/index.html">ResNet</a></li>
 </ul>
 
         </div>
@@ -126,7 +127,7 @@
 <span class="linenos"> 41</span>
 <span class="linenos"> 42</span>    <span class="k">def</span><span class="w"> </span><span class="nf">_reset_metrics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="linenos"> 43</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Setzt die Metriken zurück.&quot;&quot;&quot;</span>
-<span class="linenos"> 44</span>        <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="p">{</span> <span class="s2">&quot;total_loss&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;total_correct&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;total_samples&quot;</span><span class="p">:</span> <span class="mi">0</span> <span class="p">}</span>
+<span class="linenos"> 44</span>        <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span> <span class="o">=</span> <span class="p">{</span><span class="s2">&quot;total_loss&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;total_correct&quot;</span><span class="p">:</span> <span class="mf">0.0</span><span class="p">,</span> <span class="s2">&quot;total_samples&quot;</span><span class="p">:</span> <span class="mi">0</span><span class="p">}</span>
 <span class="linenos"> 45</span>
 <span class="linenos"> 46</span>    <span class="k">def</span><span class="w"> </span><span class="nf">_reset_samples_statistics</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="linenos"> 47</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Setzt die Statistik der Samples zurück.&quot;&quot;&quot;</span>
@@ -222,14 +223,14 @@
 <span class="linenos">137</span>        <span class="n">loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;total_loss&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;total_samples&quot;</span><span class="p">]</span>
 <span class="linenos">138</span>        <span class="n">accuracy</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;total_correct&quot;</span><span class="p">]</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">metrics</span><span class="p">[</span><span class="s2">&quot;total_samples&quot;</span><span class="p">]</span>
 <span class="linenos">139</span>
-<span class="linenos">140</span>        <span class="n">tag</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span> <span class="k">if</span> <span class="n">train</span> <span class="k">else</span> <span class="s2">&quot;validation&quot;</span>        
+<span class="linenos">140</span>        <span class="n">tag</span> <span class="o">=</span> <span class="s2">&quot;train&quot;</span> <span class="k">if</span> <span class="n">train</span> <span class="k">else</span> <span class="s2">&quot;validation&quot;</span>
 <span class="linenos">141</span>        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">/loss&quot;</span><span class="p">,</span> <span class="n">loss</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
 <span class="linenos">142</span>        <span class="bp">self</span><span class="o">.</span><span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">tag</span><span class="si">}</span><span class="s2">/accuracy&quot;</span><span class="p">,</span> <span class="n">accuracy</span><span class="p">,</span> <span class="n">step</span><span class="p">)</span>
-<span class="linenos">143</span>        
+<span class="linenos">143</span>
 <span class="linenos">144</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_reset_metrics</span><span class="p">()</span>
 <span class="linenos">145</span>
 <span class="linenos">146</span>    <span class="k">def</span><span class="w"> </span><span class="nf">log_sample_statistics</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">train</span><span class="p">,</span> <span class="n">step</span><span class="p">):</span>
-<span class="linenos">147</span><span class="w">        </span><span class="sd">&quot;&quot;&quot; Loggt die am schlechtesten klassifizierten Samples in TensorBoard.</span>
+<span class="linenos">147</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Loggt die am schlechtesten klassifizierten Samples in TensorBoard.</span>
 <span class="linenos">148</span>
 <span class="linenos">149</span><span class="sd">        Parameters:</span>
 <span class="linenos">150</span><span class="sd">        -----------</span>
@@ -242,7 +243,7 @@
 <span class="linenos">157</span><span class="sd">        **TODO**:</span>
 <span class="linenos">158</span><span class="sd">        Logge die am schlechtesten klassifizierten Samples für jede Klasse in TensorBoard.</span>
 <span class="linenos">159</span><span class="sd">        Die Samples sollten in einem Grid-Format geloggt werden, wobei jede Klasse in einem eigenen Tag gespeichert wird.</span>
-<span class="linenos">160</span><span class="sd">        </span>
+<span class="linenos">160</span>
 <span class="linenos">161</span><span class="sd">        - Iteriere über die Klassen-IDs (0-9) und logge die Samples für jede Klasse.</span>
 <span class="linenos">162</span><span class="sd">        - Verwende `self.sample_statistics[cls_id][&quot;samples&quot;]` um die Samples für die Klasse `cls_id` zu erhalten.</span>
 <span class="linenos">163</span><span class="sd">        - Verwende `torchvision.utils.make_grid() &lt;https://docs.pytorch.org/vision/stable/generated/torchvision.utils.make_grid.html&gt;`_ um die Samples in einem Grid zu formatieren</span>
@@ -267,7 +268,7 @@
 <span class="linenos">182</span>                <span class="n">grid</span><span class="p">,</span>
 <span class="linenos">183</span>                <span class="n">global_step</span><span class="o">=</span><span class="n">step</span><span class="p">,</span>
 <span class="linenos">184</span>            <span class="p">)</span>
-<span class="linenos">185</span>        
+<span class="linenos">185</span>
 <span class="linenos">186</span>        <span class="c1"># Setze die Statistik der Samples zurück</span>
 <span class="linenos">187</span>        <span class="bp">self</span><span class="o">.</span><span class="n">_reset_samples_statistics</span><span class="p">()</span>
 <span class="linenos">188</span>

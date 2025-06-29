@@ -128,3 +128,64 @@ CIFAR-10-Datensatzes zu klassifizieren.
               in_channels = out_channels
 
           return nn.Sequential(*layers)
+
+**Implementieren** Sie anschließend den Konstruktor der Klasse `ResNet` in der Datei `resnet/resnet.py`, die das gesamte ResNet-Modell definiert.          
+
+.. automethod:: resnet.ResNet.__init__
+
+.. admonition:: Musterlösung anzeigen
+   :class: toggle
+
+   .. code-block:: python
+
+       class ResNet(nn.Module):
+           def __init__(self, num_classes=10):
+              super(ResNet, self).__init__()
+
+              # Initlal block
+              self.layer0 = nn.Sequential(
+                  nn.Conv2d(3, 32, kernel_size=7, padding=3, stride=2, bias=False),
+                  nn.BatchNorm2d(32),
+                  nn.ReLU(inplace=True)
+              )
+
+              # Residual blocks
+              self.layer1 = self.make_layer(32, 32, 6, 1)
+              self.layer2 = self.make_layer(32, 64, 6, 2)
+              self.layer3 = self.make_layer(64, 128, 12, 2)
+
+              # Average pooling and fully connected layer
+              self.avgpool = nn.AvgPool2d((4,4))
+              self.fc = nn.Linear(128, num_classes)
+
+**Implementieren** Sie zuletzt noch den Forward-Pass des ResNet-Modells in der Datei `resnet/resnet.py`,
+
+.. admonition:: Musterlösung anzeigen
+   :class: toggle
+
+   .. code-block:: python
+
+            def forward(self, x):
+              x = self.layer0(x)
+              x = self.layer1(x)
+              x = self.layer2(x)
+              x = self.layer3(x)
+              x = self.avgpool(x)
+              x = torch.flatten(x, 1)
+              x = self.fc(x)
+              return x
+
+Starten Sie das Training des ResNet-Modells, indem Sie das Skript :file:`resnet/resnet.py` ausführen.
+Starten Sie parallel das TensorBoard, um den Trainingsfortschritt zu überwachen.
+Sie sollten eine stabil steigende Genauigkeit sowie einen stabil sinkenden Loss sehen:
+
+.. image:: trainingcurve.png
+   :width: 600px
+   :align: center              
+  
+**Musterlösung**:
+-----------------
+
+Die vollständige Implementierung des ResNet-Modells finden Sie in der Datei :file:`resnet/resnet.py`.
+
+:doc:`resnet_source`

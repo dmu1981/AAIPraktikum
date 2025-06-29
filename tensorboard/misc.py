@@ -135,7 +135,7 @@ def epoch(
         total_samples += data.size(0)
 
         bar.set_description(
-            f"Epoch {n} ({'T' if train else 'V'})"#, Loss: {total_loss / total_samples:.4f}, Accuracy: {total_correct / total_samples:.2%}"
+            f"Epoch {n} ({'T' if train else 'V'})"  # , Loss: {total_loss / total_samples:.4f}, Accuracy: {total_correct / total_samples:.2%}"
         )
 
         # Loggen der Metriken nach einer bestimmten Anzahl von Samples (nur fürs Trainingsset)

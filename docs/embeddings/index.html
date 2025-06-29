@@ -1,0 +1,468 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Embedding Vectors &mdash; Advances in AI Praktikum  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+
+  
+    <link rel="canonical" href="https://dmu1981.github.io/MPTPraktikum/embeddings/index.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=245627df"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script src="../_static/translations.js?v=79cc9f76"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../genindex.html" />
+    <link rel="search" title="Suche" href="../search.html" />
+    <link rel="prev" title="ResNet" href="../resnet/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Advances in AI Praktikum
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Aufgaben:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../pytorch/index.html">PyTorch - Grundlagen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pytorch/cnn.html">Convolutional Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../checkpoints/index.html">Checkpoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensorboard/index.html">Tensor Board</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resnet/index.html">ResNet</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Embeddings</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-1-embedding-vektoren-extrahieren"><strong>Aufgabe 1</strong>: Embedding Vektoren extrahieren</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#embeddings.EmbeddingLogger.calculate_embeddings"><code class="docutils literal notranslate"><span class="pre">EmbeddingLogger.calculate_embeddings()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-2-t-sne-visualisierung"><strong>Aufgabe 2</strong>: t-SNE Visualisierung</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#embeddings.EmbeddingLogger.calculate_tsne"><code class="docutils literal notranslate"><span class="pre">EmbeddingLogger.calculate_tsne()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-3-die-alte-und-neue-punktwolke-gegeneinander-registrieren"><strong>Aufgabe 3</strong>: Die alte und neue Punktwolke gegeneinander registrieren</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#embeddings.EmbeddingLogger.register_embeddings_2d"><code class="docutils literal notranslate"><span class="pre">EmbeddingLogger.register_embeddings_2d()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-4-die-embeddings-visualisieren"><strong>Aufgabe 4</strong>: Die Embeddings visualisieren</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#embeddings.EmbeddingLogger.visualize_embeddings"><code class="docutils literal notranslate"><span class="pre">EmbeddingLogger.visualize_embeddings()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#musterlosung"><strong>Musterlösung</strong>:</a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Advances in AI Praktikum</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Embedding Vectors</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/embeddings/index.rst.txt" rel="nofollow"> Quelltext anzeigen</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="embedding-vectors">
+<h1>Embedding Vectors<a class="headerlink" href="#embedding-vectors" title="Link to this heading"></a></h1>
+<p>In diesem Abschnitt wollen wir genauer untersuchen, wie Embedding Vektoren in neuronalen Netzwerken entstehen.
+Dazu trainieren wir das aus dem vorherigen Abschnitt entwickelte ResNet auf dem CIFAR-10 Datensatz.
+Gleichzeitig werden wir die Embedding Vektoren der Bilder extrahieren und analysieren.</p>
+<p>Wir verwenden <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html">t-SNE</a> zur Visualisierung der Embedding Vektoren.
+Anders als die <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.decomposition.PCA.html">PCA (Principal Component Analysis)</a> ist t-SNE ein nichtlineares Verfahren, das besonders gut für die Visualisierung hochdimensionaler Daten geeignet ist.</p>
+<a class="reference internal image-reference" href="../_images/emb.gif"><img alt="../_images/emb.gif" class="align-center" src="../_images/emb.gif" style="width: 600px;" />
+</a>
+<p>Das Ziel ist es eine Animation wie die obige zu erstellen, die die Entwicklung der Embedding Vektoren während des Trainings zeigt.</p>
+<section id="aufgabe-1-embedding-vektoren-extrahieren">
+<h2><strong>Aufgabe 1</strong>: Embedding Vektoren extrahieren<a class="headerlink" href="#aufgabe-1-embedding-vektoren-extrahieren" title="Link to this heading"></a></h2>
+<p>Im ersten Schritt müssen wir die Embedding Vektoren der Bilder extrahieren.
+Das Modell liefert in seinem forward-Pass bereits neben den Logits auch die Ausgabe der letzten Schicht vor der Klassifikation, also die Embedding-Vektoren.
+Diese sind in diesem Fall 128-dimensional, da das ResNet-Model eine letzte Faltungsschicht mit 128 Kanälen hat.</p>
+<p>Öffnen Sie die Datei <cite>embeddings.py</cite> und implementieren Sie die Methode <cite>embeddings.calculate_embeddings</cite>, welche die Embedding Vektoren aus dem Modell extrahiert.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="embeddings.EmbeddingLogger.calculate_embeddings">
+<span class="sig-prename descclassname"><span class="pre">EmbeddingLogger.</span></span><span class="sig-name descname"><span class="pre">calculate_embeddings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/embeddings.html#EmbeddingLogger.calculate_embeddings"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#embeddings.EmbeddingLogger.calculate_embeddings" title="Link to this definition"></a></dt>
+<dd><p>Berechnet alle Embeddings für die Daten im Dataloader.</p>
+<section id="parameters">
+<h3>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>model (nn.Module):</dt><dd><p>Das Modell, das die Embeddings berechnet.</p>
+</dd>
+</dl>
+</section>
+<section id="returns">
+<h3>Returns:<a class="headerlink" href="#returns" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>embeddings (np.ndarray):</dt><dd><p>Die berechneten Embeddings als NumPy-Array.</p>
+</dd>
+<dt>labels (np.ndarray):</dt><dd><p>Die zugehörigen Labels als NumPy-Array.</p>
+</dd>
+</dl>
+<p><strong>TODO</strong>:</p>
+<ul class="simple">
+<li><p>Setzen Sie das Modell in den Evaluationsmodus (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.eval">model.eval()</a>), um sicherzustellen, dass die Batch-Normalisierung deaktiviert ist.</p></li>
+<li><p>Erstellen Sie leere Listen für <cite>embeddings</cite> und <cite>labels</cite>, um die Ergebnisse zu speichern.</p></li>
+<li><p>Verwenden Sie <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.no_grad.html">torch.no_grad()</a>, um den Gradientenfluss zu deaktivieren, da wir nur die Embeddings berechnen und nicht trainieren.</p></li>
+<li><p>Iterieren Sie über <cite>self.validation_set</cite> und berechnen Sie die Embeddings für jedes Batch indem Sie die Eingaben auf das Gerät (<cite>DEVICE</cite>) verschieben und das Modell aufrufen.</p></li>
+<li><p>Das Modell liefert ein Tupel zurück, wobei der zweite Wert die Embeddings sind.</p></li>
+<li><p>Verschieben Sie die Embeddings und Labels auf die CPU (rufen Sie <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.Tensor.cpu.html">tensor.cpu()</a> auf ) und speichern Sie sie in den Listen <cite>embeddings</cite> und <cite>labels</cite>.</p></li>
+<li><p>Konvertieren Sie die Listen <cite>embeddings</cite> und <cite>labels</cite> in NumPy-Arrays, indem Sie <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.cat.html">torch.cat(embeddings, dim=0)</a> <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.Tensor.numpy.html">.numpy()</a> und <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.cat.html">torch.cat(labels, dim=0)</a> <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.Tensor.numpy.html">.numpy()</a> verwenden.</p></li>
+<li><p>Setzen Sie das Modell wieder in den Trainingsmodus (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.train">model.train()</a>), um sicherzustellen, dass es für zukünftige Trainingsschritte bereit ist.</p></li>
+<li><p>Geben Sie die berechneten Embeddings und Labels zurück.</p></li>
+</ul>
+</section>
+</dd></dl>
+
+<div class="toggle admonition">
+<p class="admonition-title">Lösung anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">calculate_embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="n">embeddings</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">labels</span> <span class="o">=</span> <span class="p">[]</span>
+    <span class="n">bar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">validation_set</span><span class="p">,</span> <span class="n">desc</span><span class="o">=</span><span class="s2">&quot;Berechne Embeddings&quot;</span><span class="p">)</span>
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="k">for</span> <span class="n">inputs</span><span class="p">,</span> <span class="n">l</span> <span class="ow">in</span> <span class="n">bar</span><span class="p">:</span>
+            <span class="n">inputs</span> <span class="o">=</span> <span class="n">inputs</span><span class="o">.</span><span class="n">to</span><span class="p">(</span><span class="n">DEVICE</span><span class="p">)</span>
+            <span class="n">_</span><span class="p">,</span> <span class="n">emb</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="n">inputs</span><span class="p">)</span>
+            <span class="n">embeddings</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">emb</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
+            <span class="n">labels</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">l</span><span class="o">.</span><span class="n">cpu</span><span class="p">())</span>
+
+    <span class="n">bar</span><span class="o">.</span><span class="n">close</span><span class="p">()</span>
+
+    <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+
+    <span class="k">return</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">embeddings</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">labels</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">)</span><span class="o">.</span><span class="n">numpy</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="aufgabe-2-t-sne-visualisierung">
+<h2><strong>Aufgabe 2</strong>: t-SNE Visualisierung<a class="headerlink" href="#aufgabe-2-t-sne-visualisierung" title="Link to this heading"></a></h2>
+<p>t-Distributed Stochastic Neighbor Embedding (t-SNE) ist ein nichtlineares Verfahren zur
+Dimensionsreduktion, das hauptsächlich zur Visualisierung hochdimensionaler Daten in einem
+niedrigdimensionalen Raum (meist 2D oder 3D) verwendet wird. Entwickelt wurde t-SNE von
+Laurens van der Maaten und Geoffrey Hinton. Es eignet sich besonders gut, um Muster in
+Daten wie Bild-Features, Text-Embeddings oder biologischen Messwerten zu entdecken.</p>
+<p><strong>Funktionsweise</strong></p>
+<p>t-SNE wandelt die Ähnlichkeiten zwischen Datenpunkten in Wahrscheinlichkeiten um und minimiert
+anschließend die Kullback-Leibler-Divergenz zwischen den Wahrscheinlichkeitsverteilungen im
+hohen und im niedrigen Dimensionsraum.</p>
+<p>Der Algorithmus besteht im Wesentlichen aus zwei Schritten:</p>
+<ol class="arabic simple">
+<li><p><strong>Wahrscheinlichkeitsverteilung im hochdimensionalen Raum</strong>: Die Ähnlichkeiten werden mit
+Hilfe einer gaußschen Verteilung berechnet.</p></li>
+<li><p><strong>Wahrscheinlichkeitsverteilung im niedrigdimensionalen Raum</strong>: Eine ähnliche Verteilung wird
+mit einer Student-t-Verteilung mit einem Freiheitsgrad berechnet (mit „schwerem Schwanz“),
+um das sogenannte „Crowding-Problem“ zu mildern.</p></li>
+<li><p><strong>Minimierung der Divergenz</strong>: Die Kullback-Leibler-Divergenz zwischen den beiden Verteilungen
+wird minimiert, um die Struktur der Daten im niedrigdimensionalen Raum zu erhalten.</p></li>
+</ol>
+<p><strong>Details zur Wahrscheinlichkeitsumwandlung in t-SNE</strong></p>
+<p>t-SNE übersetzt Ähnlichkeiten zwischen Punkten in Wahrscheinlichkeiten, um die
+Struktur hochdimensionaler Daten im niedrigen Raum zu erhalten. Im Folgenden
+eine Schritt-für-Schritt-Erklärung dieses Prozesses:</p>
+<p><strong>1. Ähnlichkeit im hochdimensionalen Raum</strong></p>
+<p>Für jeden Punkt <span class="math notranslate nohighlight">\(x_i\)</span> wird berechnet, wie ähnlich er zu jedem anderen
+Punkt <span class="math notranslate nohighlight">\(x_j\)</span> ist. Dies geschieht über eine gaußsche (normalverteilte)
+Wahrscheinlichkeitsfunktion:</p>
+<div class="math notranslate nohighlight">
+\[p_{j|i} = \frac{\exp(-\|x_i - x_j\|^2 / 2\sigma_i^2)}{\sum_{k \neq i} \exp(-\|x_i - x_k\|^2 / 2\sigma_i^2)}\]</div>
+<p>Diese bedingte Wahrscheinlichkeit beschreibt, wie wahrscheinlich es ist, dass
+<span class="math notranslate nohighlight">\(x_i\)</span> den Punkt <span class="math notranslate nohighlight">\(x_j\)</span> als seinen Nachbarn „auswählen“ würde.</p>
+<p><strong>2. Symmetrisierung</strong></p>
+<p>Zur Konstruktion einer symmetrischen Ähnlichkeitsmatrix wird folgender Ausdruck
+verwendet:</p>
+<div class="math notranslate nohighlight">
+\[p_{ij} = \frac{p_{j|i} + p_{i|j}}{2N}\]</div>
+<p>Dabei ist <span class="math notranslate nohighlight">\(N\)</span> die Gesamtzahl der Punkte. So entsteht eine symmetrische
+Verteilung <span class="math notranslate nohighlight">\(P\)</span> über alle Punktpaare.</p>
+<p><strong>3. Ähnlichkeit im niedrigdimensionalen Raum</strong></p>
+<p>Im niedrigdimensionalen Raum (z. B. 2D) wird eine ähnliche
+Wahrscheinlichkeitsverteilung <span class="math notranslate nohighlight">\(q_{ij}\)</span> erzeugt – jedoch auf Basis einer
+Student-t-Verteilung mit einem Freiheitsgrad:</p>
+<div class="math notranslate nohighlight">
+\[q_{ij} = \frac{(1 + \|y_i - y_j\|^2)^{-1}}{\sum_{k \ne l}(1 + \|y_k - y_l\|^2)^{-1}}\]</div>
+<p>Die Punkte <span class="math notranslate nohighlight">\(y_i\)</span> und <span class="math notranslate nohighlight">\(y_j\)</span> repräsentieren die Projektionen von
+<span class="math notranslate nohighlight">\(x_i\)</span> und <span class="math notranslate nohighlight">\(x_j\)</span> im niedrigdimensionalen Raum.</p>
+<p><strong>4. Optimierung mittels Kullback-Leibler-Divergenz</strong></p>
+<p>t-SNE minimiert den Unterschied zwischen den Verteilungen <span class="math notranslate nohighlight">\(P\)</span> und
+<span class="math notranslate nohighlight">\(Q\)</span> mithilfe der Kullback-Leibler-Divergenz:</p>
+<div class="math notranslate nohighlight">
+\[KL(P \| Q) = \sum_{i \ne j} p_{ij} \log \left( \frac{p_{ij}}{q_{ij}} \right)\]</div>
+<p>Eine kleine Divergenz bedeutet, dass die Struktur des hochdimensionalen Raums
+im niedrigdimensionalen Raum gut erhalten wurde.</p>
+<p><strong>Fazit</strong></p>
+<p>Die Wahrscheinlichkeiten dienen als Maß für „Nachbarschaft“ und bilden die
+Grundlage dafür, dass t-SNE lokal ähnliche Strukturen korrekt in 2D oder 3D
+darstellt.</p>
+<p>Da t-SNE die Kullback-Leibler-Divergenz zwischen den Wahrscheinlichkeitsverteilungen
+<span class="math notranslate nohighlight">\(P\)</span> und <span class="math notranslate nohighlight">\(Q\)</span> minimiert, handelt es sich im Kern um ein
+<strong>Gradientenabstiegsverfahren</strong>. Die Positionen der Punkte im niedrigdimensionalen
+Raum werden iterativ so angepasst, dass die Divergenz möglichst klein wird.</p>
+<p>Dies hat zwei wichtige Konsequenzen:</p>
+<ul class="simple">
+<li><p><strong>Initialisierungsabhängigkeit</strong>: Da der Gradientenabstieg ein lokales Optimierungsverfahren ist,
+kann das Ergebnis stark von der zufälligen Initialisierung abhängen. Unterschiedliche Läufe
+mit verschiedenen Seeds können zu unterschiedlichen Visualisierungen führen.</p></li>
+<li><p><strong>Konsistenz über Zeitreihen</strong>: Möchte man t-SNE für mehrere aufeinanderfolgende Zeitpunkte
+(z. B. bei sich entwickelnden Daten) einsetzen und dabei visuelle Konsistenz bewahren, empfiehlt
+es sich, die t-SNE-Positionen des vorherigen Zeitschritts als <strong>Initialisierung</strong> für den nächsten
+Zeitschritt zu verwenden. Dadurch wird verhindert, dass sich Cluster durch reine Neuberechnung
+verschieben oder auseinanderfallen.</p></li>
+</ul>
+<p>Um die Vergleichbarkeit der t-SNE-Visualisierungen über verschiedene Trainingsschritte zusätzlich zu verbessern
+normalisieren wir die 2D-Embeddings zusätzlich, sodass sie einen Mittelwert von 0 und eine Standardabweichung von 1 haben.</p>
+<p>Implementieren Sie nun die Methode <cite>embeddings.calculate_tsne</cite>, die die t-SNE-Visualisierung der Embedding Vektoren erstellt.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="embeddings.EmbeddingLogger.calculate_tsne">
+<span class="sig-prename descclassname"><span class="pre">EmbeddingLogger.</span></span><span class="sig-name descname"><span class="pre">calculate_tsne</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embeddings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_embeddings_2d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/embeddings.html#EmbeddingLogger.calculate_tsne"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#embeddings.EmbeddingLogger.calculate_tsne" title="Link to this definition"></a></dt>
+<dd><p>Berechnet das t-SNE-Modell für die Embeddings.</p>
+<section id="id2">
+<h3>Parameters:<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>embeddings (np.ndarray):</dt><dd><p>Die Embeddings, die in 2D projiziert werden sollen.</p>
+</dd>
+</dl>
+</section>
+<section id="id3">
+<h3>Returns:<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>embeddings_2d (np.ndarray):</dt><dd><p>Die 2D-Projektion der Embeddings.</p>
+</dd>
+</dl>
+<p><strong>TODO</strong>:</p>
+<ul class="simple">
+<li><p>Verwenden Sie <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html">sklearn.manifold.TSNE</a> um die Embeddings in 2D zu projizieren.
+Setzen Sie <cite>n_components=2</cite> und verwenden Sie <cite>init=“pca“</cite> für die Initialisierung.
+Wenn <cite>self.previous_embeddings_2d</cite> nicht <cite>None</cite> ist, verwenden Sie stattdessen diese als Initialisierung.</p></li>
+<li><p>Konvertieren Sie die 2D-Embeddings in ein <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html">NumPy-Array</a> mit <cite>dtype=np.float32</cite>.</p></li>
+<li><p>Normalisieren Sie die 2D-Embeddings, indem Sie den Mittelwert und die Standardabweichung berechnen und
+die Embeddings so transformieren, dass sie einen Mittelwert von 0 und eine Standardabweichung von 1 haben.</p></li>
+<li><p>Verwenden Sie <a class="reference external" href="https://numpy.org/doc/2.2/reference/generated/numpy.mean.html">np.mean(embeddings_2d, axis=0, keepdims=True)</a> für den Mittelwert und <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.std.html">np.std(embeddings_2d, axis=0, keepdims=True)</a> für die Standardabweichung.</p></li>
+<li><p>Normalisieren Sie die Embeddings mit <cite>(embeddings_2d - m) / s</cite>, wobei <cite>m</cite> der Mittelwert und <cite>s</cite> die Standardabweichung ist.</p></li>
+<li><p>Geben Sie die normalisierten 2D-Embeddings zurück.</p></li>
+</ul>
+</section>
+</dd></dl>
+
+<div class="toggle admonition">
+<p class="admonition-title">Lösung anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">calculate_tsne</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">,</span> <span class="n">previous_embeddings_2d</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">previous_embeddings_2d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+    <span class="n">tsne_model</span> <span class="o">=</span> <span class="n">TSNE</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="n">previous_embeddings_2d</span><span class="p">)</span>
+    <span class="k">else</span><span class="p">:</span>
+        <span class="n">tsne_model</span> <span class="o">=</span> <span class="n">TSNE</span><span class="p">(</span><span class="n">n_components</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">init</span><span class="o">=</span><span class="s2">&quot;pca&quot;</span><span class="p">)</span>
+
+    <span class="n">embeddings_2d</span> <span class="o">=</span> <span class="n">tsne_model</span><span class="o">.</span><span class="n">fit_transform</span><span class="p">(</span><span class="n">embeddings</span><span class="p">)</span>
+
+    <span class="n">embeddings_2d</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">array</span><span class="p">(</span><span class="n">embeddings_2d</span><span class="p">,</span> <span class="n">dtype</span><span class="o">=</span><span class="n">np</span><span class="o">.</span><span class="n">float32</span><span class="p">)</span>
+    <span class="n">m</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">embeddings_2d</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Normalize to zero mean</span>
+    <span class="n">s</span> <span class="o">=</span> <span class="n">np</span><span class="o">.</span><span class="n">std</span><span class="p">(</span><span class="n">embeddings_2d</span><span class="p">,</span> <span class="n">axis</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdims</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># Normalize to unit variance</span>
+    <span class="n">embeddings_2d</span> <span class="o">=</span> <span class="p">(</span><span class="n">embeddings_2d</span> <span class="o">-</span> <span class="n">m</span><span class="p">)</span> <span class="o">/</span> <span class="n">s</span>  <span class="c1"># Normalize the embeddings</span>
+
+    <span class="k">return</span> <span class="n">embeddings_2d</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="aufgabe-3-die-alte-und-neue-punktwolke-gegeneinander-registrieren">
+<h2><strong>Aufgabe 3</strong>: Die alte und neue Punktwolke gegeneinander registrieren<a class="headerlink" href="#aufgabe-3-die-alte-und-neue-punktwolke-gegeneinander-registrieren" title="Link to this heading"></a></h2>
+<p>Selbst wenn die t-SNE-Projektion für einen neuen Zeitschritt mit der
+niedrigdimensionalen Einbettung des vorherigen Zeitschritts initialisiert wird,
+kann es während der Optimierung trotzdem zu signifikanten Transformationen
+kommen – insbesondere zu <strong>Spiegelungen oder Rotationen</strong> der gesamten
+Punktwolke (z. B. einer Drehung um 180°).</p>
+<p>Solche Transformationen verändern die relative Struktur der Daten nicht,
+können aber bei der Darstellung über mehrere Zeitpunkte hinweg zu <strong>visuell
+instabilen oder springenden Animationen</strong> führen.</p>
+<p>Um diese Instabilität zu beheben, empfiehlt es sich, im Anschluss an die
+t-SNE-Projektion eine <strong>optimale Rotationsmatrix</strong> zu berechnen, die die neue
+Punktwolke möglichst gut an die vorherige „anpasst“. Dieser Schritt wird
+häufig mit einem Verfahren wie der <a class="reference external" href="https://en.wikipedia.org/wiki/Procrustes_analysis">Prokrustes-Analyse</a> realisiert.</p>
+<p>Die Rotation hat dabei folgende Vorteile:</p>
+<ul class="simple">
+<li><p>Sie <strong>registriert</strong> die Punktwolken über die Zeit, also bringt sie in
+bestmögliche Übereinstimmung.</p></li>
+<li><p>Sie reduziert ungewollte globale Effekte (z. B. „Kippen“, „Drehen“ oder
+„Flackern“).</p></li>
+<li><p>Sie sorgt für eine <strong>glattere, interpretierbarere Darstellung</strong> in dynamischen
+Visualisierungen.</p></li>
+</ul>
+<p>Insbesondere bei Anwendungen mit <strong>zeitabhängigen Daten oder Animationen</strong> (z. B.
+Entwicklung von Clustern über mehrere Iterationen) ist dieser zusätzliche
+Registrierungsschritt entscheidend für die <strong>visuelle Kohärenz</strong>.</p>
+<p>Wir verwenden die Implementierung der Prokrustes-Analyse aus <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.procrustes.html">scipy</a>,
+insbesondere die Funktion <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.orthogonal_procrustes.html">scipy.linalg.orthogonal_procrustes</a>.</p>
+<p>Implementieren Sie nun die Methode <cite>embeddings.register_embeddings_2d</cite>, die die alte und neue Punktwolke gegeneinander registriert.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="embeddings.EmbeddingLogger.register_embeddings_2d">
+<span class="sig-prename descclassname"><span class="pre">EmbeddingLogger.</span></span><span class="sig-name descname"><span class="pre">register_embeddings_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embeddings_2d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_embeddings_2d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/embeddings.html#EmbeddingLogger.register_embeddings_2d"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#embeddings.EmbeddingLogger.register_embeddings_2d" title="Link to this definition"></a></dt>
+<dd><p>Registriert die 2D-Embeddings, um sie mit den vorherigen Embeddings zu vergleichen.</p>
+<section id="id4">
+<h3>Parameters:<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>embeddings_2d (np.ndarray):</dt><dd><p>Die 2D-Embeddings, die registriert werden sollen.</p>
+</dd>
+<dt>previous_embeddings_2d (np.ndarray, optional):</dt><dd><p>Die vorherigen 2D-Embeddings, die für die Registrierung verwendet werden sollen. Standardmäßig None.</p>
+</dd>
+</dl>
+</section>
+<section id="id5">
+<h3>Returns:<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>embeddings_2d (np.ndarray):</dt><dd><p>Die registrierten 2D-Embeddings.</p>
+</dd>
+</dl>
+<p><strong>TODO</strong>:</p>
+<ul class="simple">
+<li><p>Wenn <cite>previous_embeddings_2d</cite> nicht <cite>None</cite> ist, verwenden Sie <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.orthogonal_procrustes.html">scipy.linalg.orthogonal_procrustes</a> um die 2D-Embeddings zu registrieren.
+Dies hilft, die Embeddings so zu transformieren, dass sie mit den vorherigen bestmöglich Embeddings übereinstimmen.</p></li>
+<li><p>Die Funktion liefert die orthogonale Rotationsmatrix <cite>R</cite> und die Skala <cite>s</cite>, aber wir verwenden nur <cite>R</cite>, um die 2D-Embeddings zu transformieren.</p></li>
+<li><p>Transformieren Sie die 2D-Embeddings mit <cite>embeddings_2d &#64; R</cite>, um sie an die vorherigen Embeddings anzupassen.</p></li>
+<li><p>Geben Sie die transformierten 2D-Embeddings zurück.</p></li>
+</ul>
+</section>
+</dd></dl>
+
+<div class="toggle admonition">
+<p class="admonition-title">Lösung anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">register_embeddings_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embeddings_2d</span><span class="p">,</span> <span class="n">previous_embeddings_2d</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">previous_embeddings_2d</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+      <span class="n">R</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">orthogonal_procrustes</span><span class="p">(</span><span class="n">embeddings_2d</span><span class="p">,</span> <span class="n">previous_embeddings_2d</span><span class="p">)</span>
+      <span class="n">embeddings_2d</span> <span class="o">=</span> <span class="n">embeddings_2d</span> <span class="o">@</span> <span class="n">R</span>
+
+    <span class="k">return</span> <span class="n">embeddings_2d</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="aufgabe-4-die-embeddings-visualisieren">
+<h2><strong>Aufgabe 4</strong>: Die Embeddings visualisieren<a class="headerlink" href="#aufgabe-4-die-embeddings-visualisieren" title="Link to this heading"></a></h2>
+<p>Nachdem wir die Embedding Vektoren extrahiert und die t-SNE-Visualisierung erstellt haben, können wir die Embeddings visualisieren.
+Dazu verwenden wir <a class="reference external" href="https://seaborn.pydata.org/generated/seaborn.scatterplot.html">seaborn.scatterplot</a> und Matplotlib, um die 2D-Embeddings zu
+plotten und die Labels der Bilder anzuzeigen.</p>
+<p>Implementieren Sie nun die Methode <cite>embeddings.visualize_embeddings</cite>, die die Embeddings visualisiert.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="embeddings.EmbeddingLogger.visualize_embeddings">
+<span class="sig-prename descclassname"><span class="pre">EmbeddingLogger.</span></span><span class="sig-name descname"><span class="pre">visualize_embeddings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embeddings_2d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/embeddings.html#EmbeddingLogger.visualize_embeddings"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#embeddings.EmbeddingLogger.visualize_embeddings" title="Link to this definition"></a></dt>
+<dd><p>Visualisiert die 2D-Embeddings mit t-SNE und speichert das Bild.</p>
+<section id="id7">
+<h3>Parameters:<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>embeddings_2d (np.ndarray):</dt><dd><p>Die 2D-Embeddings, die visualisiert werden sollen.</p>
+</dd>
+<dt>labels (np.ndarray):</dt><dd><p>Die zugehörigen Labels für die Embeddings.</p>
+</dd>
+<dt>step (int):</dt><dd><p>Der aktuelle Schritt oder die Epoche, die für den Titel des Plots verwendet wird.</p>
+</dd>
+<dt>axs (matplotlib.axes.Axes):</dt><dd><p>Die Achsen, auf denen die Embeddings visualisiert werden sollen.</p>
+</dd>
+</dl>
+<p><strong>TODO</strong>:</p>
+<ul class="simple">
+<li><p>Erstellen Sie mit Pandas ein DataFrame mit den 2D-Embeddings und den zugehörigen Labels,
+um die Daten für die Visualisierung vorzubereiten.</p></li>
+<li><p>Verwenden Sie <a class="reference external" href="https://seaborn.pydata.org/generated/seaborn.scatterplot.html">seaborn.scatterplot</a> um die 2D-Embeddings zu visualisieren.</p></li>
+<li><p>Setzen Sie die Achsenlimits auf (-3.0, 3.0) für beide Achsen, um eine konsistente Darstellung zu gewährleisten.</p></li>
+<li><p>Entfernen Sie die Legende (<cite>axs.get_legend().remove()</cite>), um den Plot übersichtlicher zu gestalten.</p></li>
+<li><p>Setzen Sie den Titel des Plots sinnvoll.</p></li>
+</ul>
+</section>
+</dd></dl>
+
+<div class="toggle admonition">
+<p class="admonition-title">Lösung anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">visualize_embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embeddings_2d</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">axs</span><span class="p">):</span>
+    <span class="n">df</span> <span class="o">=</span> <span class="n">pd</span><span class="o">.</span><span class="n">DataFrame</span><span class="p">(</span>
+        <span class="p">{</span><span class="s2">&quot;x&quot;</span><span class="p">:</span> <span class="n">embeddings_2d</span><span class="p">[:,</span> <span class="mi">0</span><span class="p">],</span> <span class="s2">&quot;y&quot;</span><span class="p">:</span> <span class="n">embeddings_2d</span><span class="p">[:,</span> <span class="mi">1</span><span class="p">],</span> <span class="s2">&quot;label&quot;</span><span class="p">:</span> <span class="n">labels</span><span class="p">}</span>
+    <span class="p">)</span>
+
+    <span class="n">sns</span><span class="o">.</span><span class="n">scatterplot</span><span class="p">(</span><span class="n">data</span><span class="o">=</span><span class="n">df</span><span class="p">,</span> <span class="n">x</span><span class="o">=</span><span class="s2">&quot;x&quot;</span><span class="p">,</span> <span class="n">y</span><span class="o">=</span><span class="s2">&quot;y&quot;</span><span class="p">,</span> <span class="n">hue</span><span class="o">=</span><span class="s2">&quot;label&quot;</span><span class="p">,</span> <span class="n">palette</span><span class="o">=</span><span class="s2">&quot;muted&quot;</span><span class="p">,</span> <span class="n">ax</span><span class="o">=</span><span class="n">axs</span><span class="p">)</span>
+    <span class="n">axs</span><span class="o">.</span><span class="n">set_xlim</span><span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)</span>
+    <span class="n">axs</span><span class="o">.</span><span class="n">set_ylim</span><span class="p">(</span><span class="o">-</span><span class="mf">3.0</span><span class="p">,</span> <span class="mf">3.0</span><span class="p">)</span>
+    <span class="n">axs</span><span class="o">.</span><span class="n">get_legend</span><span class="p">()</span><span class="o">.</span><span class="n">remove</span><span class="p">()</span>
+    <span class="n">axs</span><span class="o">.</span><span class="n">set_title</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;t-SNE Embedding Projection - Step </span><span class="si">{</span><span class="n">step</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<p>Starten Sie nun das Training des ResNet-Modells und beobachten Sie die Entwicklung der Embedding Vektoren, z.B. im
+<a class="reference external" href="http://127.0.0.1:6006">TensorBoard-Interface</a> oder im Unterordner <cite>embeddings/imagess</cite> des Projekts.</p>
+</section>
+<section id="musterlosung">
+<h2><strong>Musterlösung</strong>:<a class="headerlink" href="#musterlosung" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="source.html"><span class="doc">Musterlösung für die Embeddings</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../resnet/index.html" class="btn btn-neutral float-left" title="ResNet" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Prof. Dr. Dennis Müller.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

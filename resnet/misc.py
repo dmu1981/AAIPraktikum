@@ -30,6 +30,7 @@ validation_transform = transforms.Compose(
     [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
 )
 
+
 class TensorBoardLogger:
     def __init__(self):
         """
@@ -47,7 +48,7 @@ class TensorBoardLogger:
 
     def _reset_metrics(self):
         """Setzt die Metriken zurück."""
-        self.metrics = { "total_loss": 0.0, "total_correct": 0.0, "total_samples": 0 }
+        self.metrics = {"total_loss": 0.0, "total_correct": 0.0, "total_samples": 0}
 
     def _reset_samples_statistics(self):
         """Setzt die Statistik der Samples zurück."""
@@ -78,10 +79,10 @@ class TensorBoardLogger:
         loss = self.metrics["total_loss"] / self.metrics["total_samples"]
         accuracy = self.metrics["total_correct"] / self.metrics["total_samples"]
 
-        tag = "train" if train else "validation"        
+        tag = "train" if train else "validation"
         self.writer.add_scalar(f"{tag}/loss", loss, step)
         self.writer.add_scalar(f"{tag}/accuracy", accuracy, step)
-        
+
         self._reset_metrics()
 
     def log_sample_statistics(self, train, step):
@@ -102,7 +103,7 @@ class TensorBoardLogger:
                 grid,
                 global_step=step,
             )
-        
+
         # Setze die Statistik der Samples zurück
         self._reset_samples_statistics()
 
@@ -142,6 +143,7 @@ class TensorBoardLogger:
             self.sample_statistics[cls_id]["loss"] = self.sample_statistics[cls_id][
                 "loss"
             ][sorted_indices]
+
 
 def load_data():
     # TODO: Laden der CIFAR-10-Daten
@@ -216,7 +218,7 @@ def epoch(
         total_samples += data.size(0)
 
         bar.set_description(
-            f"Epoch {n} ({'T' if train else 'V'})"#, Loss: {total_loss / total_samples:.4f}, Accuracy: {total_correct / total_samples:.2%}"
+            f"Epoch {n} ({'T' if train else 'V'})"  # , Loss: {total_loss / total_samples:.4f}, Accuracy: {total_correct / total_samples:.2%}"
         )
 
         # Loggen der Metriken nach einer bestimmten Anzahl von Samples (nur fürs Trainingsset)
@@ -227,7 +229,6 @@ def epoch(
                 train,
             )
 
-            
             total_samples = 0
 
     # Always output smth. at the end of the epoch
@@ -238,7 +239,7 @@ def epoch(
         )
         logger.log_sample_statistics(train, n * len(dataloader.dataset) + counter)
 
-          
+
 def save_checkpoint(model, optimizer, epoch, filename="checkpoint.pth"):
     """Speichert den aktuellen Zustand des Modells und des Optimierers in einer Datei."""
     torch.save(

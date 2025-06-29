@@ -19,3 +19,4 @@ Das dazugehörige Repository finden Sie auf `GitHub <https://github.com/dmu1981/
    Checkpoints <../checkpoints/index>
    Tensor Board <../tensorboard/index>
    ResNet <../resnet/index>
+   Embeddings <../embeddings/index>

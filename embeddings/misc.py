@@ -30,6 +30,81 @@ validation_transform = transforms.Compose(
     [transforms.ToTensor(), transforms.Normalize((0.5, 0.5, 0.5), (0.5, 0.5, 0.5))]
 )
 
+class ResidualBlock(nn.Module):
+    def __init__(self, in_channels, out_channels, stride=1):
+        super(ResidualBlock, self).__init__()
+        self.conv1 = nn.Sequential(
+            nn.Conv2d(
+                in_channels,
+                out_channels,
+                kernel_size=3,
+                padding=1,
+                stride=stride,
+                bias=False,
+            ),
+            nn.BatchNorm2d(out_channels),
+        )
+        self.conv2 = nn.Sequential(
+            nn.Conv2d(out_channels, out_channels, kernel_size=3, padding=1, bias=False),
+            nn.BatchNorm2d(out_channels),
+        )
+        self.relu = nn.ReLU(inplace=True)
+
+        # Shortcut connection
+        if stride != 1 or in_channels != out_channels:
+            self.shortcut = nn.Conv2d(
+                in_channels, out_channels, kernel_size=1, stride=stride, bias=False
+            )
+        else:
+            self.shortcut = nn.Identity()
+
+    def forward(self, x):
+        residual = self.shortcut(x)
+        out = self.relu(self.conv1(x))
+        out = self.relu(self.conv2(out) + residual)
+        return out
+
+
+class ResNet(nn.Module):
+    def __init__(self, num_classes=10):
+        super(ResNet, self).__init__()
+
+        # Initlal block
+        self.layer0 = nn.Sequential(
+            nn.Conv2d(3, 32, kernel_size=7, padding=3, stride=2, bias=False),
+            nn.BatchNorm2d(32),
+            nn.ReLU(inplace=True),
+        )
+
+        # Residual blocks
+        self.layer1 = self.make_layer(32, 32, 6, 1)
+        self.layer2 = self.make_layer(32, 64, 6, 2)
+        self.layer3 = self.make_layer(64, 128, 12, 2)
+
+        # Average pooling and fully connected layer
+        self.avgpool = nn.AvgPool2d((4, 4))
+        self.fc = nn.Linear(128, num_classes)
+
+    def make_layer(self, in_channels, out_channels, num_blocks, stride):
+        strides = [stride] + [1] * (num_blocks - 1)
+        layers = []
+        for s in strides:
+            layers.append(ResidualBlock(in_channels, out_channels, s))
+            in_channels = out_channels
+
+        return nn.Sequential(*layers)
+
+    def forward(self, x):
+        x = self.layer0(x)
+        x = self.layer1(x)
+        x = self.layer2(x)
+        x = self.layer3(x)
+        x = self.avgpool(x)
+        emb = torch.flatten(x, 1)
+        x = self.fc(emb)
+        return x, emb
+
+
 class TensorBoardLogger:
     def __init__(self):
         """
@@ -47,7 +122,7 @@ class TensorBoardLogger:
 
     def _reset_metrics(self):
         """Setzt die Metriken zurück."""
-        self.metrics = { "total_loss": 0.0, "total_correct": 0.0, "total_samples": 0 }
+        self.metrics = {"total_loss": 0.0, "total_correct": 0.0, "total_samples": 0}
 
     def _reset_samples_statistics(self):
         """Setzt die Statistik der Samples zurück."""
@@ -78,10 +153,10 @@ class TensorBoardLogger:
         loss = self.metrics["total_loss"] / self.metrics["total_samples"]
         accuracy = self.metrics["total_correct"] / self.metrics["total_samples"]
 
-        tag = "train" if train else "validation"        
+        tag = "train" if train else "validation"
         self.writer.add_scalar(f"{tag}/loss", loss, step)
         self.writer.add_scalar(f"{tag}/accuracy", accuracy, step)
-        
+
         self._reset_metrics()
 
     def log_sample_statistics(self, train, step):
@@ -102,7 +177,7 @@ class TensorBoardLogger:
                 grid,
                 global_step=step,
             )
-        
+
         # Setze die Statistik der Samples zurück
         self._reset_samples_statistics()
 
@@ -142,6 +217,7 @@ class TensorBoardLogger:
             self.sample_statistics[cls_id]["loss"] = self.sample_statistics[cls_id][
                 "loss"
             ][sorted_indices]
+
 
 def load_data():
     # TODO: Laden der CIFAR-10-Daten
@@ -216,7 +292,7 @@ def epoch(
         total_samples += data.size(0)
 
         bar.set_description(
-            f"Epoch {n} ({'T' if train else 'V'})"#, Loss: {total_loss / total_samples:.4f}, Accuracy: {total_correct / total_samples:.2%}"
+            f"Epoch {n} ({'T' if train else 'V'})"  # , Loss: {total_loss / total_samples:.4f}, Accuracy: {total_correct / total_samples:.2%}"
         )
 
         # Loggen der Metriken nach einer bestimmten Anzahl von Samples (nur fürs Trainingsset)
@@ -227,8 +303,8 @@ def epoch(
                 train,
             )
 
-            logger.log_embeddings(model, n * len(dataloader.dataset) + counter)
-            
+            logger.log_embeddings(model)
+
             total_samples = 0
 
     # Always output smth. at the end of the epoch
@@ -240,8 +316,9 @@ def epoch(
         logger.log_sample_statistics(train, n * len(dataloader.dataset) + counter)
 
         if not train:
-          logger.log_embeddings(model, n * len(dataloader.dataset) + counter)
-          
+            logger.log_embeddings(model)
+
+
 def save_checkpoint(model, optimizer, epoch, filename="checkpoint.pth"):
     """Speichert den aktuellen Zustand des Modells und des Optimierers in einer Datei."""
     torch.save(
