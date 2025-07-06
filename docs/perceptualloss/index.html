@@ -1,0 +1,730 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Perceptual Loss &mdash; Advances in AI Praktikum  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+
+  
+    <link rel="canonical" href="https://dmu1981.github.io/MPTPraktikum/perceptualloss/index.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=245627df"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script src="../_static/translations.js?v=79cc9f76"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script async="async" src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../genindex.html" />
+    <link rel="search" title="Suche" href="../search.html" />
+    <link rel="prev" title="Embedding Vectors" href="../embeddings/index.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Advances in AI Praktikum
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Aufgaben:</span></p>
+<ul class="current">
+<li class="toctree-l1"><a class="reference internal" href="../pytorch/index.html">PyTorch - Grundlagen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pytorch/cnn.html">Convolutional Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../checkpoints/index.html">Checkpoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensorboard/index.html">Tensor Board</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resnet/index.html">ResNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../embeddings/index.html">Embeddings</a></li>
+<li class="toctree-l1 current"><a class="current reference internal" href="#">Perceptual Loss</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#vgg16">VGG16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#perceptual-loss-mit-vgg16">Perceptual Loss mit VGG16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#image-upscaling">Image Upscaling</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#lpips-ein-masz-fur-wahrgenommene-bildqualitat">LPIPS: Ein Maß für wahrgenommene Bildqualität</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#psnr-klassisches-masz-zur-bildqualitat">PSNR: Klassisches Maß zur Bildqualität</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-1-perceptual-loss-implementieren"><strong>Aufgabe 1</strong>: Perceptual Loss implementieren</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#perceptual.VGG16PerceptualLoss"><code class="docutils literal notranslate"><span class="pre">VGG16PerceptualLoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#perceptual.VGG16PerceptualLoss.__init__"><code class="docutils literal notranslate"><span class="pre">VGG16PerceptualLoss.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#perceptual.VGG16PerceptualLoss.forward"><code class="docutils literal notranslate"><span class="pre">VGG16PerceptualLoss.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-2-super-resolution-cnn-definieren"><strong>Aufgabe 2</strong>: Super-Resolution CNN definieren</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#perceptualloss.misc.ResNetBlock.__init__"><code class="docutils literal notranslate"><span class="pre">ResNetBlock.__init__()</span></code></a></li>
+<li class="toctree-l3"><a class="reference internal" href="#upscale2x.Upscale2x"><code class="docutils literal notranslate"><span class="pre">Upscale2x</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#upscale2x.Upscale2x.__init__"><code class="docutils literal notranslate"><span class="pre">Upscale2x.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#upscale2x.Upscale2x.forward"><code class="docutils literal notranslate"><span class="pre">Upscale2x.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-3-super-resolution-mit-perceptual-loss-trainieren"><strong>Aufgabe 3:</strong> Super-Resolution mit Perceptual Loss trainieren</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-4-super-resolution-mit-mse-loss-trainieren"><strong>Aufgabe 4</strong>: Super-Resolution mit MSE-Loss trainieren</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-5-super-resolution-x4"><strong>Aufgabe 5</strong>: Super-Resolution x4</a><ul>
+<li class="toctree-l3"><a class="reference internal" href="#upscale4x.Upscale4x"><code class="docutils literal notranslate"><span class="pre">Upscale4x</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#upscale4x.Upscale4x.__init__"><code class="docutils literal notranslate"><span class="pre">Upscale4x.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#upscale4x.Upscale4x.forward"><code class="docutils literal notranslate"><span class="pre">Upscale4x.forward()</span></code></a></li>
+</ul>
+</li>
+</ul>
+</li>
+<li class="toctree-l2"><a class="reference internal" href="#musterlosung"><strong>Musterlösung</strong></a></li>
+</ul>
+</li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Advances in AI Praktikum</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Perceptual Loss</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/perceptualloss/index.rst.txt" rel="nofollow"> Quelltext anzeigen</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="perceptual-loss">
+<h1>Perceptual Loss<a class="headerlink" href="#perceptual-loss" title="Link to this heading"></a></h1>
+<p>Im Jahr 2016 zeigen Justin Johnson, Alexandre Alahi und Li Fei-Fei in ihrem Paper
+„<a class="reference external" href="https://arxiv.org/pdf/1603.08155.pdf">Perceptual Losses for Real-Time Style Transfer and Super-Resolution</a>“
+die Vorteile von Perceptual Loss für die Bildverarbeitung.
+Sie verwenden vortrainierte Convolutional Neural Networks (CNNs) wie VGG, um Merkmale aus Bildern zu extrahieren und diese Merkmale als Verlustfunktion zu nutzen.
+Perceptual Loss misst die Differenz zwischen den extrahierten Merkmalen von zwei Bildern und ermöglicht so eine bessere Wahrnehmung von Bildinhalten im Vergleich zu
+traditionellen Verlustfunktionen wie dem pixelweisen L1-Verlust (Betragsdifferenz).</p>
+<section id="vgg16">
+<h2>VGG16<a class="headerlink" href="#vgg16" title="Link to this heading"></a></h2>
+<p>VGG16 ist ein bekanntes Convolutional Neural Network, das ursprünglich für die Bildklassifikation entwickelt wurde.
+Es besteht aus 16 Schichten, die Convolutional-Layer, ReLU-Aktivierungen und Max-Pooling-Schichten enthalten.
+VGG16 wurde auf dem ImageNet-Datensatz trainiert und hat sich als leistungsstark in verschiedenen Computer Vision-Aufgaben erwiesen.
+In diesem Abschnitt werden wir VGG16 verwenden, um Perceptual Loss zu berechnen.</p>
+<a class="reference internal image-reference" href="../_images/vgg16.png"><img alt="../_images/vgg16.png" class="align-center" src="../_images/vgg16.png" style="width: 600px;" />
+</a>
+<p>Das obige Bild zeigt die Architektur von VGG16.
+Wir werden die Aktivierungen aus den Convolutional-Layern verwenden, um Merkmale zu extrahieren,
+die dann für die Berechnung des Perceptual Loss verwendet werden.</p>
+</section>
+<section id="perceptual-loss-mit-vgg16">
+<h2>Perceptual Loss mit VGG16<a class="headerlink" href="#perceptual-loss-mit-vgg16" title="Link to this heading"></a></h2>
+<p>Der Perceptual Loss vergleicht nicht die Pixelwerte direkt, sondern Merkmale (Features),
+die durch ein vortrainiertes neuronales Netzwerk (z. B. VGG16) extrahiert werden.
+Dadurch lässt sich die <em>wahrgenommene</em> Ähnlichkeit zwischen Bildern besser bewerten
+als mit klassischen Fehlermaßen wie MSE.</p>
+<p><strong>Berechnungsschritte</strong></p>
+<ol class="arabic simple">
+<li><p>Zwei Bilder werden als Eingabe verwendet: ein generiertes Bild (Output) und das Zielbild (Ground Truth).</p></li>
+<li><p>Beide Bilder werden durch ein vortrainiertes VGG16-Netzwerk geleitet.</p></li>
+<li><p>Die Aktivierungen aus einer oder mehreren Zwischenebenen (z. B. <code class="docutils literal notranslate"><span class="pre">relu2_2</span></code> oder <code class="docutils literal notranslate"><span class="pre">relu3_3</span></code>) werden extrahiert.</p></li>
+<li><p>Der <strong>L1-Abstand</strong> (Betragsdifferenz) zwischen den entsprechenden Feature-Maps wird berechnet.</p></li>
+<li><p>Der Durchschnitt dieser Abstände ergibt den Perceptual Loss.</p></li>
+</ol>
+<p><strong>Hinweise zur Implementierung</strong></p>
+<ul class="simple">
+<li><p>Das VGG16-Netzwerk wird meist ohne den Klassifikationskopf verwendet (nur bis zu einem bestimmten Layer).</p></li>
+<li><p>Die Gewichte des VGG-Netzes bleiben <em>eingefroren</em> (nicht trainierbar).</p></li>
+</ul>
+<a class="reference internal image-reference" href="../_images/perloss.png"><img alt="../_images/perloss.png" class="align-center" src="../_images/perloss.png" style="width: 600px;" />
+</a>
+<p>Die obige Abbildung zeigt den Prozess der Berechnung des Perceptual Loss.
+Die beiden zu vergleichenden Bilder (<span class="math notranslate nohighlight">\(x\)</span> und <span class="math notranslate nohighlight">\(G(z)\)</span> für Ground Truth und Output) werden durch das
+VGG16-Netzwerk geleitet. Die Aktivierungen aus den Convolutional-Layern werden extrahiert und der L1-Abstand zwischen den
+entsprechenden Feature-Maps wird berechnet.</p>
+</section>
+<section id="image-upscaling">
+<h2>Image Upscaling<a class="headerlink" href="#image-upscaling" title="Link to this heading"></a></h2>
+<p>Die Bildvergrößerung, auch <em>Image Super-Resolution</em> genannt, ist ein zentrales Problem
+in der Computer Vision. Dabei soll aus einem kleinen, niedrig aufgelösten Bild
+eine hochaufgelöste Version rekonstruiert werden – z. B. von 64×64 auf 256×256 Pixel.
+Solche Verfahren sind in vielen Bereichen relevant: von der medizinischen Bildgebung
+über Überwachungskameras bis hin zur Restaurierung alter Fotos.</p>
+<p>Eine der größten Herausforderungen dabei ist, dass die Aufgabe <strong>hochgradig unterbestimmt</strong> ist:
+Aus einem kleinen Bild lassen sich unendlich viele „mögliche“ große Bilder rekonstruieren –
+aber welches ist das <em>richtige</em>?</p>
+<p>Klassische Verfahren nutzen meist den <strong>MSE (Mean Squared Error) Loss</strong>, der versucht,
+die Pixelwerte des rekonstruierten Bildes möglichst genau an das Original anzupassen.
+Doch dieser Ansatz hat einen entscheidenden Nachteil: Er neigt zu <strong>verwaschenen,
+detailarmen Bildern</strong>, da er im Zweifel lieber „mittelt“, um den Fehler zu minimieren.</p>
+<p>Genau hier setzt der <strong>Perceptual Loss</strong> an.</p>
+<p>Statt einzelne Pixel zu vergleichen, bewertet er die <strong>visuelle Ähnlichkeit</strong> auf Basis
+von Merkmalen (Features), die ein vortrainiertes neuronales Netzwerk gelernt hat – also so,
+wie ein Mensch Unterschiede wahrnimmt.</p>
+<p>In dieser Aufgabe wollen wir den Unterschied zwischen MSE und Perceptual Loss bei der Bildvergrößerung herausarbeiten
+und zeigen, wie Perceptual Loss zu deutlich natürlicheren, detailreicheren Ergebnissen führt als klassische
+pixelbasierte Fehlermaße. Am praktischen Beispiel wird dabei deutlich, dass nicht immer der „niedrigste Fehler“
+der menschlich überzeugendste ist – sondern die <em>wahrgenommene Qualität</em> zählt.</p>
+</section>
+<section id="lpips-ein-masz-fur-wahrgenommene-bildqualitat">
+<h2>LPIPS: Ein Maß für wahrgenommene Bildqualität<a class="headerlink" href="#lpips-ein-masz-fur-wahrgenommene-bildqualitat" title="Link to this heading"></a></h2>
+<p>Der <em>Learned Perceptual Image Patch Similarity</em> (LPIPS) Score ist ein modernes
+Fehlermodell zur Bewertung der Ähnlichkeit zwischen zwei Bildern – basierend
+auf menschlicher Wahrnehmung.</p>
+<p>Im Gegensatz zu klassischen Metriken wie PSNR oder MSE vergleicht LPIPS keine
+einzelnen Pixel, sondern Merkmale (<em>Features</em>), die durch ein vortrainiertes
+neuronales Netzwerk (z. B. VGG oder SqueezeNet) extrahiert werden. Dadurch kann LPIPS
+deutlich besser abschätzen, wie „ähnlich“ zwei Bilder für das menschliche Auge wirken.</p>
+<p>Der LPIPS-Wert liegt typischerweise zwischen <code class="docutils literal notranslate"><span class="pre">0</span></code> (identisch) und <code class="docutils literal notranslate"><span class="pre">1</span></code> (stark verschieden).
+Ein <strong>niedriger LPIPS-Score</strong> bedeutet also eine hohe visuelle Ähnlichkeit.</p>
+<p>Gerade bei Aufgaben wie Bildvergrößerung, Stiltransfer oder GAN-Generierung
+ist LPIPS ein wertvolles Werkzeug, um die <em>qualitative</em> Leistung von Modellen
+objektiv zu bewerten – auch wenn klassische Metriken versagen.</p>
+</section>
+<section id="psnr-klassisches-masz-zur-bildqualitat">
+<h2>PSNR: Klassisches Maß zur Bildqualität<a class="headerlink" href="#psnr-klassisches-masz-zur-bildqualitat" title="Link to this heading"></a></h2>
+<p>Der <em>Peak Signal-to-Noise Ratio</em> (PSNR) ist ein weit verbreitetes Maß zur Bewertung
+der Qualität von rekonstruierten Bildern, insbesondere in der Bildkompression
+oder Super-Resolution. Er quantifiziert den Unterschied zwischen einem Originalbild
+und dessen rekonstruiertem Gegenstück, basierend auf dem mittleren quadratischen Fehler (MSE).</p>
+<p>Berechnet wird PSNR folgendermaßen:</p>
+<div class="math notranslate nohighlight">
+\[\text{PSNR} = 20 \cdot \log_{10} \left( \frac{\text{MAX}}{\sqrt{\text{MSE}}} \right)\]</div>
+<p>Dabei ist <code class="docutils literal notranslate"><span class="pre">MAX</span></code> der maximale darstellbare Pixelwert (z. B. 1.0 bei normalisierten Bildern oder 255 bei 8-Bit-Graustufenbildern). Ein höherer PSNR-Wert deutet auf eine geringere Abweichung vom Originalbild hin – und damit auf eine bessere Qualität.</p>
+<p><strong>Einschränkungen</strong></p>
+<p>Trotz seiner weiten Verbreitung hat PSNR entscheidende Schwächen:
+Er korreliert <strong>nicht gut mit der menschlichen Wahrnehmung</strong>. Zwei Bilder mit hohem
+PSNR können dennoch visuell sehr unterschiedlich wirken, insbesondere bei Texturen oder
+feinen Details. Deshalb wird PSNR oft durch wahrnehmungsorientierte Metriken wie
+LPIPS oder SSIM ergänzt.</p>
+<p>In dieser Arbeit wird PSNR als Referenzmaß genutzt, um klassische Fehlermaße mit
+perzeptuell motivierten Alternativen zu vergleichen.</p>
+</section>
+<section id="aufgabe-1-perceptual-loss-implementieren">
+<h2><strong>Aufgabe 1</strong>: Perceptual Loss implementieren<a class="headerlink" href="#aufgabe-1-perceptual-loss-implementieren" title="Link to this heading"></a></h2>
+<p>In dieser Aufgabe implementieren Sie den Perceptual Loss unter Verwendung des VGG16-Netzwerks.</p>
+<p>Sie arbeiten in der Datei <code class="file docutils literal notranslate"><span class="pre">perceptualloss/perceptual.py</span></code>.</p>
+<p>Zunächst müssen Sie das VGG16-Netzwerk laden und die erforderlichen Layer extrahieren.
+Verwenden Sie dazu die <cite>torchvision.models</cite>-Bibliothek, um das vortrainierte VGG16-Modell zu laden.
+Wir werden nur bestimmte Layer des VGG16-Netzwerks verwenden, um die Merkmale zu extrahieren,</p>
+<p>Das VGG16-Netzwerk ist in PyTorch bereits vortrainiert und kann direkt verwendet werden.
+Sie können es mit <cite>torchvision.models.vgg16(pretrained=True)</cite> laden.
+Eine Liste mit allen Features können Sie mit <cite>model.features</cite> abrufen.</p>
+<p>Deaktiveren Sie die Gradientenberechnung für das VGG16-Netzwerk, da wir es nicht trainieren wollen.
+Setzen Sie dazu <cite>requires_grad</cite> auf <cite>False</cite> für alle Parameter des Modells.</p>
+<p>Achten Sie beim Vorwärts-Pass darauf, dass die Eingabebilder auf die Größe 224x224 skaliert werden,
+da VGG16 auf dieser Größe trainiert wurde. Verwenden Sie dazu <cite>torch.nn.functional.interpolate</cite>.</p>
+<p>Implementieren Sie nun die Klasse <cite>VGG16PerceptualLoss</cite> in der Datei <cite>perceptualloss/perceptual.py</cite>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="perceptual.VGG16PerceptualLoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">perceptual.</span></span><span class="sig-name descname"><span class="pre">VGG16PerceptualLoss</span></span><a class="reference internal" href="../_modules/perceptual.html#VGG16PerceptualLoss"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#perceptual.VGG16PerceptualLoss" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="perceptual.VGG16PerceptualLoss.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptual.html#VGG16PerceptualLoss.__init__"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#perceptual.VGG16PerceptualLoss.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the VGG16 perceptual loss model.</p>
+<p>It computes the perceptual loss as the mean squared error between the features.</p>
+<p>The model is set to evaluation mode and the parameters are frozen.</p>
+<p><strong>TODO</strong>:</p>
+<ul class="simple">
+<li><p>Load the VGG16 model with pretrained weights. Use <cite>torchvision.models.vgg16(pretrained=True)</cite>.</p></li>
+<li><p>Restrict the VGG16 model to the first 16 layers by using <cite>self.vgg = vgg16(pretrained=True).features[:16]</cite>.</p></li>
+<li><p>Set the model to evaluation mode using <cite>.eval()</cite>.</p></li>
+<li><p>Freeze the parameters of the VGG16 model by setting <cite>param.requires_grad = False</cite> for all parameters.
+NOTE: Iterate through all parameters by using the <cite>self.vgg.parameters()</cite>-Iterator.</p></li>
+<li><p>Initialize the L2 loss function using <cite>nn.MSELoss()</cite>.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="perceptual.VGG16PerceptualLoss.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">output</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">target</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptual.html#VGG16PerceptualLoss.forward"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#perceptual.VGG16PerceptualLoss.forward" title="Link to this definition"></a></dt>
+<dd><p>Compute the perceptual loss between two images.</p>
+<section id="parameters">
+<h3>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt>output (torch.Tensor):</dt><dd><p>The output image tensor from the upscaler network.</p>
+</dd>
+<dt>target (torch.Tensor):</dt><dd><p>The target image tensor from ground truth.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="returns">
+<h3>Returns:<a class="headerlink" href="#returns" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt>torch.Tensor:</dt><dd><p>The computed perceptual loss as the mean squared error between the features of the two images.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p><strong>TODO</strong>:</p>
+<ul class="simple">
+<li><p>Resize <cite>output</cite> and <cite>target</cite> to 224x224 using <cite>torch.nn.functional.interpolate()</cite>. Use <cite>mode=‘bilinear‘</cite> and <cite>align_corners=False</cite>.</p></li>
+<li><p>Pass <cite>output</cite> through the VGG16 model to get the features <cite>f1</cite>.</p></li>
+<li><p>Pass <cite>target</cite> through the VGG16 model to get the features <cite>f2</cite>. Note: You should use <cite>torch.no_grad()</cite> to avoid computing gradients for the target image.</p></li>
+<li><p>Compute and return the L2 loss between <cite>f1</cite> and <cite>f2</cite> using <cite>self.l2_loss(f1, f2)</cite>.</p></li>
+</ul>
+</section>
+</dd></dl>
+
+</dd></dl>
+
+<div class="toggle admonition">
+<p class="admonition-title">Musterlösung für den Konstruktur __init__ anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">VGG16PerceptualLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+    <span class="nb">super</span><span class="p">(</span><span class="n">VGG16PerceptualLoss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+    <span class="bp">self</span><span class="o">.</span><span class="n">vgg</span> <span class="o">=</span> <span class="n">vgg16</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">features</span><span class="p">[:</span><span class="mi">16</span><span class="p">]</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+
+    <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vgg</span><span class="o">.</span><span class="n">parameters</span><span class="p">():</span>
+        <span class="n">param</span><span class="o">.</span><span class="n">requires_grad</span> <span class="o">=</span> <span class="kc">False</span>
+
+    <span class="bp">self</span><span class="o">.</span><span class="n">l1_loss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">L1Loss</span><span class="p">()</span>
+</pre></div>
+</div>
+</div>
+<div class="toggle admonition">
+<p class="admonition-title">Musterlösung für den Forward-Pass anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+   <span class="n">output</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;bilinear&#39;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+   <span class="n">target</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;bilinear&#39;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+   <span class="n">f1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vgg</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+
+   <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+    <span class="n">f2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vgg</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+
+   <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">l1_loss</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="aufgabe-2-super-resolution-cnn-definieren">
+<h2><strong>Aufgabe 2</strong>: Super-Resolution CNN definieren<a class="headerlink" href="#aufgabe-2-super-resolution-cnn-definieren" title="Link to this heading"></a></h2>
+<p>In dieser Aufgabe implementieren Sie ein einfaches Super-Resolution CNN welches wir später mit dem Perceptual Loss trainieren werden.</p>
+<p>Wir verwenden eine Abwandlung der ResNet-Blöcke aus den vorherigen Aufgaben, um ein Super-Resolution-Netzwerk zu erstellen.</p>
+<p>Ein einzelner ResNet-Block wird dabei wie folgt aussehen:</p>
+<a class="reference internal image-reference" href="../_images/resblock.png"><img alt="../_images/resblock.png" class="align-center" src="../_images/resblock.png" style="width: 600px;" />
+</a>
+<p>Der ResNet-Block ist bereits implementiert und kann verwendet werden.</p>
+<dl class="py method">
+<dt class="sig sig-object py" id="perceptualloss.misc.ResNetBlock.__init__">
+<span class="sig-prename descclassname"><span class="pre">ResNetBlock.</span></span><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptualloss/misc.html#ResNetBlock.__init__"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#perceptualloss.misc.ResNetBlock.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialisiert einen ResNet-Block mit zwei Convolutional-Schichten, Batch-Normalisierung und ReLU-Aktivierung.</p>
+<section id="id1">
+<h3>Parameters:<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<dl class="simple">
+<dt>in_channels (int):</dt><dd><p>Anzahl der Eingabekanäle.</p>
+</dd>
+<dt>out_channels (int):</dt><dd><p>Anzahl der Ausgabekanäle.</p>
+</dd>
+<dt>kernel_size (int, optional):</dt><dd><p>Größe des Convolutional-Kernels. Standard ist 9.</p>
+</dd>
+<dt>padding (int, optional):</dt><dd><p>Padding für die Convolutional-Schichten. Standard ist None. In dem Fall wird das Padding automatisch berechnet, so dass die Ausgabe die gleiche Größe wie die Eingabe hat.</p>
+</dd>
+</dl>
+</section>
+</dd></dl>
+
+<p>Die Größe der Faltungsmasken variert dabei je nach Block. Das Padding wird stets so gewählt, dass die räumliche
+Dimension der Eingabe gleich bleibt. Die Batch-Normalization-Schichten wurden hinter die nicht-linearität geschoben,
+um normalisierte Aktivierungen zu erhalten. Die Shortcut-Verbindung passt die Dimension der Eingabe an die des Outputs an.</p>
+<p>Wir werden <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Upsample.html">torch.nn.Upsample</a>
+zum Hochskalierung der Eingabe verwenden. Anschließend verwenden wir drei aufeinanderfolgende ResNet-Blöcke
+nach obiger Architektur, um die Merkmale weiter zu verarbeiten. Der erste Residual-Block
+verwendet dabei eine Faltung mit 9x9-Masken und erhöht die Anzahl der Kanäle von 3 (RGB) auf 64.
+Der zweite Block verwendet 7x7-Masken und veringert die Anzahl der Kanäle auf 32. Der dritte Block verwendet 5x5-Masken
+und reduziert die Anzahl der Kanäle weiter auf 16.</p>
+<p>Die Architektur endet dann mit einer klassischen 5x5 Faltung (kein ResidualBlock!) von 16 auf 3 Kanäle, um das hochskalierte Bild zu erzeugen.
+Beachten Sie das diese letzte Faltung keine Aktivierungsfunktion und auch keine Batch-Normalisierung verwendet, da sie das finale Bild erzeugt.
+Ähnlich wie bei den ResNet-Blöcken der vorherigen Aufgabe, wird auch hier eine Shortcut-Verbindung verwendet,
+die die hochskalierte Eingabe des Bildes mit dem Output dieser Faltung addiert. Dies ermöglicht eine bessere Informationsweitergabe und
+führt zu einer stabileren und schnelleren Konvergenz während des Trainings.</p>
+<p>Durch die durchgängige Verwendung von Shortcut-Verbindungen und die Verwendung von Upsampling lernen die
+Faltungsschichten, die hochskalierte Ausgabe so zu verfeinern und zu verbessern, dass fehlende Details
+und Strukturen aus dem niedrig aufgelösten Bild rekonstruiert werden können.</p>
+<a class="reference internal image-reference" href="../_images/srcnn.png"><img alt="../_images/srcnn.png" class="align-center" src="../_images/srcnn.png" style="width: 600px;" />
+</a>
+<p>Implementieren Sie nun die Klasse <cite>SRCNN</cite> in der Datei <cite>perceptualloss/upscale2x.py</cite>, die das Super-Resolution-Netzwerk definiert.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="upscale2x.Upscale2x">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">upscale2x.</span></span><span class="sig-name descname"><span class="pre">Upscale2x</span></span><a class="reference internal" href="../_modules/upscale2x.html#Upscale2x"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#upscale2x.Upscale2x" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="upscale2x.Upscale2x.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/upscale2x.html#Upscale2x.__init__"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#upscale2x.Upscale2x.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the Upscale2x model.</p>
+<p>This model performs 2x upscaling using a series of ResNet blocks and an upsampling layer.</p>
+<p><strong>TODO</strong>:</p>
+<ul class="simple">
+<li><p>Call the <cite>__init__</cite> method of the base class <cite>nn.Module</cite>.</p></li>
+<li><p>Define an upsampling layer using <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Upsample.html">nn.Upsample(scale_factor=2, mode=“bilinear“, align_corners=True)</a>.</p></li>
+<li><p>Define a sequential model consisting of:</p></li>
+<li><p>Three <cite>ResNetBlock</cite> layers with 3-&gt;64, 64-&gt;32 and 32-&gt;16 channels as well as kernel sizes 9, 7, and 5 respectively.</p></li>
+<li><p>A final convolutional layer with 16 input channels, 3 output channels and kernel size 5 with padding 2.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="upscale2x.Upscale2x.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/upscale2x.html#Upscale2x.forward"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#upscale2x.Upscale2x.forward" title="Link to this definition"></a></dt>
+<dd><p>Perform the forward pass of the Upscale2x model.</p>
+<section id="id2">
+<h3>Parameters:<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt>x (torch.Tensor):</dt><dd><p>The input tensor to be upscaled.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="id3">
+<h3>Returns:<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt>torch.Tensor:</dt><dd><p>The upscaled output tensor.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p><strong>TODO</strong>:</p>
+<ul class="simple">
+<li><p>Apply the upsampling layer to the input tensor <cite>x</cite>.</p></li>
+<li><p>Pass the upsampled tensor through the model.</p></li>
+<li><p>Add the upsampled tensor to the output of the model.</p></li>
+</ul>
+</section>
+</dd></dl>
+
+</dd></dl>
+
+<div class="toggle admonition">
+<p class="admonition-title">Musterlösung für den Konstruktur __init__ anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Upscale2x</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+  <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+     <span class="nb">super</span><span class="p">(</span><span class="n">Upscale2x</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+     <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Upsample</span><span class="p">(</span><span class="n">scale_factor</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+     <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+         <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">9</span><span class="p">),</span>
+         <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+         <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+         <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+     <span class="p">)</span>
+</pre></div>
+</div>
+</div>
+<div class="toggle admonition">
+<p class="admonition-title">Musterlösung für den Forward-Pass anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+   <span class="n">up</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+   <span class="n">x</span> <span class="o">=</span> <span class="n">up</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">up</span><span class="p">)</span>
+   <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+</div>
+</section>
+<section id="aufgabe-3-super-resolution-mit-perceptual-loss-trainieren">
+<h2><strong>Aufgabe 3:</strong> Super-Resolution mit Perceptual Loss trainieren<a class="headerlink" href="#aufgabe-3-super-resolution-mit-perceptual-loss-trainieren" title="Link to this heading"></a></h2>
+<p>Trainieren Sie nun das Super-Resolution-Modell mit dem Perceptual Loss.
+Sie brauchen nur das Skript <cite>perceptualloss/upscale2x.py</cite> auszuführen. Öffnen Sie
+ebenfalls das TensorBoard mit dem Befehl <cite>tensorboard –logdir runs</cite> um das Training zu überwachen.</p>
+<p>Nach nur wenigen Epochen sollten Sie eine deutliche Verbesserung der Bildqualität sehen. In den gezeigten Bildern
+ist links stets das (hoch-skalierte) Ausgangsbild zu sehen, was an den fehlenden Details sowie dem weichgezeichneten Aussehen zu erkennen ist.
+Rechts sehen Sie den Ground Truth, also das nicht-skalierte Bild in Orginalauflösung.</p>
+<p>Das mittlere Bild zeigt das Ergebnis des Super-Resolution-Netzwerks, welches deutlich mehr Details und Strukturen enthält.</p>
+</section>
+<section id="aufgabe-4-super-resolution-mit-mse-loss-trainieren">
+<h2><strong>Aufgabe 4</strong>: Super-Resolution mit MSE-Loss trainieren<a class="headerlink" href="#aufgabe-4-super-resolution-mit-mse-loss-trainieren" title="Link to this heading"></a></h2>
+<p>Um den Unterschied zwischen MSE-Loss und Perceptual Loss zu verdeutlichen,
+trainieren Sie das Super-Resolution-Modell nochmal, diesmal allerdings mit dem MSE-Loss zwischen den
+hochskalierten und den Ground Truth Bildern.</p>
+<p>Passen Sie das die Hauptmethode in der Datei <cite>perceptualloss/upscale2x.py</cite> an, um den MSE-Loss zu verwenden.</p>
+<p>Ihre Trainingskurven sollten ähnlich aussehen wie die folgende:</p>
+<a class="reference internal image-reference" href="../_images/lpips_2x.png"><img alt="../_images/lpips_2x.png" class="align-center" src="../_images/lpips_2x.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/mse_2x.png"><img alt="../_images/mse_2x.png" class="align-center" src="../_images/mse_2x.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/psnr_2x.png"><img alt="../_images/psnr_2x.png" class="align-center" src="../_images/psnr_2x.png" style="width: 600px;" />
+</a>
+<p>Der LPIPS-Score sollte für den Perceptual Loss deutlich niedriger sein als für den MSE-Loss,
+was auf eine bessere wahrgenommene Bildqualität hinweist während der PSNR-Score und der MSE-Loss höher ist.
+Dies ist typisch, da der MSE-Loss versucht, die Pixelwerte direkt zu minimieren, während der Perceptual Loss
+auf die Wahrnehmung des Bildinhalts abzielt.</p>
+<p>In den unten stehenden Bildern sehen Sie die Ergebnisse des Trainings.
+Das ganze linke Bild zeigt das (hochskalierte) Eingabebild in niedriger Auflösung.
+Daneben finden Sie die Ausgabe des Upscalers, welcher mit MSE-Loss trainiert wurde gefolgt von der Ausgabe
+des Upscalers, welcher mit Perceptual Loss trainiert wurde. Ganz rechts sehen Sie das Ground Truth Bild in hoher Auflösung.</p>
+<p>Achten Sie auf feine Details und Strukturen in den Bildern.</p>
+<a class="reference internal image-reference" href="../_images/upscale2x_0.png"><img alt="../_images/upscale2x_0.png" class="align-center" src="../_images/upscale2x_0.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_1.png"><img alt="../_images/upscale2x_1.png" class="align-center" src="../_images/upscale2x_1.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_2.png"><img alt="../_images/upscale2x_2.png" class="align-center" src="../_images/upscale2x_2.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_3.png"><img alt="../_images/upscale2x_3.png" class="align-center" src="../_images/upscale2x_3.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_4.png"><img alt="../_images/upscale2x_4.png" class="align-center" src="../_images/upscale2x_4.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_5.png"><img alt="../_images/upscale2x_5.png" class="align-center" src="../_images/upscale2x_5.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_6.png"><img alt="../_images/upscale2x_6.png" class="align-center" src="../_images/upscale2x_6.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_7.png"><img alt="../_images/upscale2x_7.png" class="align-center" src="../_images/upscale2x_7.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_8.png"><img alt="../_images/upscale2x_8.png" class="align-center" src="../_images/upscale2x_8.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_9.png"><img alt="../_images/upscale2x_9.png" class="align-center" src="../_images/upscale2x_9.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_10.png"><img alt="../_images/upscale2x_10.png" class="align-center" src="../_images/upscale2x_10.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_11.png"><img alt="../_images/upscale2x_11.png" class="align-center" src="../_images/upscale2x_11.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_12.png"><img alt="../_images/upscale2x_12.png" class="align-center" src="../_images/upscale2x_12.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_13.png"><img alt="../_images/upscale2x_13.png" class="align-center" src="../_images/upscale2x_13.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_14.png"><img alt="../_images/upscale2x_14.png" class="align-center" src="../_images/upscale2x_14.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_15.png"><img alt="../_images/upscale2x_15.png" class="align-center" src="../_images/upscale2x_15.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_16.png"><img alt="../_images/upscale2x_16.png" class="align-center" src="../_images/upscale2x_16.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_17.png"><img alt="../_images/upscale2x_17.png" class="align-center" src="../_images/upscale2x_17.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_18.png"><img alt="../_images/upscale2x_18.png" class="align-center" src="../_images/upscale2x_18.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_19.png"><img alt="../_images/upscale2x_19.png" class="align-center" src="../_images/upscale2x_19.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_20.png"><img alt="../_images/upscale2x_20.png" class="align-center" src="../_images/upscale2x_20.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_21.png"><img alt="../_images/upscale2x_21.png" class="align-center" src="../_images/upscale2x_21.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_22.png"><img alt="../_images/upscale2x_22.png" class="align-center" src="../_images/upscale2x_22.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_23.png"><img alt="../_images/upscale2x_23.png" class="align-center" src="../_images/upscale2x_23.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_24.png"><img alt="../_images/upscale2x_24.png" class="align-center" src="../_images/upscale2x_24.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_25.png"><img alt="../_images/upscale2x_25.png" class="align-center" src="../_images/upscale2x_25.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_26.png"><img alt="../_images/upscale2x_26.png" class="align-center" src="../_images/upscale2x_26.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_27.png"><img alt="../_images/upscale2x_27.png" class="align-center" src="../_images/upscale2x_27.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_28.png"><img alt="../_images/upscale2x_28.png" class="align-center" src="../_images/upscale2x_28.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_29.png"><img alt="../_images/upscale2x_29.png" class="align-center" src="../_images/upscale2x_29.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_30.png"><img alt="../_images/upscale2x_30.png" class="align-center" src="../_images/upscale2x_30.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale2x_31.png"><img alt="../_images/upscale2x_31.png" class="align-center" src="../_images/upscale2x_31.png" style="width: 600px;" />
+</a>
+</section>
+<section id="aufgabe-5-super-resolution-x4">
+<h2><strong>Aufgabe 5</strong>: Super-Resolution x4<a class="headerlink" href="#aufgabe-5-super-resolution-x4" title="Link to this heading"></a></h2>
+<p>Zum Abschluß erweitern Sie das Super-Resolution-Netzwerk, um Bilder von 64x64 auf 256x256 zu skalieren.
+Arbeiten Sie in der Datei <cite>perceptualloss/upscale4x.py</cite> und passen Sie die Architektur von vorher an, um die Eingabe von 64x64 auf 256x256 zu skalieren.
+Sie können dazu die <cite>Upscale2x</cite>-Klasse als Basis verwenden und diese entsprechend erweitern.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="upscale4x.Upscale4x">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">upscale4x.</span></span><span class="sig-name descname"><span class="pre">Upscale4x</span></span><a class="reference internal" href="../_modules/upscale4x.html#Upscale4x"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#upscale4x.Upscale4x" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="upscale4x.Upscale4x.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/upscale4x.html#Upscale4x.__init__"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#upscale4x.Upscale4x.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the Upscale4x model.</p>
+<p>This model performs 4x upscaling using a series of ResNet blocks and an upsampling layer.</p>
+<p><strong>TODO</strong>:</p>
+<ul class="simple">
+<li><p>Call the <cite>__init__</cite> method of the base class <cite>nn.Module</cite>.</p></li>
+<li><p>Define an upsampling layer using <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Upsample.html">nn.Upsample(scale_factor=2, mode=“bilinear“, align_corners=True)</a>.</p></li>
+<li><p>Define a sequential model consisting of:</p></li>
+<li><p>Three <cite>ResNetBlock</cite> layers with 3-&gt;64, 64-&gt;32 and 32-&gt;16 channels as well as kernel sizes 9, 7, and 5 respectively.</p></li>
+<li><p>A final convolutional layer with 16 input channels, 3 output channels and kernel size 5 with padding 2.</p></li>
+</ul>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="upscale4x.Upscale4x.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/upscale4x.html#Upscale4x.forward"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#upscale4x.Upscale4x.forward" title="Link to this definition"></a></dt>
+<dd><p>Perform the forward pass of the Upscale2x model.</p>
+<section id="id5">
+<h3>Parameters:<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt>x (torch.Tensor):</dt><dd><p>The input tensor to be upscaled.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="id6">
+<h3>Returns:<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt>torch.Tensor:</dt><dd><p>The upscaled output tensor.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p><strong>TODO</strong>:</p>
+<ul class="simple">
+<li><p>Apply the upsampling layer to the input tensor <cite>x</cite>.</p></li>
+<li><p>Pass the upsampled tensor through the model.</p></li>
+<li><p>Add the upsampled tensor to the output of the model.</p></li>
+</ul>
+</section>
+</dd></dl>
+
+</dd></dl>
+
+<div class="toggle admonition">
+<p class="admonition-title">Beispiel für einen Upscaler x4 anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Upscale4x</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+   <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+       <span class="nb">super</span><span class="p">(</span><span class="n">Upscale4x</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+       <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Upsample</span><span class="p">(</span><span class="n">scale_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+       <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+           <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span>  <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">9</span><span class="p">),</span>
+           <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+           <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">48</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+           <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
+           <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">24</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+       <span class="p">)</span>
+
+   <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+       <span class="n">up</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+       <span class="n">x</span> <span class="o">=</span> <span class="n">up</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">up</span><span class="p">)</span>
+       <span class="k">return</span> <span class="n">x</span>
+</pre></div>
+</div>
+</div>
+<p>Trainieren Sie dann ihren Upscaler sowohl mit dem Perceptual Loss als auch mit dem MSE-Loss. Vergleichen Sie wieder.</p>
+<a class="reference internal image-reference" href="../_images/lpips_4x.png"><img alt="../_images/lpips_4x.png" class="align-center" src="../_images/lpips_4x.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/mse_4x.png"><img alt="../_images/mse_4x.png" class="align-center" src="../_images/mse_4x.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/psnr_4x.png"><img alt="../_images/psnr_4x.png" class="align-center" src="../_images/psnr_4x.png" style="width: 600px;" />
+</a>
+<p>Wieder sollte der LPIPS-Score für den Perceptual Loss deutlich niedriger sein als für den MSE-Loss.</p>
+<a class="reference internal image-reference" href="../_images/upscale4x_0.png"><img alt="../_images/upscale4x_0.png" class="align-center" src="../_images/upscale4x_0.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_1.png"><img alt="../_images/upscale4x_1.png" class="align-center" src="../_images/upscale4x_1.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_3.png"><img alt="../_images/upscale4x_3.png" class="align-center" src="../_images/upscale4x_3.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_4.png"><img alt="../_images/upscale4x_4.png" class="align-center" src="../_images/upscale4x_4.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_5.png"><img alt="../_images/upscale4x_5.png" class="align-center" src="../_images/upscale4x_5.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_6.png"><img alt="../_images/upscale4x_6.png" class="align-center" src="../_images/upscale4x_6.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_7.png"><img alt="../_images/upscale4x_7.png" class="align-center" src="../_images/upscale4x_7.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_9.png"><img alt="../_images/upscale4x_9.png" class="align-center" src="../_images/upscale4x_9.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_10.png"><img alt="../_images/upscale4x_10.png" class="align-center" src="../_images/upscale4x_10.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_11.png"><img alt="../_images/upscale4x_11.png" class="align-center" src="../_images/upscale4x_11.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_12.png"><img alt="../_images/upscale4x_12.png" class="align-center" src="../_images/upscale4x_12.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_13.png"><img alt="../_images/upscale4x_13.png" class="align-center" src="../_images/upscale4x_13.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_14.png"><img alt="../_images/upscale4x_14.png" class="align-center" src="../_images/upscale4x_14.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_15.png"><img alt="../_images/upscale4x_15.png" class="align-center" src="../_images/upscale4x_15.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_16.png"><img alt="../_images/upscale4x_16.png" class="align-center" src="../_images/upscale4x_16.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_17.png"><img alt="../_images/upscale4x_17.png" class="align-center" src="../_images/upscale4x_17.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_18.png"><img alt="../_images/upscale4x_18.png" class="align-center" src="../_images/upscale4x_18.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_19.png"><img alt="../_images/upscale4x_19.png" class="align-center" src="../_images/upscale4x_19.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_20.png"><img alt="../_images/upscale4x_20.png" class="align-center" src="../_images/upscale4x_20.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_21.png"><img alt="../_images/upscale4x_21.png" class="align-center" src="../_images/upscale4x_21.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_22.png"><img alt="../_images/upscale4x_22.png" class="align-center" src="../_images/upscale4x_22.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_23.png"><img alt="../_images/upscale4x_23.png" class="align-center" src="../_images/upscale4x_23.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_24.png"><img alt="../_images/upscale4x_24.png" class="align-center" src="../_images/upscale4x_24.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_25.png"><img alt="../_images/upscale4x_25.png" class="align-center" src="../_images/upscale4x_25.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_26.png"><img alt="../_images/upscale4x_26.png" class="align-center" src="../_images/upscale4x_26.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_27.png"><img alt="../_images/upscale4x_27.png" class="align-center" src="../_images/upscale4x_27.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_28.png"><img alt="../_images/upscale4x_28.png" class="align-center" src="../_images/upscale4x_28.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_29.png"><img alt="../_images/upscale4x_29.png" class="align-center" src="../_images/upscale4x_29.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_30.png"><img alt="../_images/upscale4x_30.png" class="align-center" src="../_images/upscale4x_30.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/upscale4x_31.png"><img alt="../_images/upscale4x_31.png" class="align-center" src="../_images/upscale4x_31.png" style="width: 600px;" />
+</a>
+</section>
+<section id="musterlosung">
+<h2><strong>Musterlösung</strong><a class="headerlink" href="#musterlosung" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="source.html"><span class="doc">Perceptual Loss - Musterlösung</span></a></p>
+</section>
+</section>
+
+
+           </div>
+          </div>
+          <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
+        <a href="../embeddings/index.html" class="btn btn-neutral float-left" title="Embedding Vectors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
+    </div>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Prof. Dr. Dennis Müller.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
