@@ -1,0 +1,4 @@
+*.pt
+runs
+checkpoints
+__pycache__
