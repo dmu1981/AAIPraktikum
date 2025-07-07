@@ -87,7 +87,7 @@ class GeneratorLoss(nn.Module):
         self.mseLoss = nn.MSELoss()
 
     def forward(self, output, target):
-        return self.perceptualLoss(output, target) + self.mseLoss(output, target) + 1e-3 * tv_loss(output)
+        return self.perceptualLoss(output, target) + self.mseLoss(output, target) + 0.1 * tv_loss(output)
 
 def compute_gradient_penalty(critic, real, fake, lambda_gp=10):
     batch_size = real.size(0)
