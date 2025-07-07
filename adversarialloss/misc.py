@@ -92,12 +92,16 @@ class CustomImageDataset(torch.utils.data.Dataset):
             if f.lower().endswith((".png", ".jpg", ".jpeg", ".bmp", ".tiff"))
         ]
 
+        #img_paths = [os.path.join(self.root_dir, self.image_files[idx]) for idx in range(len(self.image_files))]
+        #self.images = [Image.open(img_path).convert("RGB") for img_path in img_paths]
+
     def __len__(self):
         return len(self.image_files)
 
     def __getitem__(self, idx):
         img_path = os.path.join(self.root_dir, self.image_files[idx])
         image = Image.open(img_path).convert("RGB")
+        #image = self.images[idx]
 
         if self.transformInput:
             imageInput = self.transformInput(image)
@@ -132,7 +136,7 @@ def get_dataloader(inputSize=128, outputSize=256, batch_size=32):
         transformInput=transformInput, 
         transformOutput=transformOutput)
     
-    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True)
+    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, pin_memory=True, num_workers=8)
 
     return dataloader
 

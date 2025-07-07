@@ -131,7 +131,7 @@ def train(prefix, generator, critic, dataloader, generator_loss_fn):
   # for p in critic.parameters():
   #       p.data.clamp_(-weight_clip, weight_clip)
 
-  for epoch in range(ep, ep + 300):
+  for epoch in range(ep, ep + 1000):
       total_loss_gen = 0.0
       total_lips = 0.0
       total_mse = 0.0
