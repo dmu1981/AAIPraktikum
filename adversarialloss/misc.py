@@ -180,7 +180,7 @@ class ResNetBlock(nn.Module):
         out = self.conv2(out)
         out = out + residual
         return self.relu(self.bn2(out))
-
+        
 def save_checkpoint(model, optimizer, epoch, filename="checkpoint.pth"):
     """Speichert den aktuellen Zustand des Modells und des Optimierers in einer Datei."""
     torch.save(
@@ -214,11 +214,15 @@ def log_metrics(writer, epoch, total_lips, total_mse, total_psnr, total_loss_cri
     writer.add_scalar('LPIPS', 1000.0 * avg_lips, epoch)
     writer.add_scalar('MSE', 1000.0 * avg_mse, epoch)
     writer.add_scalar('PSNR', avg_psnr, epoch)
-    writer.add_scalar('Critic Real', 1000.0 * total_loss_critic_real / total_cnt, epoch)
-    writer.add_scalar('Critic Fake', 1000.0 * total_loss_critic_fake / total_cnt, epoch)
+
+    critic_bias = (total_loss_critic_real + total_loss_critic_fake) / 2.0
+    c_real = (total_loss_critic_real - critic_bias) / total_cnt
+    c_fake = (total_loss_critic_fake - critic_bias) / total_cnt
+    writer.add_scalar('Critic Real', c_real, epoch)
+    writer.add_scalar('Critic Fake', c_fake, epoch)
 
     loss_C = total_loss_critic_fake - total_loss_critic_real
-    writer.add_scalar('loss_C', 1000.0 * loss_C / total_cnt, epoch)
+    writer.add_scalar('loss_C', loss_C / total_cnt, epoch)
 
     writer.add_scalar('Generator Loss', 1000.0 * total_generator_loss / total_cnt, epoch)
     writer.add_scalar('Content Loss', 1000.0 * total_content_loss / total_cnt, epoch)

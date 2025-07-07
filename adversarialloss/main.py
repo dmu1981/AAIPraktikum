@@ -14,17 +14,16 @@ class Upscale4x(nn.Module):
         self.upBilinear = nn.Upsample(scale_factor=4, mode="bilinear", align_corners=True)
         
         self.model = nn.Sequential(
-            nn.Conv2d(3, 32, kernel_size=5, padding=2),  # Initial conv to increase channels
-            nn.LeakyReLU(inplace=True),  # Activation after initial conv
-            ResNetBlock(32, 32, kernel_size=5),
-            ResNetBlock(32, 32, kernel_size=5),
-            ResNetBlock(32, 16, kernel_size=5),
-            nn.Conv2d(16, 3, kernel_size=5, padding=2),  # Final conv to reduce channels
+            ResNetBlock(3, 64, kernel_size=7),
+            ResNetBlock(64, 32, kernel_size=7),
+            ResNetBlock(32, 32, kernel_size=7),
+            nn.Conv2d(32, 3, kernel_size=7, padding=3),  # Final conv to reduce channels
         )
 
         self.upsample = nn.Sequential(
-            nn.Conv2d(3, 3*16, kernel_size=5, padding=2),  # Initial conv to increase channels
+            nn.Conv2d(3, 16*3, kernel_size=7, padding=3),
             nn.PixelShuffle(upscale_factor=4),  # First upsample
+            # Note: This is supposed to be a 4x upsample, so no non-linearity here
         )
 
     def forward(self, x):
@@ -76,6 +75,11 @@ class Critic(nn.Module):
     def forward(self, x):
         return self.model(x)
 
+def tv_loss(img):
+    return torch.mean(torch.abs(img[:, :, :-1, :] - img[:, :, 1:, :])) + \
+           torch.mean(torch.abs(img[:, :, :, :-1] - img[:, :, :, 1:]))
+
+
 class GeneratorLoss(nn.Module):
     def __init__(self):
         super(GeneratorLoss, self).__init__()
@@ -83,7 +87,7 @@ class GeneratorLoss(nn.Module):
         self.mseLoss = nn.MSELoss()
 
     def forward(self, output, target):
-        return 0.5 * self.perceptualLoss(output, target) + self.mseLoss(output, target)
+        return self.perceptualLoss(output, target) + self.mseLoss(output, target) + 1e-3 * tv_loss(output)
 
 def compute_gradient_penalty(critic, real, fake, lambda_gp=10):
     batch_size = real.size(0)
@@ -186,8 +190,9 @@ def train(prefix, generator, critic, dataloader, generator_loss_fn):
             gen_loss = generator_loss_fn(output, target)
             total_content_loss += gen_loss.item()
             #loss = 0.1 * gen_loss + adversarial_loss
-            loss = gen_loss
-            loss = gen_loss + adversarial_loss
+
+            adversarial_lambda = min(1.0, epoch / 10.0)
+            loss = gen_loss + adversarial_lambda * adversarial_loss
             total_generator_loss += loss.item() * n_critic
             loss.backward()
             torch.nn.utils.clip_grad_norm_(generator.parameters(), max_norm=1.0)
@@ -205,13 +210,15 @@ def train(prefix, generator, critic, dataloader, generator_loss_fn):
             total_cnt += input.size(0)
 
             
+            critic_bias = (total_loss_critic_real + total_loss_critic_fake) / 2.0
+            c_real = (total_loss_critic_real - critic_bias) / total_cnt
+            c_fake = (total_loss_critic_fake - critic_bias) / total_cnt
+            bar.set_description(f"[{epoch+1}], Content: {1000.0 * total_content_loss / total_cnt:.3f}, Adversarial: {1000.0 * total_adversarial_loss / total_cnt:.3f}, C(real): {c_real:.3f}, C(fake): {c_fake:.3f}")
 
-            bar.set_description(f"[{epoch+1}], Content: {1000.0 * total_content_loss / total_cnt:.3f}, Adversarial: {1000.0 * total_adversarial_loss / total_cnt:.3f}, C(real): {1000.0 * total_loss_critic_real / total_cnt:.3f}, C(fake): {1000.0 * total_loss_critic_fake / total_cnt:.3f}")
-            
       log_metrics(writer, epoch + 1, total_lips, total_mse, total_psnr, total_loss_critic_real, total_loss_critic_fake, total_generator_loss, total_content_loss, total_cnt)
       log_images(writer, generator, dataloader, epoch + 1)
-      #save_checkpoint(generator, optimGenerator, epoch + 1, filename=f"{prefix}_generator.pt")
-      #save_checkpoint(critic, optimCritic, epoch + 1, filename=f"{prefix}_critic.pt")
+      save_checkpoint(generator, optimGenerator, epoch + 1, filename=f"{prefix}_generator.pt")
+      save_checkpoint(critic, optimCritic, epoch + 1, filename=f"{prefix}_critic.pt")
 
 if __name__ == "__main__":    
   prefix = "upscale4x_mse"
