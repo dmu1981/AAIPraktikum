@@ -140,7 +140,7 @@ def get_dataloader(inputSize=128, outputSize=256, batch_size=32):
     )
 
     dataloader = DataLoader(
-        dataset, batch_size=batch_size, shuffle=True, pin_memory=True#, num_workers=8
+        dataset, batch_size=batch_size, shuffle=True, pin_memory=True  # , num_workers=8
     )
 
     return dataloader
@@ -220,25 +220,32 @@ class ResNetBlock(nn.Module):
         return self.relu(self.bn2(out))
 
 
-def save_checkpoint(model, optimizer, epoch, filename="checkpoint.pth"):
+def save_checkpoint(checkpoint_dict, epoch, filename="checkpoint.pth"):
     """Speichert den aktuellen Zustand des Modells und des Optimierers in einer Datei."""
+
+    checkpoint_dict = {
+        key: value.state_dict() for key, value in checkpoint_dict.items()
+    }
+
+    checkpoint_dict["epoch"] = epoch
+
     torch.save(
-        {
-            "epoch": epoch,
-            "model_state_dict": model.state_dict(),
-            "optimizer_state_dict": optimizer.state_dict(),
-        },
+        checkpoint_dict,
         filename,
     )
 
 
-def load_checkpoint(model, optimizer, filename="checkpoint.pth"):
+def load_checkpoint(checkpoint_dict, filename="checkpoint.pth"):
     """Lädt den Zustand des Modells und des Optimierers aus einer Datei."""
     try:
         checkpoint = torch.load(filename, weights_only=True)
-        model.load_state_dict(checkpoint["model_state_dict"])
-        if optimizer is not None:
-            optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+
+        for key in checkpoint_dict:
+            if key in checkpoint:
+                checkpoint_dict[key].load_state_dict(checkpoint[key])
+            else:
+                raise KeyError(f"Key {key} not found in checkpoint.")
+
         return checkpoint["epoch"]
     except Exception as e:
         print(f"Fehler beim Laden des Checkpoints {filename}: {e}")
@@ -246,33 +253,15 @@ def load_checkpoint(model, optimizer, filename="checkpoint.pth"):
         return 0
 
 
-def log_metrics(
-    writer,
-    epoch,
-    total_lips,
-    total_mse,
-    total_psnr,
-    total_loss_c,
-    total_generator_loss,
-    total_content_loss,
-    total_gradient_norm,
-    total_cnt,
-):
-    avg_lips = total_lips / total_cnt
-    avg_mse = total_mse / total_cnt
-    avg_psnr = total_psnr / total_cnt
-    writer.add_scalar("LPIPS", 1000.0 * avg_lips, epoch)
-    writer.add_scalar("MSE", 1000.0 * avg_mse, epoch)
-    writer.add_scalar("PSNR", avg_psnr, epoch)
+def log_metrics(writer, metrics):
+    for key, value in metrics.items():
+        step = value.step
+        if value.count <= 20:
+            continue
 
-    writer.add_scalar("loss_C", abs(total_loss_c) / total_cnt, epoch)
+        writer.add_scalar(key, value.compute(), global_step=step)
 
-    writer.add_scalar(
-        "Generator Loss", 1000.0 * total_generator_loss / total_cnt, epoch
-    )
-    writer.add_scalar("Content Loss", 1000.0 * total_content_loss / total_cnt, epoch)
-
-    writer.add_scalar("Gradient Norm", total_gradient_norm / total_cnt, epoch)
+    writer.flush()
 
 
 # Denormalize images

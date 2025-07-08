@@ -26,21 +26,17 @@ class Upscale4x(nn.Module):
         )
 
         self.model = nn.Sequential(
+            nn.Conv2d(3, 16 * 3, kernel_size=7, padding=3),
+            nn.PixelShuffle(upscale_factor=4),  # First upsample
+            nn.PReLU(),
             ResNetBlock(3, 64, kernel_size=7),
             ResNetBlock(64, 32, kernel_size=7),
             ResNetBlock(32, 32, kernel_size=7),
             nn.Conv2d(32, 3, kernel_size=7, padding=3),  # Final conv to reduce channels
         )
 
-        self.upsample = nn.Sequential(
-            nn.Conv2d(3, 16 * 3, kernel_size=7, padding=3),
-            nn.PixelShuffle(upscale_factor=4),  # First upsample
-            # Note: This is supposed to be a 4x upsample, so no non-linearity here
-        )
-
     def forward(self, x):
-        up = self.upsample(x)
-        x = up + self.model(up)
+        x = self.upBilinear(x) + self.model(x)
 
         return x
 
@@ -64,29 +60,8 @@ class Critic(nn.Module):
             nn.AvgPool2d(kernel_size=(4, 4)),  # 512x1x1
             nn.LeakyReLU(inplace=True),
             nn.Flatten(),
-            # nn.Linear(1024, 1024),
-            # nn.LeakyReLU(inplace=True),
             nn.Linear(1024, 1, bias=False),  # Final output layer
         )
-
-    def _make_layer(
-        self, in_channels, out_channels, kernel_size, num_blocks=1, stride=1
-    ):
-        strides = [stride] + [1] * (num_blocks - 1)
-        layers = []
-        for s in strides:
-            layers.append(
-                ResNetBlock(
-                    in_channels,
-                    out_channels,
-                    kernel_size=kernel_size,
-                    stride=s,
-                    norm=False,
-                )
-            )
-            in_channels = out_channels
-
-        return nn.Sequential(*layers)
 
     def forward(self, x):
         return self.model(x)
@@ -104,7 +79,7 @@ class TVLoss(nn.Module):
 
 
 class GeneratorLoss(nn.Module):
-    def __init__(self, critic=None):
+    def __init__(self, critic):
         super(GeneratorLoss, self).__init__()
         self.perceptualLoss = VGG16PerceptualLoss()
         self.mseLoss = nn.MSELoss()
@@ -112,18 +87,12 @@ class GeneratorLoss(nn.Module):
         self.critic = critic
 
     def forward(self, output, target, epoch):
-        if self.critic is not None:
-            # Use critic to compute adversarial loss
-            adversarial_loss = -torch.tanh(0.001 * self.critic(output))
-            adversarial_loss = adversarial_loss.mean()
-        else:
-            adversarial_loss = 0.0
-
+        adversarial_loss = -torch.tanh(0.001 * self.critic(output)).mean()
         adversarial_lambda = min(1.0, epoch / 10.0)
 
         content_loss = (
             self.perceptualLoss(output, target)
-            + self.mseLoss(output, target)
+            + 2.0 * self.mseLoss(output, target)
             + self.tvLoss(output)
         )
 
@@ -133,11 +102,12 @@ class GeneratorLoss(nn.Module):
             adversarial_loss,
         )
 
+
 class CriticLoss(nn.Module):
     def __init__(self):
         super(CriticLoss, self).__init__()
 
-    def compute_gradient_penalty(self, critic, real, fake, lambda_gp=10):
+    def compute_gradient_penalty(self, critic, real, fake, lambda_gp=100):
         batch_size = real.size(0)
         epsilon = torch.rand(batch_size, 1, 1, 1, device=real.device)
         interpolated = (epsilon * real + (1 - epsilon) * fake).requires_grad_(True)
@@ -158,34 +128,57 @@ class CriticLoss(nn.Module):
         gradient_norm = gradients.norm(2, dim=1)
         gradient_penalty = ((gradient_norm - 1) ** 2).mean() * lambda_gp
         return gradient_penalty, gradient_norm
-    
+
     def forward(self, critic, real, fake):
         gp, gradient_norm = self.compute_gradient_penalty(critic, real, fake)
 
-        loss_c = -critic(real).mean() + critic(fake).mean() 
+        loss_c = -critic(real).mean() + critic(fake).mean()
         return loss_c + gp, gradient_norm, loss_c
-    
-# def compute_gradient_penalty(critic, real, fake, lambda_gp=10):
-#     batch_size = real.size(0)
-#     epsilon = torch.rand(batch_size, 1, 1, 1, device=real.device)
-#     interpolated = (epsilon * real + (1 - epsilon) * fake).requires_grad_(True)
 
-#     critic_output = critic(interpolated)
-#     grad_outputs = torch.ones_like(critic_output)
 
-#     gradients = torch.autograd.grad(
-#         outputs=critic_output,
-#         inputs=interpolated,
-#         grad_outputs=grad_outputs,
-#         create_graph=True,
-#         retain_graph=True,
-#         only_inputs=True,
-#     )[0]
+class Metric:
+    def __init__(self, factor=1.0, abs=False):
+        self.total = 0.0
+        self.count = 0
+        self.step = 0
+        self.factor = factor
+        self.abs = abs
 
-#     gradients = gradients.view(batch_size, -1)
-#     gradient_norm = gradients.norm(2, dim=1)
-#     gradient_penalty = ((gradient_norm - 1) ** 2).mean() * lambda_gp
-#     return gradient_penalty, gradient_norm
+    def state_dict(self):
+        return {
+            "total": self.total,
+            "count": self.count,
+            "step": self.step,
+            "factor": self.factor,
+            "abs": self.abs,
+        }
+
+    def load_state_dict(self, state_dict):
+        self.total = state_dict["total"]
+        self.count = state_dict["count"]
+        self.step = state_dict["step"]
+        self.factor = state_dict["factor"]
+        self.abs = state_dict["abs"]
+
+    def update(self, value):
+        self.total += value
+        self.count += 1
+        self.step += 1
+
+    def compute(self, reset=True):
+        if self.count == 0:
+            avg = 0.0
+        else:
+            avg = self.total / self.count
+
+        if reset:
+            self.total = 0.0
+            self.count = 0
+
+        if self.abs:
+            avg = abs(avg)
+
+        return self.factor * avg
 
 
 def train(prefix, generator, critic, dataloader, generator_loss_fn, critic_loss_fn):
@@ -196,30 +189,40 @@ def train(prefix, generator, critic, dataloader, generator_loss_fn, critic_loss_
 
     metric = lpips.LPIPS(net="vgg").cuda()  # Using SqueezeNet for perceptual loss
     mseMetric = nn.MSELoss()
-    psnrMetric = PSNR()
-
-    ep = load_checkpoint(generator, optimGenerator, filename=f"{prefix}_generator.pt")
-    ep = max(ep, load_checkpoint(critic, optimCritic, filename=f"{prefix}_critic.pt"))
+    psnrMetric = PSNR(max_val=6.0)
 
     writer = SummaryWriter(f"runs/{prefix}")
 
-    # weight_clip = 0.01
-    # for p in critic.parameters():
-    #       p.data.clamp_(-weight_clip, weight_clip)
+    lpips_score = Metric(factor=1.0)
+    mse_score = Metric(factor=1.0)
+    psnr_score = Metric(factor=1.0)
+    content_loss_score = Metric(factor=1.0)
+    loss_c_score = Metric(factor=1.0, abs=True)
+    generator_loss_score = Metric(factor=1.0)
+    adversarial_loss_score = Metric(factor=1.0)
+    gradient_norm_score = Metric(factor=1.0)
+
+    scores = {
+        "LPIPS": lpips_score,
+        "MSE": mse_score,
+        "PSNR": psnr_score,
+        "Content": content_loss_score,
+        "loss_C": loss_c_score,
+        "Generator": generator_loss_score,
+        "Adversarial": adversarial_loss_score,
+        "Gradient Norm": gradient_norm_score,
+    }
+
+    checkpoint_dict = {
+        "generator": generator,
+        "critic": critic,
+        "optimGenerator": optimGenerator,
+        "optimCritic": optimCritic,
+    } | scores
+
+    ep = load_checkpoint(checkpoint_dict, filename=f"{prefix}_checkpoint.pt")
 
     for epoch in range(ep, ep + 1000):
-        total_loss_gen = 0.0
-        total_lips = 0.0
-        total_mse = 0.0
-        total_psnr = 0.0
-        total_cnt = 0
-        #total_loss_critic_real = 0.0
-        #total_loss_critic_fake = 0.0
-        total_content_loss = 0.0
-        total_loss_c = 0.0
-        total_generator_loss = 0.0
-        total_adversarial_loss = 0.0
-        total_gradient_norm = 0.0
         bar = tqdm(dataloader)
 
         for index, (input, target) in enumerate(bar):
@@ -227,31 +230,19 @@ def train(prefix, generator, critic, dataloader, generator_loss_fn, critic_loss_
             target = target.cuda()
 
             # Train Critic
-            with torch.no_grad():
-                output = generator(input)
+            #with torch.no_grad():
+            output = generator(input)
 
             optimCritic.zero_grad()
-
             critic_loss, gradient_norm, loss_c = critic_loss_fn(critic, target, output)
-            # critic_real = critic(target).mean()
-            # critic_fake = critic(output.detach()).mean()
-
-            # gp, gradient_norm = compute_gradient_penalty(
-            #     critic, target, output.detach()
-            # )
-            
-            total_gradient_norm += gradient_norm.mean().item()
-            total_loss_c += loss_c.item()
-
-            # critic_output = -critic_real + critic_fake + gp
-            # total_loss_critic_real += critic_real.item()
-            # total_loss_critic_fake += critic_fake.item()
             critic_loss.backward()
             optimCritic.step()
 
-            # Train Generator
-            n_critic = 5
-            # Train Generator only every 5th step
+            gradient_norm_score.update(gradient_norm.mean().item())
+            loss_c_score.update(loss_c.item())
+
+            # Train Generator only every 4th step
+            n_critic = 4
             if (index + 1) % n_critic == 0:
                 optimGenerator.zero_grad()
                 output = generator(input)
@@ -260,14 +251,15 @@ def train(prefix, generator, critic, dataloader, generator_loss_fn, critic_loss_
                     output, target, epoch
                 )
 
-                total_content_loss += content_loss.item()
-                total_adversarial_loss += adversarial_loss.item()
-                total_generator_loss += loss.item()
+                content_loss_score.update(content_loss.item())
+                adversarial_loss_score.update(adversarial_loss.mean().item())
+                generator_loss_score.update(loss.item())
+
                 loss.backward()
                 torch.nn.utils.clip_grad_norm_(generator.parameters(), max_norm=1.0)
                 optimGenerator.step()
 
-                total_lips += (
+                lpips_score.update(
                     metric(
                         2.0 * denormalize(output) - 1.0, 2.0 * denormalize(target) - 1.0
                     )
@@ -275,35 +267,25 @@ def train(prefix, generator, critic, dataloader, generator_loss_fn, critic_loss_
                     .item()
                 )
 
-                total_mse += mseMetric(output, target).item()
-                total_psnr += psnrMetric(output, target).item()
+                mse_score.update(mseMetric(output, target).item())
+                psnr_score.update(psnrMetric(output, target).item())
 
-                total_cnt += input.size(0)
-
-                #critic_bias = (total_loss_critic_real + total_loss_critic_fake) / 2.0
-                #c_real = (total_loss_critic_real - critic_bias) / total_cnt
-                #c_fake = (total_loss_critic_fake - critic_bias) / total_cnt
                 bar.set_description(
-                    f"[{epoch+1}], Content: {1000.0 * total_content_loss / total_cnt:.3f}, loss_C: {abs(total_loss_c / total_cnt):.3f}"
+                    f"[{epoch+1}], Content: {content_loss_score.compute(reset=False):.3f}, loss_C: {loss_c_score.compute(reset=False):.3f}"
                 )
 
-        log_metrics(
-            writer,
-            epoch + 1,
-            total_lips,
-            total_mse,
-            total_psnr,
-            total_loss_c,
-            total_generator_loss,
-            total_content_loss,
-            total_gradient_norm,
-            total_cnt,
-        )
+            log_metrics(writer, scores)
+
         log_images(writer, generator, dataloader, epoch + 1)
         save_checkpoint(
-            generator, optimGenerator, epoch + 1, filename=f"{prefix}_generator.pt"
+            checkpoint_dict,
+            epoch + 1,
+            filename=f"{prefix}_checkpoint.pt",
         )
-        save_checkpoint(critic, optimCritic, epoch + 1, filename=f"{prefix}_critic.pt")
+        # save_checkpoint(
+        #     generator, optimGenerator, epoch + 1, filename=f"{prefix}_generator.pt"
+        # )
+        # save_checkpoint(critic, optimCritic, epoch + 1, filename=f"{prefix}_critic.pt")
 
 
 if __name__ == "__main__":
@@ -312,7 +294,7 @@ if __name__ == "__main__":
     upscaler = Upscale4x().cuda()
     critic = Critic().cuda()
     dataloader = get_dataloader(inputSize=64, outputSize=256, batch_size=64)
-    
+
     generatorLoss = GeneratorLoss(critic).cuda()
     criticLoss = CriticLoss().cuda()
 
