@@ -1,28 +1,28 @@
-
 import torch
 from torch import nn
 from torchvision.models import vgg16
 
+
 class VGG16PerceptualLoss(nn.Module):
     def __init__(self):
         """Initialize the VGG16 perceptual loss model.
-        
+
         It computes the perceptual loss as the mean squared error between the features.
-        
+
         The model is set to evaluation mode and the parameters are frozen.
-        
+
         **TODO**:
 
-        - Load the VGG16 model with pretrained weights. Use `torchvision.models.vgg16(pretrained=True)`.        
+        - Load the VGG16 model with pretrained weights. Use `torchvision.models.vgg16(pretrained=True)`.
 
         - Restrict the VGG16 model to the first 16 layers by using `self.vgg = vgg16(pretrained=True).features[:16]`.
 
         - Set the model to evaluation mode using `.eval()`.
 
-        - Freeze the parameters of the VGG16 model by setting `param.requires_grad = False` for all parameters. 
+        - Freeze the parameters of the VGG16 model by setting `param.requires_grad = False` for all parameters.
           NOTE: Iterate through all parameters by using the `self.vgg.parameters()`-Iterator.
 
-        - Initialize the L2 loss function using `nn.MSELoss()`.  
+        - Initialize the L2 loss function using `nn.MSELoss()`.
         """
         super(VGG16PerceptualLoss, self).__init__()
         self.vgg = vgg16(pretrained=True).features[:16].eval().cuda()
@@ -34,24 +34,24 @@ class VGG16PerceptualLoss(nn.Module):
 
     def forward(self, output, target):
         """Compute the perceptual loss between two images.
-        
+
         Parameters:
         -----------
-            output (torch.Tensor): 
+            output (torch.Tensor):
               The output image tensor from the upscaler network.
 
-            target (torch.Tensor): 
+            target (torch.Tensor):
               The target image tensor from ground truth.
 
         Returns:
-        --------  
-            torch.Tensor: 
+        --------
+            torch.Tensor:
               The computed perceptual loss as the mean squared error between the features of the two images.
 
         **TODO**:
 
-        - Resize `output` and `target` to 224x224 using `torch.nn.functional.interpolate()`. Use `mode='bilinear'` and `align_corners=False`. 
-        
+        - Resize `output` and `target` to 224x224 using `torch.nn.functional.interpolate()`. Use `mode='bilinear'` and `align_corners=False`.
+
         - Pass `output` through the VGG16 model to get the features `f1`.
 
         - Pass `target` through the VGG16 model to get the features `f2`. Note: You should use `torch.no_grad()` to avoid computing gradients for the target image.
@@ -61,7 +61,7 @@ class VGG16PerceptualLoss(nn.Module):
         f1 = self.vgg(output)
 
         with torch.no_grad():
-          f2 = self.vgg(target)
+            f2 = self.vgg(target)
 
         return self.l1_loss(f1, f2)
 
@@ -92,8 +92,8 @@ class CustomImageDataset(torch.utils.data.Dataset):
             if f.lower().endswith((".png", ".jpg", ".jpeg", ".bmp", ".tiff"))
         ]
 
-        #img_paths = [os.path.join(self.root_dir, self.image_files[idx]) for idx in range(len(self.image_files))]
-        #self.images = [Image.open(img_path).convert("RGB") for img_path in img_paths]
+        # img_paths = [os.path.join(self.root_dir, self.image_files[idx]) for idx in range(len(self.image_files))]
+        # self.images = [Image.open(img_path).convert("RGB") for img_path in img_paths]
 
     def __len__(self):
         return len(self.image_files)
@@ -101,7 +101,7 @@ class CustomImageDataset(torch.utils.data.Dataset):
     def __getitem__(self, idx):
         img_path = os.path.join(self.root_dir, self.image_files[idx])
         image = Image.open(img_path).convert("RGB")
-        #image = self.images[idx]
+        # image = self.images[idx]
 
         if self.transformInput:
             imageInput = self.transformInput(image)
@@ -129,50 +129,84 @@ def get_dataloader(inputSize=128, outputSize=256, batch_size=32):
         ]
     )
 
-    root_dir = os.path.join(os.path.dirname(__file__), "../flower_dataset/flowersSquared")
+    root_dir = os.path.join(
+        os.path.dirname(__file__), "../flower_dataset/flowersSquared"
+    )
 
     dataset = CustomImageDataset(
-        root_dir=root_dir, 
-        transformInput=transformInput, 
-        transformOutput=transformOutput)
-    
-    dataloader = DataLoader(dataset, batch_size=batch_size, shuffle=True, pin_memory=True, num_workers=8)
+        root_dir=root_dir,
+        transformInput=transformInput,
+        transformOutput=transformOutput,
+    )
+
+    dataloader = DataLoader(
+        dataset, batch_size=batch_size, shuffle=True, pin_memory=True#, num_workers=8
+    )
 
     return dataloader
 
-class ResNetBlock(nn.Module): 
-    def __init__(self, in_channels, out_channels, kernel_size=9, padding=None, stride=1, norm=True):
+
+class ResNetBlock(nn.Module):
+    def __init__(
+        self,
+        in_channels,
+        out_channels,
+        kernel_size=9,
+        padding=None,
+        stride=1,
+        norm=True,
+    ):
         """Initialisiert einen ResNet-Block mit zwei Convolutional-Schichten, Batch-Normalisierung und ReLU-Aktivierung.
-        
+
         Parameters:
         -----------
 
-        in_channels (int): 
+        in_channels (int):
           Anzahl der Eingabekanäle.
-        
-        out_channels (int): 
+
+        out_channels (int):
             Anzahl der Ausgabekanäle.
-        
-        kernel_size (int, optional): 
+
+        kernel_size (int, optional):
             Größe des Convolutional-Kernels. Standard ist 9.
-        
-        padding (int, optional): 
+
+        padding (int, optional):
             Padding für die Convolutional-Schichten. Standard ist None. In dem Fall wird das Padding automatisch berechnet, so dass die Ausgabe die gleiche Größe wie die Eingabe hat.
         """
         super(ResNetBlock, self).__init__()
         if padding is None:
             padding = (kernel_size - 1) // 2
-            
-        self.conv1 = nn.Conv2d(in_channels, out_channels, kernel_size=kernel_size, padding=padding, bias=False, stride=stride)
-        self.bn1 = nn.BatchNorm2d(out_channels) if norm else nn.Identity() #nn.InstanceNorm2d(out_channels)
+
+        self.conv1 = nn.Conv2d(
+            in_channels,
+            out_channels,
+            kernel_size=kernel_size,
+            padding=padding,
+            bias=False,
+            stride=stride,
+        )
+        self.bn1 = (
+            nn.BatchNorm2d(out_channels) if norm else nn.Identity()
+        )  # nn.InstanceNorm2d(out_channels)
         self.relu = nn.LeakyReLU(inplace=True)
 
-        self.conv2 = nn.Conv2d(out_channels, out_channels, kernel_size=kernel_size, stride=1, padding=padding, bias=False)
-        self.bn2 = nn.BatchNorm2d(out_channels) if norm else nn.Identity() #nn.InstanceNorm2d(out_channels)
+        self.conv2 = nn.Conv2d(
+            out_channels,
+            out_channels,
+            kernel_size=kernel_size,
+            stride=1,
+            padding=padding,
+            bias=False,
+        )
+        self.bn2 = (
+            nn.BatchNorm2d(out_channels) if norm else nn.Identity()
+        )  # nn.InstanceNorm2d(out_channels)
 
         if stride != 1 or in_channels != out_channels:
             self.shortcut = nn.Sequential(
-                nn.Conv2d(in_channels, out_channels, kernel_size=1, bias=False, stride=stride),
+                nn.Conv2d(
+                    in_channels, out_channels, kernel_size=1, bias=False, stride=stride
+                ),
             )
         else:
             self.shortcut = nn.Identity()
@@ -184,7 +218,8 @@ class ResNetBlock(nn.Module):
         out = self.conv2(out)
         out = out + residual
         return self.relu(self.bn2(out))
-        
+
+
 def save_checkpoint(model, optimizer, epoch, filename="checkpoint.pth"):
     """Speichert den aktuellen Zustand des Modells und des Optimierers in einer Datei."""
     torch.save(
@@ -203,7 +238,7 @@ def load_checkpoint(model, optimizer, filename="checkpoint.pth"):
         checkpoint = torch.load(filename, weights_only=True)
         model.load_state_dict(checkpoint["model_state_dict"])
         if optimizer is not None:
-          optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
+            optimizer.load_state_dict(checkpoint["optimizer_state_dict"])
         return checkpoint["epoch"]
     except Exception as e:
         print(f"Fehler beim Laden des Checkpoints {filename}: {e}")
@@ -211,25 +246,41 @@ def load_checkpoint(model, optimizer, filename="checkpoint.pth"):
         return 0
 
 
-def log_metrics(writer, epoch, total_lips, total_mse, total_psnr, total_loss_critic_real, total_loss_critic_fake, total_generator_loss, total_content_loss, total_cnt):
+def log_metrics(
+    writer,
+    epoch,
+    total_lips,
+    total_mse,
+    total_psnr,
+    total_loss_c,
+    total_generator_loss,
+    total_content_loss,
+    total_gradient_norm,
+    total_cnt,
+):
     avg_lips = total_lips / total_cnt
     avg_mse = total_mse / total_cnt
     avg_psnr = total_psnr / total_cnt
-    writer.add_scalar('LPIPS', 1000.0 * avg_lips, epoch)
-    writer.add_scalar('MSE', 1000.0 * avg_mse, epoch)
-    writer.add_scalar('PSNR', avg_psnr, epoch)
+    writer.add_scalar("LPIPS", 1000.0 * avg_lips, epoch)
+    writer.add_scalar("MSE", 1000.0 * avg_mse, epoch)
+    writer.add_scalar("PSNR", avg_psnr, epoch)
 
-    critic_bias = (total_loss_critic_real + total_loss_critic_fake) / 2.0
-    c_real = (total_loss_critic_real - critic_bias) / total_cnt
-    c_fake = (total_loss_critic_fake - critic_bias) / total_cnt
-    writer.add_scalar('Critic Real', c_real, epoch)
-    writer.add_scalar('Critic Fake', c_fake, epoch)
+    writer.add_scalar("loss_C", abs(total_loss_c) / total_cnt, epoch)
 
-    loss_C = total_loss_critic_fake - total_loss_critic_real
-    writer.add_scalar('loss_C', loss_C / total_cnt, epoch)
+    writer.add_scalar(
+        "Generator Loss", 1000.0 * total_generator_loss / total_cnt, epoch
+    )
+    writer.add_scalar("Content Loss", 1000.0 * total_content_loss / total_cnt, epoch)
 
-    writer.add_scalar('Generator Loss', 1000.0 * total_generator_loss / total_cnt, epoch)
-    writer.add_scalar('Content Loss', 1000.0 * total_content_loss / total_cnt, epoch)
+    writer.add_scalar("Gradient Norm", total_gradient_norm / total_cnt, epoch)
+
+
+# Denormalize images
+def denormalize(tensor):
+    mean = torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1).cuda()
+    std = torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1).cuda()
+    return tensor * std + mean
+
 
 def log_images(writer, model, dataloader, epoch):
     model.eval()
@@ -242,15 +293,16 @@ def log_images(writer, model, dataloader, epoch):
             target = target.cuda()
             output = model(input)
 
-            # Denormalize images
-            def denormalize(tensor):
-                mean = torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1).cuda()
-                std = torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1).cuda()
-                return tensor * std + mean
             # Rescale to 256x256 and stitch together
-            input_resized = torch.nn.functional.interpolate(input[0:1], size=(256, 256), mode='bilinear', align_corners=False)
-            output_resized = torch.nn.functional.interpolate(output[0:1], size=(256, 256), mode='bilinear', align_corners=False)
-            target_resized = torch.nn.functional.interpolate(target[0:1], size=(256, 256), mode='bilinear', align_corners=False)
+            input_resized = torch.nn.functional.interpolate(
+                input[0:1], size=(256, 256), mode="bilinear", align_corners=False
+            )
+            output_resized = torch.nn.functional.interpolate(
+                output[0:1], size=(256, 256), mode="bilinear", align_corners=False
+            )
+            target_resized = torch.nn.functional.interpolate(
+                target[0:1], size=(256, 256), mode="bilinear", align_corners=False
+            )
 
             input_norm = denormalize(input_resized[0]).clamp(0, 1)
             output_norm = denormalize(output_resized[0]).clamp(0, 1)
@@ -262,8 +314,9 @@ def log_images(writer, model, dataloader, epoch):
 
         # Convert to grid and log
         stitched = torch.cat(stiches, dim=1)
-        writer.add_image(f'Images', stitched, epoch)
+        writer.add_image(f"Images", stitched, epoch)
     model.train()
+
 
 class PSNR(nn.Module):
     def __init__(self, max_val=1.0):
