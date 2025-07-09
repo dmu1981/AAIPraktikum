@@ -21,8 +21,9 @@ from misc import (
     TensorBoardLogger,
     save_checkpoint,
     LR,
-    ResNet
+    ResNet,
 )
+
 
 class EmbeddingLogger(TensorBoardLogger):
     def __init__(self, validation_set):
@@ -33,21 +34,18 @@ class EmbeddingLogger(TensorBoardLogger):
         self.frames = []
         self.step = 1
 
-    
-
-        
     def calculate_embeddings(self, model):
         """Berechnet alle Embeddings für die Daten im Dataloader.
-        
+
         Parameters:
-        ----------- 
+        -----------
         model (nn.Module):
-            Das Modell, das die Embeddings berechnet. 
+            Das Modell, das die Embeddings berechnet.
 
         Returns:
-        --------  
+        --------
         embeddings (np.ndarray):
-            Die berechneten Embeddings als NumPy-Array. 
+            Die berechneten Embeddings als NumPy-Array.
 
         labels (np.ndarray):
             Die zugehörigen Labels als NumPy-Array.
@@ -62,7 +60,7 @@ class EmbeddingLogger(TensorBoardLogger):
 
         -  Iterieren Sie über `self.validation_set` und berechnen Sie die Embeddings für jedes Batch indem Sie die Eingaben auf das Gerät (`DEVICE`) verschieben und das Modell aufrufen.
 
-        -  Das Modell liefert ein Tupel zurück, wobei der zweite Wert die Embeddings sind. 
+        -  Das Modell liefert ein Tupel zurück, wobei der zweite Wert die Embeddings sind.
 
         -  Verschieben Sie die Embeddings und Labels auf die CPU (rufen Sie `tensor.cpu() <https://docs.pytorch.org/docs/stable/generated/torch.Tensor.cpu.html>`_ auf ) und speichern Sie sie in den Listen `embeddings` und `labels`.
 
@@ -84,14 +82,14 @@ class EmbeddingLogger(TensorBoardLogger):
                 labels.append(l.cpu())
 
         bar.close()
-        
+
         model.train()
 
         return torch.cat(embeddings, dim=0).numpy(), torch.cat(labels, dim=0).numpy()
 
     def calculate_tsne(self, embeddings, previous_embeddings_2d=None):
         """Berechnet das t-SNE-Modell für die Embeddings.
-        
+
         Parameters:
         -----------
         embeddings (np.ndarray):
@@ -100,23 +98,23 @@ class EmbeddingLogger(TensorBoardLogger):
         Returns:
         --------
         embeddings_2d (np.ndarray):
-            Die 2D-Projektion der Embeddings. 
+            Die 2D-Projektion der Embeddings.
 
         **TODO**:
 
-        -  Verwenden Sie `sklearn.manifold.TSNE <https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html>`_ um die Embeddings in 2D zu projizieren. 
-           Setzen Sie `n_components=2` und verwenden Sie `init="pca"` für die Initialisierung. 
+        -  Verwenden Sie `sklearn.manifold.TSNE <https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html>`_ um die Embeddings in 2D zu projizieren.
+           Setzen Sie `n_components=2` und verwenden Sie `init="pca"` für die Initialisierung.
            Wenn `self.previous_embeddings_2d` nicht `None` ist, verwenden Sie stattdessen diese als Initialisierung.
 
         -  Konvertieren Sie die 2D-Embeddings in ein `NumPy-Array <https://numpy.org/doc/stable/reference/generated/numpy.array.html>`_ mit `dtype=np.float32`.
-        
-        -  Normalisieren Sie die 2D-Embeddings, indem Sie den Mittelwert und die Standardabweichung berechnen und 
+
+        -  Normalisieren Sie die 2D-Embeddings, indem Sie den Mittelwert und die Standardabweichung berechnen und
            die Embeddings so transformieren, dass sie einen Mittelwert von 0 und eine Standardabweichung von 1 haben.
 
-        -  Verwenden Sie `np.mean(embeddings_2d, axis=0, keepdims=True) <https://numpy.org/doc/2.2/reference/generated/numpy.mean.html>`_ für den Mittelwert und `np.std(embeddings_2d, axis=0, keepdims=True) <https://numpy.org/doc/stable/reference/generated/numpy.std.html>`_ für die Standardabweichung.  
-        
+        -  Verwenden Sie `np.mean(embeddings_2d, axis=0, keepdims=True) <https://numpy.org/doc/2.2/reference/generated/numpy.mean.html>`_ für den Mittelwert und `np.std(embeddings_2d, axis=0, keepdims=True) <https://numpy.org/doc/stable/reference/generated/numpy.std.html>`_ für die Standardabweichung.
+
         -  Normalisieren Sie die Embeddings mit `(embeddings_2d - m) / s`, wobei `m` der Mittelwert und `s` die Standardabweichung ist.
-        
+
         -  Geben Sie die normalisierten 2D-Embeddings zurück.
         """
         if previous_embeddings_2d is not None:
@@ -135,26 +133,26 @@ class EmbeddingLogger(TensorBoardLogger):
 
     def register_embeddings_2d(self, embeddings_2d, previous_embeddings_2d=None):
         """Registriert die 2D-Embeddings, um sie mit den vorherigen Embeddings zu vergleichen.
-        
+
         Parameters:
         -----------
         embeddings_2d (np.ndarray):
             Die 2D-Embeddings, die registriert werden sollen.
 
-        previous_embeddings_2d (np.ndarray, optional):  
+        previous_embeddings_2d (np.ndarray, optional):
               Die vorherigen 2D-Embeddings, die für die Registrierung verwendet werden sollen. Standardmäßig None.
-              
-        Returns:    
+
+        Returns:
         --------
-        embeddings_2d (np.ndarray):   
-            Die registrierten 2D-Embeddings.  
+        embeddings_2d (np.ndarray):
+            Die registrierten 2D-Embeddings.
 
         **TODO**:
 
         - Wenn `previous_embeddings_2d` nicht `None` ist, verwenden Sie `scipy.linalg.orthogonal_procrustes <https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.orthogonal_procrustes.html>`_ um die 2D-Embeddings zu registrieren.
           Dies hilft, die Embeddings so zu transformieren, dass sie mit den vorherigen bestmöglich Embeddings übereinstimmen.
 
-        - Die Funktion liefert die orthogonale Rotationsmatrix `R` und die Skala `s`, aber wir verwenden nur `R`, um die 2D-Embeddings zu transformieren.    
+        - Die Funktion liefert die orthogonale Rotationsmatrix `R` und die Skala `s`, aber wir verwenden nur `R`, um die 2D-Embeddings zu transformieren.
 
         - Transformieren Sie die 2D-Embeddings mit `embeddings_2d @ R`, um sie an die vorherigen Embeddings anzupassen.
 
@@ -168,14 +166,14 @@ class EmbeddingLogger(TensorBoardLogger):
 
     def visualize_embeddings(self, embeddings_2d, labels, step, axs):
         """Visualisiert die 2D-Embeddings mit t-SNE und speichert das Bild.
-        
+
         Parameters:
         -----------
-        embeddings_2d (np.ndarray): 
+        embeddings_2d (np.ndarray):
             Die 2D-Embeddings, die visualisiert werden sollen.
 
         labels (np.ndarray):
-            Die zugehörigen Labels für die Embeddings.  
+            Die zugehörigen Labels für die Embeddings.
 
         step (int):
             Der aktuelle Schritt oder die Epoche, die für den Titel des Plots verwendet wird.
@@ -185,16 +183,16 @@ class EmbeddingLogger(TensorBoardLogger):
 
         **TODO**:
 
-        - Erstellen Sie mit Pandas ein DataFrame mit den 2D-Embeddings und den zugehörigen Labels, 
+        - Erstellen Sie mit Pandas ein DataFrame mit den 2D-Embeddings und den zugehörigen Labels,
           um die Daten für die Visualisierung vorzubereiten.
-        
+
         - Verwenden Sie `seaborn.scatterplot <https://seaborn.pydata.org/generated/seaborn.scatterplot.html>`_ um die 2D-Embeddings zu visualisieren.
-        
+
         - Setzen Sie die Achsenlimits auf (-3.0, 3.0) für beide Achsen, um eine konsistente Darstellung zu gewährleisten.
-        
+
         - Entfernen Sie die Legende (`axs.get_legend().remove()`), um den Plot übersichtlicher zu gestalten.
-        
-        - Setzen Sie den Titel des Plots sinnvoll.            
+
+        - Setzen Sie den Titel des Plots sinnvoll.
         """
         df = pd.DataFrame(
             {"x": embeddings_2d[:, 0], "y": embeddings_2d[:, 1], "label": labels}
@@ -205,8 +203,6 @@ class EmbeddingLogger(TensorBoardLogger):
         axs.set_ylim(-3.0, 3.0)
         axs.get_legend().remove()
         axs.set_title(f"t-SNE Embedding Projection - Step {step}")
-
-        
 
     def append_frame(self, image):
         """Fügt ein Bild zu den Frames hinzu, die später als GIF gespeichert werden."""
@@ -233,7 +229,9 @@ class EmbeddingLogger(TensorBoardLogger):
     def log_embeddings(self, model):
         embeddings, labels = self.calculate_embeddings(model)
         embeddings_2d = self.calculate_tsne(embeddings, self.previous_embeddings_2d)
-        embeddings_2d = self.register_embeddings_2d(embeddings_2d, self.previous_embeddings_2d)
+        embeddings_2d = self.register_embeddings_2d(
+            embeddings_2d, self.previous_embeddings_2d
+        )
         self.previous_embeddings_2d = embeddings_2d
 
         fig = plt.figure(figsize=(8, 6))
@@ -284,7 +282,7 @@ if __name__ == "__main__":
         if n == 1:
             log_after = 10000
         if n == 2:
-            log_after = 50000  
+            log_after = 50000
 
         epoch(
             model,

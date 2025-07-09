@@ -1,16 +1,16 @@
-
 import torch
 from torch import nn
 from torchvision.models import vgg16
 from misc import get_dataloader, train, ResNetBlock
 from perceptual import VGG16PerceptualLoss
 
+
 class Upscale4x(nn.Module):
     def __init__(self):
         """Initialize the Upscale4x model.
-        
+
         This model performs 4x upscaling using a series of ResNet blocks and an upsampling layer.
-        
+
         **TODO**:
 
         - Call the `__init__` method of the base class `nn.Module`.
@@ -30,32 +30,31 @@ class Upscale4x(nn.Module):
 
         Parameters:
         -----------
-            x (torch.Tensor): 
+            x (torch.Tensor):
               The input tensor to be upscaled.
 
         Returns:
-        --------  
-            torch.Tensor: 
-              The upscaled output tensor. 
+        --------
+            torch.Tensor:
+              The upscaled output tensor.
 
-        **TODO**: 
+        **TODO**:
 
         - Apply the upsampling layer to the input tensor `x`.
 
         - Pass the upsampled tensor through the model.
 
-        - Add the upsampled tensor to the output of the model.  
+        - Add the upsampled tensor to the output of the model.
         """
         pass
 
 
+if __name__ == "__main__":
+    prefix = "upscale4x_perceptual"
 
-if __name__ == "__main__":    
-  prefix = "upscale4x_perceptual"
+    upscaler = Upscale4x().cuda()
+    dataloader = get_dataloader(inputSize=64, outputSize=256, batch_size=16)
+    perceptualLoss = VGG16PerceptualLoss().cuda()
 
-  upscaler = Upscale4x().cuda()
-  dataloader = get_dataloader(inputSize=64, outputSize=256, batch_size=16)
-  perceptualLoss = VGG16PerceptualLoss().cuda()
-
-  # TODO Aufgabe 3: Use mseLoss instead of perceptualLoss for training
-  train(prefix, upscaler, dataloader, perceptualLoss)
+    # TODO Aufgabe 3: Use mseLoss instead of perceptualLoss for training
+    train(prefix, upscaler, dataloader, perceptualLoss)

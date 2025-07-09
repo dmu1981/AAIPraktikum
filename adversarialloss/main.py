@@ -6,6 +6,7 @@ from misc import (
     get_dataloader,
     ResNetBlock,
     VGG16PerceptualLoss,
+    # VGG16PerceptualLossGPT,
     PSNR,
     log_metrics,
     log_images,
@@ -87,7 +88,7 @@ class GeneratorLoss(nn.Module):
         self.critic = critic
 
     def forward(self, output, target, epoch):
-        adversarial_loss = -torch.tanh(0.001 * self.critic(output)).mean()
+        adversarial_loss = -torch.tanh(0.01 * self.critic(output)).mean()
         adversarial_lambda = min(1.0, epoch / 10.0)
 
         content_loss = (
@@ -107,7 +108,7 @@ class CriticLoss(nn.Module):
     def __init__(self):
         super(CriticLoss, self).__init__()
 
-    def compute_gradient_penalty(self, critic, real, fake, lambda_gp=100):
+    def compute_gradient_penalty(self, critic, real, fake, lambda_gp=30):
         batch_size = real.size(0)
         epsilon = torch.rand(batch_size, 1, 1, 1, device=real.device)
         interpolated = (epsilon * real + (1 - epsilon) * fake).requires_grad_(True)
@@ -193,14 +194,15 @@ def train(prefix, generator, critic, dataloader, generator_loss_fn, critic_loss_
 
     writer = SummaryWriter(f"runs/{prefix}")
 
-    lpips_score = Metric(factor=1.0)
-    mse_score = Metric(factor=1.0)
-    psnr_score = Metric(factor=1.0)
-    content_loss_score = Metric(factor=1.0)
-    loss_c_score = Metric(factor=1.0, abs=True)
-    generator_loss_score = Metric(factor=1.0)
-    adversarial_loss_score = Metric(factor=1.0)
-    gradient_norm_score = Metric(factor=1.0)
+    lpips_score = Metric()
+    mse_score = Metric()
+    psnr_score = Metric()
+    content_loss_score = Metric()
+    loss_c_score = Metric(abs=True)
+    generator_loss_score = Metric()
+    adversarial_loss_score = Metric(abs=True)
+    gradient_norm_score = Metric()
+    generator_gradient_norm_score = Metric()
 
     scores = {
         "LPIPS": lpips_score,
@@ -210,7 +212,8 @@ def train(prefix, generator, critic, dataloader, generator_loss_fn, critic_loss_
         "loss_C": loss_c_score,
         "Generator": generator_loss_score,
         "Adversarial": adversarial_loss_score,
-        "Gradient Norm": gradient_norm_score,
+        "Critic Gradient Norm": gradient_norm_score,
+        "Generator Gradient Norm": generator_gradient_norm_score,
     }
 
     checkpoint_dict = {
@@ -230,7 +233,7 @@ def train(prefix, generator, critic, dataloader, generator_loss_fn, critic_loss_
             target = target.cuda()
 
             # Train Critic
-            #with torch.no_grad():
+            # with torch.no_grad():
             output = generator(input)
 
             optimCritic.zero_grad()
@@ -251,13 +254,19 @@ def train(prefix, generator, critic, dataloader, generator_loss_fn, critic_loss_
                     output, target, epoch
                 )
 
+                loss.backward()
+
+                torch.nn.utils.clip_grad_norm_(generator.parameters(), max_norm=1.0)
+                gen_norm = torch.nn.utils.clip_grad_norm_(
+                    generator.parameters(), max_norm=1e9
+                )
+                generator_gradient_norm_score.update(gen_norm)
+
+                optimGenerator.step()
+
                 content_loss_score.update(content_loss.item())
                 adversarial_loss_score.update(adversarial_loss.mean().item())
                 generator_loss_score.update(loss.item())
-
-                loss.backward()
-                torch.nn.utils.clip_grad_norm_(generator.parameters(), max_norm=1.0)
-                optimGenerator.step()
 
                 lpips_score.update(
                     metric(
@@ -292,6 +301,7 @@ if __name__ == "__main__":
     prefix = "upscale4x_mse"
 
     upscaler = Upscale4x().cuda()
+
     critic = Critic().cuda()
     dataloader = get_dataloader(inputSize=64, outputSize=256, batch_size=64)
 
