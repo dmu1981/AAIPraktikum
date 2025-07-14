@@ -181,6 +181,43 @@ class Metric:
 
         return self.factor * avg
 
+def train_critic(critic, generator, input, target, optimCritic, critic_loss_fn):
+    output = generator(input)
+
+    optimCritic.zero_grad()
+    critic_loss, gradient_norm, loss_c = critic_loss_fn(critic, target, output)
+    critic_loss.backward()
+    optimCritic.step()
+
+    return {
+        "gradient_norm": gradient_norm.mean().item(),   
+        "loss_c": loss_c.item(),
+    }
+
+def train_generator(generator, input, target, optimGenerator, generator_loss_fn, epoch):
+    optimGenerator.zero_grad()
+    output = generator(input)
+
+    loss, content_loss, adversarial_loss = generator_loss_fn(
+        output, target, epoch
+    )
+    
+    loss.backward()
+
+    torch.nn.utils.clip_grad_norm_(generator.parameters(), max_norm=1.0)
+    gen_norm = torch.nn.utils.clip_grad_norm_(
+        generator.parameters(), max_norm=1e9
+    )
+
+    optimGenerator.step()
+
+    return {
+        "loss": loss.item(),
+        "content_loss": content_loss.item(),
+        "adversarial_loss": adversarial_loss.mean().item(),
+        "gradient_norm": gen_norm.item(),
+    }, output
+   
 
 def train(prefix, generator, critic, dataloader, generator_loss_fn, critic_loss_fn):
     print(f"Training {prefix} model...")
@@ -232,41 +269,20 @@ def train(prefix, generator, critic, dataloader, generator_loss_fn, critic_loss_
             input = input.cuda()
             target = target.cuda()
 
-            # Train Critic
-            # with torch.no_grad():
-            output = generator(input)
+            scoresCritic = train_critic(critic, generator, input, target, optimCritic, critic_loss_fn)
 
-            optimCritic.zero_grad()
-            critic_loss, gradient_norm, loss_c = critic_loss_fn(critic, target, output)
-            critic_loss.backward()
-            optimCritic.step()
-
-            gradient_norm_score.update(gradient_norm.mean().item())
-            loss_c_score.update(loss_c.item())
+            gradient_norm_score.update(scoresCritic["gradient_norm"])
+            loss_c_score.update(scoresCritic["loss_c"])
 
             # Train Generator only every 4th step
             n_critic = 4
             if (index + 1) % n_critic == 0:
-                optimGenerator.zero_grad()
-                output = generator(input)
+                scoresGenerator, output = train_generator(generator, input, target, optimGenerator, generator_loss_fn, epoch)
 
-                loss, content_loss, adversarial_loss = generator_loss_fn(
-                    output, target, epoch
-                )
-
-                loss.backward()
-
-                torch.nn.utils.clip_grad_norm_(generator.parameters(), max_norm=1.0)
-                gen_norm = torch.nn.utils.clip_grad_norm_(
-                    generator.parameters(), max_norm=1e9
-                )
-                generator_gradient_norm_score.update(gen_norm)
-
-                optimGenerator.step()
-
-                content_loss_score.update(content_loss.item())
-                adversarial_loss_score.update(adversarial_loss.mean().item())
-                generator_loss_score.update(loss.item())
+                generator_gradient_norm_score.update(scoresGenerator["gradient_norm"])
+                content_loss_score.update(scoresGenerator["content_loss"])
+                adversarial_loss_score.update(scoresGenerator["adversarial_loss"])
+                generator_loss_score.update(scoresGenerator["loss"])
 
                 lpips_score.update(
                     metric(
@@ -291,10 +307,6 @@ def train(prefix, generator, critic, dataloader, generator_loss_fn, critic_loss_
             epoch + 1,
             filename=f"{prefix}_checkpoint.pt",
         )
-        # save_checkpoint(
-        #     generator, optimGenerator, epoch + 1, filename=f"{prefix}_generator.pt"
-        # )
-        # save_checkpoint(critic, optimCritic, epoch + 1, filename=f"{prefix}_critic.pt")
 
 
 if __name__ == "__main__":
