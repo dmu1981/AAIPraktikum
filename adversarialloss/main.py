@@ -1,6 +1,7 @@
 import torch
 from torch import nn
 from torchvision.models import vgg16
+import torch.nn.init as init
 from misc import (
     denormalize,
     get_dataloader,
@@ -8,6 +9,7 @@ from misc import (
     VGG16PerceptualLoss,
     # VGG16PerceptualLossGPT,
     PSNR,
+    Metric,
     log_metrics,
     log_images,
     save_checkpoint,
@@ -27,12 +29,16 @@ class Upscale4x(nn.Module):
         )
 
         self.model = nn.Sequential(
+            #ResNetBlock(3, 16*3, kernel_size=7),#
             nn.Conv2d(3, 16 * 3, kernel_size=7, padding=3),
             nn.PixelShuffle(upscale_factor=4),  # First upsample
             nn.PReLU(),
             ResNetBlock(3, 64, kernel_size=7),
+            #ResNetBlock(64, 64, kernel_size=3),#
             ResNetBlock(64, 32, kernel_size=7),
+            #ResNetBlock(32, 32, kernel_size=3),#
             ResNetBlock(32, 32, kernel_size=7),
+            #ResNetBlock(32, 3, kernel_size=7),#
             nn.Conv2d(32, 3, kernel_size=7, padding=3),  # Final conv to reduce channels
         )
 
@@ -63,21 +69,37 @@ class Critic(nn.Module):
             nn.Flatten(),
             nn.Linear(1024, 1, bias=False),  # Final output layer
         )
+        # self.model = nn.Sequential(
+        #     nn.Conv2d(3, 16, kernel_size=9, stride=2, padding=4),
+        #     nn.LeakyReLU(inplace=True),  # 16x128x128
+        #     nn.Conv2d(16, 32, kernel_size=5, stride=2, padding=2),
+        #     nn.LeakyReLU(inplace=True),  # 32x64x64
+        #     nn.Conv2d(32, 64, kernel_size=5, stride=2, padding=2),
+        #     nn.LeakyReLU(inplace=True),  # 64x32x32
+        #     nn.Conv2d(64, 128, kernel_size=5, stride=2, padding=2),
+        #     nn.LeakyReLU(inplace=True),  # 128x16x16
+        #     nn.Conv2d(128, 256, kernel_size=3, stride=2, padding=1),
+        #     nn.LeakyReLU(inplace=True),  # 256x8x8
+        #     nn.Conv2d(256, 512, kernel_size=3, stride=2, padding=1),
+        #     nn.LeakyReLU(inplace=True),  # 512x4x4
+        #     nn.AvgPool2d(kernel_size=(4, 4)),  # 512x1x1
+        #     #nn.LeakyReLU(inplace=True),
+        #     nn.Flatten(),
+        #     nn.Linear(512, 1, bias=False),  # Final output layer
+        # )
 
     def forward(self, x):
         return self.model(x)
-
-
+    
 class TVLoss(nn.Module):
     def __init__(self):
         super(TVLoss, self).__init__()
 
     def forward(self, img):
         return 0.1 * (
-            torch.mean(torch.abs(img[:, :, :-1, :] - img[:, :, 1:, :]))
+              torch.mean(torch.abs(img[:, :, :-1, :] - img[:, :, 1:, :]))
             + torch.mean(torch.abs(img[:, :, :, :-1] - img[:, :, :, 1:]))
-        )
-
+        )    
 
 class GeneratorLoss(nn.Module):
     def __init__(self, critic):
@@ -136,100 +158,88 @@ class CriticLoss(nn.Module):
         loss_c = -critic(real).mean() + critic(fake).mean()
         return loss_c + gp, gradient_norm, loss_c
 
+class UpscaleTrainer():
+    def __init__(self):
+        self.generator = Upscale4x().cuda()
+        self.critic = Critic().cuda()
 
-class Metric:
-    def __init__(self, factor=1.0, abs=False):
-        self.total = 0.0
-        self.count = 0
-        self.step = 0
-        self.factor = factor
-        self.abs = abs
+        # Count and print parameters
+        gen_params = sum(p.numel() for p in self.generator.parameters())
+        critic_params = sum(p.numel() for p in self.critic.parameters())
+        print(f"Generator parameters: {gen_params:,}")
+        print(f"Critic parameters: {critic_params:,}")
 
-    def state_dict(self):
+        self.generatorLoss = GeneratorLoss(self.critic).cuda()
+        self.criticLoss = CriticLoss().cuda()
+
+        self.optimGenerator = torch.optim.Adam(self.generator.parameters(), lr=0.005)
+        self.optimCritic = torch.optim.Adam(self.critic.parameters(), lr=0.001)
+
+    def train_critic(self, input, target):
+        output = self.generator(input)
+
+        self.optimCritic.zero_grad()
+        critic_loss, gradient_norm, loss_c = self.criticLoss(self.critic, target, output)
+        critic_loss.backward()
+        self.optimCritic.step()
+
         return {
-            "total": self.total,
-            "count": self.count,
-            "step": self.step,
-            "factor": self.factor,
-            "abs": self.abs,
+            "gradient_norm": gradient_norm.mean().item(),   
+            "loss_c": loss_c.item(),
         }
 
-    def load_state_dict(self, state_dict):
-        self.total = state_dict["total"]
-        self.count = state_dict["count"]
-        self.step = state_dict["step"]
-        self.factor = state_dict["factor"]
-        self.abs = state_dict["abs"]
+    def train_generator(self, input, target, epoch):
+        self.optimGenerator.zero_grad()
+        output = self.generator(input)
 
-    def update(self, value):
-        self.total += value
-        self.count += 1
-        self.step += 1
+        loss, content_loss, adversarial_loss = self.generatorLoss(
+            output, target, epoch
+        )
+        
+        loss.backward()
 
-    def compute(self, reset=True):
-        if self.count == 0:
-            avg = 0.0
-        else:
-            avg = self.total / self.count
+        torch.nn.utils.clip_grad_norm_(self.generator.parameters(), max_norm=1.0)
+        gen_norm = torch.nn.utils.clip_grad_norm_(
+            self.generator.parameters(), max_norm=1e9
+        )
 
-        if reset:
-            self.total = 0.0
-            self.count = 0
+        self.optimGenerator.step()
 
-        if self.abs:
-            avg = abs(avg)
-
-        return self.factor * avg
-
-def train_critic(critic, generator, input, target, optimCritic, critic_loss_fn):
-    output = generator(input)
-
-    optimCritic.zero_grad()
-    critic_loss, gradient_norm, loss_c = critic_loss_fn(critic, target, output)
-    critic_loss.backward()
-    optimCritic.step()
-
-    return {
-        "gradient_norm": gradient_norm.mean().item(),   
-        "loss_c": loss_c.item(),
-    }
-
-def train_generator(generator, input, target, optimGenerator, generator_loss_fn, epoch):
-    optimGenerator.zero_grad()
-    output = generator(input)
-
-    loss, content_loss, adversarial_loss = generator_loss_fn(
-        output, target, epoch
-    )
-    
-    loss.backward()
-
-    torch.nn.utils.clip_grad_norm_(generator.parameters(), max_norm=1.0)
-    gen_norm = torch.nn.utils.clip_grad_norm_(
-        generator.parameters(), max_norm=1e9
-    )
-
-    optimGenerator.step()
-
-    return {
-        "loss": loss.item(),
-        "content_loss": content_loss.item(),
-        "adversarial_loss": adversarial_loss.mean().item(),
-        "gradient_norm": gen_norm.item(),
-    }, output
+        return {
+            "loss": loss.item(),
+            "content_loss": content_loss.item(),
+            "adversarial_loss": adversarial_loss.mean().item(),
+            "gradient_norm": gen_norm.item(),
+        }, output
    
+    def train_batch(self, input, target, index, epoch):
+        # Train Critic every step
+        scoresCritic = self.train_critic(input, target)
 
-def train(prefix, generator, critic, dataloader, generator_loss_fn, critic_loss_fn):
+        # Train Generator only every 4th step
+        n_critic = 4
+        if (index + 1) % n_critic == 0:
+            scoresGenerator, output = self.train_generator(input, target, epoch)
+        else:
+            scoresGenerator = None
+            output = None
+
+        return scoresCritic, scoresGenerator, output
+
+
+
+
+
+def train(prefix, dataloader):
     print(f"Training {prefix} model...")
-
-    optimGenerator = torch.optim.Adam(generator.parameters(), lr=0.005)
-    optimCritic = torch.optim.Adam(critic.parameters(), lr=0.001)
 
     metric = lpips.LPIPS(net="vgg").cuda()  # Using SqueezeNet for perceptual loss
     mseMetric = nn.MSELoss()
     psnrMetric = PSNR(max_val=6.0)
 
     writer = SummaryWriter(f"runs/{prefix}")
+
+    trainer = UpscaleTrainer()
 
     lpips_score = Metric()
     mse_score = Metric()
@@ -254,13 +264,15 @@ def train(prefix, generator, critic, dataloader, generator_loss_fn, critic_loss_
     }
 
     checkpoint_dict = {
-        "generator": generator,
-        "critic": critic,
-        "optimGenerator": optimGenerator,
-        "optimCritic": optimCritic,
+        "generator": trainer.generator,
+        "critic": trainer.critic,
+        "optimGenerator": trainer.optimGenerator,
+        "optimCritic": trainer.optimCritic,
     } | scores
 
     ep = load_checkpoint(checkpoint_dict, filename=f"{prefix}_checkpoint.pt")
+
+    
 
     for epoch in range(ep, ep + 1000):
         bar = tqdm(dataloader)
@@ -269,16 +281,9 @@ def train(prefix, generator, critic, dataloader, generator_loss_fn, critic_loss_
             input = input.cuda()
             target = target.cuda()
 
-            scoresCritic = train_critic(critic, generator, input, target, optimCritic, critic_loss_fn)
+            scoresCritic, scoresGenerator, output = trainer.train_batch(input, target, index, epoch)
 
-            gradient_norm_score.update(scoresCritic["gradient_norm"])
-            loss_c_score.update(scoresCritic["loss_c"])
-
-            # Train Generator only every 4th step
-            n_critic = 4
-            if (index + 1) % n_critic == 0:
-                scoresGenerator, output = train_generator(generator, input, target, optimGenerator, generator_loss_fn, epoch)
-
+            if scoresGenerator is not None and output is not None:
                 generator_gradient_norm_score.update(scoresGenerator["gradient_norm"])
                 content_loss_score.update(scoresGenerator["content_loss"])
                 adversarial_loss_score.update(scoresGenerator["adversarial_loss"])
@@ -299,9 +304,12 @@ def train(prefix, generator, critic, dataloader, generator_loss_fn, critic_loss_
                     f"[{epoch+1}], Content: {content_loss_score.compute(reset=False):.3f}, loss_C: {loss_c_score.compute(reset=False):.3f}"
                 )
 
+            gradient_norm_score.update(scoresCritic["gradient_norm"])
+            loss_c_score.update(scoresCritic["loss_c"])
+
             log_metrics(writer, scores)
 
-        log_images(writer, generator, dataloader, epoch + 1)
+        log_images(writer, trainer.generator, dataloader, epoch + 1)
         save_checkpoint(
             checkpoint_dict,
             epoch + 1,
@@ -312,12 +320,6 @@ def train(prefix, generator, critic, dataloader, generator_loss_fn, critic_loss_
 if __name__ == "__main__":
     prefix = "upscale4x_mse"
 
-    upscaler = Upscale4x().cuda()
-
-    critic = Critic().cuda()
-    dataloader = get_dataloader(inputSize=64, outputSize=256, batch_size=64)
-
-    generatorLoss = GeneratorLoss(critic).cuda()
-    criticLoss = CriticLoss().cuda()
-
-    train(prefix, upscaler, critic, dataloader, generatorLoss, criticLoss)
+    dataloader = get_dataloader(inputSize=64, outputSize=256, batch_size=48)
+    
+    train(prefix, dataloader)
