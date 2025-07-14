@@ -62,32 +62,14 @@ class Critic(nn.Module):
             nn.LeakyReLU(inplace=True),  # 128x16x16
             nn.Conv2d(256, 512, kernel_size=5, stride=2, padding=2),
             nn.LeakyReLU(inplace=True),  # 256x8x8
-            nn.Conv2d(512, 1024, kernel_size=5, stride=2, padding=2),
-            nn.LeakyReLU(inplace=True),  # 512x4x4
-            nn.AvgPool2d(kernel_size=(4, 4)),  # 512x1x1
+           # nn.Conv2d(512, 1024, kernel_size=5, stride=2, padding=2),
+           # nn.LeakyReLU(inplace=True),  # 512x4x4
+            nn.AvgPool2d(kernel_size=(8, 8)),  # 512x1x1
             nn.LeakyReLU(inplace=True),
             nn.Flatten(),
-            nn.Linear(1024, 1, bias=False),  # Final output layer
+            nn.Linear(512, 1, bias=False),  # Final output layer
         )
-        # self.model = nn.Sequential(
-        #     nn.Conv2d(3, 16, kernel_size=9, stride=2, padding=4),
-        #     nn.LeakyReLU(inplace=True),  # 16x128x128
-        #     nn.Conv2d(16, 32, kernel_size=5, stride=2, padding=2),
-        #     nn.LeakyReLU(inplace=True),  # 32x64x64
-        #     nn.Conv2d(32, 64, kernel_size=5, stride=2, padding=2),
-        #     nn.LeakyReLU(inplace=True),  # 64x32x32
-        #     nn.Conv2d(64, 128, kernel_size=5, stride=2, padding=2),
-        #     nn.LeakyReLU(inplace=True),  # 128x16x16
-        #     nn.Conv2d(128, 256, kernel_size=3, stride=2, padding=1),
-        #     nn.LeakyReLU(inplace=True),  # 256x8x8
-        #     nn.Conv2d(256, 512, kernel_size=3, stride=2, padding=1),
-        #     nn.LeakyReLU(inplace=True),  # 512x4x4
-        #     nn.AvgPool2d(kernel_size=(4, 4)),  # 512x1x1
-        #     #nn.LeakyReLU(inplace=True),
-        #     nn.Flatten(),
-        #     nn.Linear(512, 1, bias=False),  # Final output layer
-        # )
-
+        
     def forward(self, x):
         return self.model(x)
     

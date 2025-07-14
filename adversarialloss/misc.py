@@ -316,3 +316,47 @@ class PSNR(nn.Module):
         mse = F.mse_loss(output, target)
         psnr = 20 * torch.log10(self.max_val / torch.sqrt(mse))
         return psnr
+
+class Metric:
+    def __init__(self, factor=1.0, abs=False):
+        self.total = 0.0
+        self.count = 0
+        self.step = 0
+        self.factor = factor
+        self.abs = abs
+
+    def state_dict(self):
+        return {
+            "total": self.total,
+            "count": self.count,
+            "step": self.step,
+            "factor": self.factor,
+            "abs": self.abs,
+        }
+
+    def load_state_dict(self, state_dict):
+        self.total = state_dict["total"]
+        self.count = state_dict["count"]
+        self.step = state_dict["step"]
+        self.factor = state_dict["factor"]
+        self.abs = state_dict["abs"]
+
+    def update(self, value):
+        self.total += value
+        self.count += 1
+        self.step += 1
+
+    def compute(self, reset=True):
+        if self.count == 0:
+            avg = 0.0
+        else:
+            avg = self.total / self.count
+
+        if reset:
+            self.total = 0.0
+            self.count = 0
+
+        if self.abs:
+            avg = abs(avg)
+
+        return self.factor * avg
