@@ -147,15 +147,7 @@ def get_dataloader(inputSize=128, outputSize=256, batch_size=32):
 
 
 class ResNetBlock(nn.Module):
-    def __init__(
-        self,
-        in_channels,
-        out_channels,
-        kernel_size=9,
-        padding=None,
-        stride=1,
-        norm=True,
-    ):
+    def __init__(self, in_channels, out_channels, kernel_size=9, padding=None):
         """Initialisiert einen ResNet-Block mit zwei Convolutional-Schichten, Batch-Normalisierung und ReLU-Aktivierung.
 
         Parameters:
@@ -183,12 +175,9 @@ class ResNetBlock(nn.Module):
             kernel_size=kernel_size,
             padding=padding,
             bias=False,
-            stride=stride,
         )
-        self.bn1 = (
-            nn.BatchNorm2d(out_channels) if norm else nn.Identity()
-        )  # nn.InstanceNorm2d(out_channels)
-        self.relu = nn.LeakyReLU(inplace=True)
+        self.bn1 = nn.BatchNorm2d(out_channels)
+        self.relu = nn.ReLU(inplace=True)
 
         self.conv2 = nn.Conv2d(
             out_channels,
@@ -198,15 +187,11 @@ class ResNetBlock(nn.Module):
             padding=padding,
             bias=False,
         )
-        self.bn2 = (
-            nn.BatchNorm2d(out_channels) if norm else nn.Identity()
-        )  # nn.InstanceNorm2d(out_channels)
+        self.bn2 = nn.BatchNorm2d(out_channels)
 
-        if stride != 1 or in_channels != out_channels:
+        if in_channels != out_channels:
             self.shortcut = nn.Sequential(
-                nn.Conv2d(
-                    in_channels, out_channels, kernel_size=1, bias=False, stride=stride
-                ),
+                nn.Conv2d(in_channels, out_channels, kernel_size=1, bias=False),
             )
         else:
             self.shortcut = nn.Identity()
@@ -214,11 +199,10 @@ class ResNetBlock(nn.Module):
     def forward(self, x):
         residual = self.shortcut(x)
         out = self.conv1(x)
-        out = self.relu(self.bn1(out))
+        out = self.bn1(self.relu(out))
         out = self.conv2(out)
         out = out + residual
-        return self.relu(self.bn2(out))
-
+        return self.bn2(self.relu(out))
 
 def save_checkpoint(checkpoint_dict, epoch, filename="checkpoint.pth"):
     """Speichert den aktuellen Zustand des Modells und des Optimierers in einer Datei."""
@@ -264,6 +248,16 @@ def log_metrics(writer, metrics):
     writer.flush()
 
 
+class TVLoss(nn.Module):
+    def __init__(self):
+        super(TVLoss, self).__init__()
+
+    def forward(self, img):
+        return (
+            torch.mean(torch.abs(img[:, :, :-1, :] - img[:, :, 1:, :]))
+            + torch.mean(torch.abs(img[:, :, :, :-1] - img[:, :, :, 1:]))
+        )
+    
 # Denormalize images
 def denormalize(tensor):
     mean = torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1).cuda()
@@ -317,6 +311,7 @@ class PSNR(nn.Module):
         psnr = 20 * torch.log10(self.max_val / torch.sqrt(mse))
         return psnr
 
+
 class Metric:
     def __init__(self, factor=1.0, abs=False):
         self.total = 0.0
@@ -360,3 +355,89 @@ class Metric:
             avg = abs(avg)
 
         return self.factor * avg
+
+
+def train(prefix, trainer, dataloader):
+    print(f"Training {prefix} model...")
+
+    metric = lpips.LPIPS(net="vgg").cuda()  # Using SqueezeNet for perceptual loss
+    mseMetric = nn.MSELoss()
+    psnrMetric = PSNR(max_val=6.0)
+
+    writer = SummaryWriter(f"runs/{prefix}")
+
+    lpips_score = Metric()
+    mse_score = Metric()
+    psnr_score = Metric()
+    content_loss_score = Metric()
+    loss_c_score = Metric(abs=True)
+    generator_loss_score = Metric()
+    adversarial_loss_score = Metric(abs=True)
+    gradient_norm_score = Metric()
+    generator_gradient_norm_score = Metric()
+
+    scores = {
+        "LPIPS": lpips_score,
+        "MSE": mse_score,
+        "PSNR": psnr_score,
+        "Content": content_loss_score,
+        "loss_C": loss_c_score,
+        "Generator": generator_loss_score,
+        "Adversarial": adversarial_loss_score,
+        "Critic Gradient Norm": gradient_norm_score,
+        "Generator Gradient Norm": generator_gradient_norm_score,
+    }
+
+    checkpoint_dict = {
+        "generator": trainer.generator,
+        "critic": trainer.critic,
+        "optimGenerator": trainer.optimGenerator,
+        "optimCritic": trainer.optimCritic,
+    } | scores
+
+    ep = load_checkpoint(checkpoint_dict, filename=f"{prefix}_checkpoint.pt")
+
+    for epoch in range(ep, ep + 1000):
+        bar = tqdm(dataloader)
+
+        for input, target in bar:
+            input = input.cuda()
+            target = target.cuda()
+
+            scoresCritic, scoresGenerator, output = trainer.train_batch(
+                input, target, epoch
+            )
+
+            if scoresGenerator is not None and output is not None:
+                generator_gradient_norm_score.update(scoresGenerator["gradient_norm"])
+                content_loss_score.update(scoresGenerator["content_loss"])
+                adversarial_loss_score.update(scoresGenerator["adversarial_loss"])
+                generator_loss_score.update(scoresGenerator["loss"])
+
+                lpips_score.update(
+                    metric(
+                        2.0 * denormalize(output) - 1.0, 2.0 * denormalize(target) - 1.0
+                    )
+                    .mean()
+                    .item()
+                )
+
+                mse_score.update(mseMetric(output, target).item())
+                psnr_score.update(psnrMetric(output, target).item())
+
+                bar.set_description(
+                    f"[{epoch+1}], Content: {content_loss_score.compute(reset=False):.3f}, loss_C: {loss_c_score.compute(reset=False):.3f}"
+                )
+
+            if scoresCritic is not None:
+                gradient_norm_score.update(scoresCritic["gradient_norm"])
+                loss_c_score.update(scoresCritic["loss_c"])
+
+            log_metrics(writer, scores)
+
+        log_images(writer, trainer.generator, dataloader, epoch + 1)
+        save_checkpoint(
+            checkpoint_dict,
+            epoch + 1,
+            filename=f"{prefix}_checkpoint.pt",
+        )
