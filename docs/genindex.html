@@ -65,6 +65,7 @@ window.addEventListener("load", () => mermaid.run());
 <li class="toctree-l1"><a class="reference internal" href="resnet/index.html">ResNet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="embeddings/index.html">Embeddings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="perceptualloss/index.html">Perceptual Loss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="adversarialloss/index.html">Adversarial Loss</a></li>
 </ul>
 
         </div>
@@ -98,8 +99,7 @@ window.addEventListener("load", () => mermaid.run());
  | <a href="#C"><strong>C</strong></a>
  | <a href="#E"><strong>E</strong></a>
  | <a href="#F"><strong>F</strong></a>
- | <a href="#M"><strong>M</strong></a>
- | <a href="#R"><strong>R</strong></a>
+ | <a href="#G"><strong>G</strong></a>
  | <a href="#S"><strong>S</strong></a>
  | <a href="#T"><strong>T</strong></a>
  | <a href="#U"><strong>U</strong></a>
@@ -109,18 +109,20 @@ window.addEventListener("load", () => mermaid.run());
 <h2 id="_">_</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="perceptualloss/index.html#perceptual.VGG16PerceptualLoss.__init__">__init__() (Methode von perceptual.VGG16PerceptualLoss)</a>
+      <li><a href="adversarialloss/index.html#adversarialloss.main.Generator.__init__">__init__() (Methode von adversarialloss.main.Generator)</a>
 
       <ul>
+        <li><a href="adversarialloss/index.html#adversarialloss.misc.ResNetBlock.__init__">(Methode von adversarialloss.misc.ResNetBlock)</a>
+</li>
+        <li><a href="perceptualloss/index.html#perceptual.TVLoss.__init__">(Methode von perceptual.TVLoss)</a>
+</li>
+        <li><a href="perceptualloss/index.html#perceptual.VGG16PerceptualLoss.__init__">(Methode von perceptual.VGG16PerceptualLoss)</a>
+</li>
         <li><a href="perceptualloss/index.html#perceptualloss.misc.ResNetBlock.__init__">(Methode von perceptualloss.misc.ResNetBlock)</a>
 </li>
         <li><a href="pytorch/cnn.html#pytorch.cifar100.CNNNetwork.__init__">(Methode von pytorch.cifar100.CNNNetwork)</a>
 </li>
         <li><a href="pytorch/index.html#pytorch.simple.SimpleNetwork.__init__">(Methode von pytorch.simple.SimpleNetwork)</a>
-</li>
-        <li><a href="resnet/index.html#resnet.ResidualBlock.__init__">(Methode von resnet.ResidualBlock)</a>
-</li>
-        <li><a href="resnet/index.html#resnet.ResNet.__init__">(Methode von resnet.ResNet)</a>
 </li>
         <li><a href="perceptualloss/index.html#upscale2x.Upscale2x.__init__">(Methode von upscale2x.Upscale2x)</a>
 </li>
@@ -133,12 +135,6 @@ window.addEventListener("load", () => mermaid.run());
 <h2 id="C">C</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="embeddings/index.html#embeddings.EmbeddingLogger.calculate_embeddings">calculate_embeddings() (Methode von embeddings.EmbeddingLogger)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="embeddings/index.html#embeddings.EmbeddingLogger.calculate_tsne">calculate_tsne() (Methode von embeddings.EmbeddingLogger)</a>
-</li>
       <li><a href="pytorch/cnn.html#pytorch.cifar100.CNNNetwork">CNNNetwork (Klasse in pytorch.cifar100)</a>
 </li>
   </ul></td>
@@ -155,14 +151,16 @@ window.addEventListener("load", () => mermaid.run());
 <h2 id="F">F</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="perceptualloss/index.html#perceptual.VGG16PerceptualLoss.forward">forward() (Methode von perceptual.VGG16PerceptualLoss)</a>
+      <li><a href="adversarialloss/index.html#adversarialloss.main.Generator.forward">forward() (Methode von adversarialloss.main.Generator)</a>
 
       <ul>
+        <li><a href="perceptualloss/index.html#perceptual.TVLoss.forward">(Methode von perceptual.TVLoss)</a>
+</li>
+        <li><a href="perceptualloss/index.html#perceptual.VGG16PerceptualLoss.forward">(Methode von perceptual.VGG16PerceptualLoss)</a>
+</li>
         <li><a href="pytorch/cnn.html#pytorch.cifar100.CNNNetwork.forward">(Methode von pytorch.cifar100.CNNNetwork)</a>
 </li>
         <li><a href="pytorch/index.html#pytorch.simple.SimpleNetwork.forward">(Methode von pytorch.simple.SimpleNetwork)</a>
-</li>
-        <li><a href="resnet/index.html#resnet.ResidualBlock.forward">(Methode von resnet.ResidualBlock)</a>
 </li>
         <li><a href="perceptualloss/index.html#upscale2x.Upscale2x.forward">(Methode von upscale2x.Upscale2x)</a>
 </li>
@@ -172,22 +170,10 @@ window.addEventListener("load", () => mermaid.run());
   </ul></td>
 </tr></table>
 
-<h2 id="M">M</h2>
+<h2 id="G">G</h2>
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="resnet/index.html#resnet.ResNet.make_layer">make_layer() (Methode von resnet.ResNet)</a>
-</li>
-  </ul></td>
-</tr></table>
-
-<h2 id="R">R</h2>
-<table style="width: 100%" class="indextable genindextable"><tr>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="embeddings/index.html#embeddings.EmbeddingLogger.register_embeddings_2d">register_embeddings_2d() (Methode von embeddings.EmbeddingLogger)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="resnet/index.html#resnet.ResidualBlock">ResidualBlock (Klasse in resnet)</a>
+      <li><a href="adversarialloss/index.html#adversarialloss.main.Generator">Generator (Klasse in adversarialloss.main)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -204,6 +190,10 @@ window.addEventListener("load", () => mermaid.run());
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="pytorch/index.html#pytorch.simple.train_model">train_model() (im Modul pytorch.simple)</a>
+</li>
+  </ul></td>
+  <td style="width: 33%; vertical-align: top;"><ul>
+      <li><a href="perceptualloss/index.html#perceptual.TVLoss">TVLoss (Klasse in perceptual)</a>
 </li>
   </ul></td>
 </tr></table>
@@ -224,10 +214,6 @@ window.addEventListener("load", () => mermaid.run());
 <table style="width: 100%" class="indextable genindextable"><tr>
   <td style="width: 33%; vertical-align: top;"><ul>
       <li><a href="perceptualloss/index.html#perceptual.VGG16PerceptualLoss">VGG16PerceptualLoss (Klasse in perceptual)</a>
-</li>
-  </ul></td>
-  <td style="width: 33%; vertical-align: top;"><ul>
-      <li><a href="embeddings/index.html#embeddings.EmbeddingLogger.visualize_embeddings">visualize_embeddings() (Methode von embeddings.EmbeddingLogger)</a>
 </li>
   </ul></td>
 </tr></table>

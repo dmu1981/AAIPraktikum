@@ -21,3 +21,4 @@ Das dazugehörige Repository finden Sie auf `GitHub <https://github.com/dmu1981/
    ResNet <../resnet/index>   
    Embeddings <../embeddings/index>
    Perceptual Loss <../perceptualloss/index>
+   Adversarial Loss <../adversarialloss/index>

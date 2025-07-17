@@ -100,6 +100,23 @@ class Critic(nn.Module):
 
 class GeneratorLoss(nn.Module):
     def __init__(self, critic):
+        """Initialize the GeneratorLoss module.
+        
+        Parameters:
+        -----------
+            critic (nn.Module):
+              The critic model used for adversarial loss computation.
+              
+        **TODO**:
+        
+        - Call the `__init__` method of the base class `nn.Module`.
+
+        - Initialize the `VGG16PerceptualLoss` for perceptual loss computation.
+
+        - Initialize the `TVLoss` for total variation loss computation.
+
+        - Store the critic model for adversarial loss computation.  
+        """
         super(GeneratorLoss, self).__init__()
         self.perceptualLoss = VGG16PerceptualLoss()
         self.mseLoss = nn.MSELoss()
@@ -107,12 +124,61 @@ class GeneratorLoss(nn.Module):
         self.critic = critic
 
     def forward(self, output, target, epoch):
-        adversarial_loss = -torch.tanh(0.01 * self.critic(output)).mean()
+        """Compute the generator loss.
 
-        if epoch < 5:
-            adversarial_lambda = 0.0
-        else:
-            adversarial_lambda = min(1.0, (epoch - 3) / 5.0)
+        The generator loss is a combination of perceptual loss, total variation loss, and adversarial loss.
+
+        The sum of the perceptual loss and total variation loss is called content loss as it is used to measure the quality of the generated image in terms 
+        of content similarity to the target image.
+
+        The adversarial loss is computed using the critic model, which is trained to distinguish between real and generated images.
+        The generator aims to maximize the critic's output for generated images, thus it tries to fool the critic. Mathematically, this is achieved by negating
+        the critic's output. As the critic output is unbounded, we apply a tanh activation to it to ensure the adversarial loss is in a reasonable range.
+
+        Since the critic is not yet fully trained during the initial epochs, we apply a linear scaling factor to the adversarial loss based on the current epoch. 
+        This allows the generator to focus more on content loss in the early stages of training and gradually increase the importance of adversarial loss as 
+        training progresses. In the first epoch, the adversarial loss is not applied at all, and it starts to increase linearly until it reaches its full weight at epoch 5.
+
+        The generator shall minimize the content loss while maximizing the adversarial loss, which is achieved by negating the critic's output.
+
+        
+        Parameters:
+        -----------
+            output (torch.Tensor):
+              The output tensor from the generator.
+
+            target (torch.Tensor):
+              The target tensor for comparison.
+
+            epoch (int):
+              The current training epoch.
+              
+        Returns:
+        --------
+            Tuple:
+            - torch.Tensor: The total generator loss, which includes perceptual loss, TV loss, and adversarial loss.
+
+            - torch.Tensor: The content loss (perceptual loss).         
+
+            - torch.Tensor: The adversarial loss computed from the critic.
+        
+        **TODO**:
+        - Compute the critic score for the generated images using the critic model.
+        
+        - Compute the adversarial loss by applying a tanh activation to the critic's output and scaling it by 0.01.
+
+        - Compute the linear scaling factor for the adversarial loss based on the current epoch. The scaling factor should be 0 in the first epoch and increase linearly to 1 by epoch 5.
+        
+        - Compute the content loss as the sum of perceptual loss and TV loss. Scale the TV loss by 0.1 to reduce its impact on the total loss.
+
+        - Compute the total generator loss as the sum of content loss and the **negative** adversarial loss scaled by the linear scaling factor.
+
+        - Return a tuple containing the total generator loss, content loss, and adversarial loss.
+        """
+        #adversarial_loss = torch.tanh(0.01 * self.critic(output)).mean()
+        adversarial_loss = 0.01 * self.critic(output).mean()
+
+        adversarial_lambda = min(1.0, epoch / 5.0)
 
         content_loss = (
             self.perceptualLoss(output, target)
@@ -121,7 +187,7 @@ class GeneratorLoss(nn.Module):
         )
 
         return (
-            content_loss + adversarial_lambda * adversarial_loss,
+            content_loss - adversarial_lambda * adversarial_loss,
             content_loss,
             adversarial_loss,
         )
@@ -169,8 +235,8 @@ class UpscaleTrainer:
         self.generatorLoss = GeneratorLoss(self.critic).cuda()
         self.criticLoss = CriticLoss().cuda()
 
-        self.optimGenerator = torch.optim.Adam(self.generator.parameters(), lr=0.005)
-        self.optimCritic = torch.optim.Adam(self.critic.parameters(), lr=0.001)
+        self.optimGenerator = torch.optim.Adam(self.generator.parameters(), lr=0.0005)
+        self.optimCritic = torch.optim.Adam(self.critic.parameters(), lr=0.0001)
 
         # Count and print parameters
         gen_params = sum(p.numel() for p in self.generator.parameters())
@@ -186,6 +252,7 @@ class UpscaleTrainer:
             self.critic, target, output
         )
         critic_loss.backward()
+        torch.nn.utils.clip_grad_norm_(self.generator.parameters(), max_norm=5.0)
         self.optimCritic.step()
 
         return {
@@ -221,7 +288,7 @@ class UpscaleTrainer:
         self.criticUpdates += 1
 
         # Train Generator only every 4th step
-        if self.criticUpdates == 4 or epoch < 4:
+        if self.criticUpdates == 5 or epoch < 1:
             scoresGenerator, output = self.train_generator(input, target, epoch)
             self.criticUpdates = 0
         else:

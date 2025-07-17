@@ -29,6 +29,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Stichwortverzeichnis" href="../genindex.html" />
     <link rel="search" title="Suche" href="../search.html" />
+    <link rel="next" title="Adversarial Loss" href="../adversarialloss/index.html" />
     <link rel="prev" title="Embedding Vectors" href="../embeddings/index.html" /> 
 </head>
 
@@ -62,13 +63,20 @@
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Perceptual Loss</a><ul>
 <li class="toctree-l2"><a class="reference internal" href="#vgg16">VGG16</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#perceptual-loss-mit-vgg16">Perceptual Loss mit VGG16</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#total-variation-loss">Total Variation Loss</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#image-upscaling">Image Upscaling</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#lpips-ein-masz-fur-wahrgenommene-bildqualitat">LPIPS: Ein Maß für wahrgenommene Bildqualität</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#psnr-klassisches-masz-zur-bildqualitat">PSNR: Klassisches Maß zur Bildqualität</a></li>
-<li class="toctree-l2"><a class="reference internal" href="#aufgabe-1-perceptual-loss-implementieren"><strong>Aufgabe 1</strong>: Perceptual Loss implementieren</a><ul>
+<li class="toctree-l2"><a class="reference internal" href="#pixelshuffle-in-pytorch">PixelShuffle in PyTorch</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-1-perceptual-loss-und-total-variation-loss-implementieren"><strong>Aufgabe 1</strong>: Perceptual Loss und Total Variation Loss implementieren</a><ul>
 <li class="toctree-l3"><a class="reference internal" href="#perceptual.VGG16PerceptualLoss"><code class="docutils literal notranslate"><span class="pre">VGG16PerceptualLoss</span></code></a><ul>
 <li class="toctree-l4"><a class="reference internal" href="#perceptual.VGG16PerceptualLoss.__init__"><code class="docutils literal notranslate"><span class="pre">VGG16PerceptualLoss.__init__()</span></code></a></li>
 <li class="toctree-l4"><a class="reference internal" href="#perceptual.VGG16PerceptualLoss.forward"><code class="docutils literal notranslate"><span class="pre">VGG16PerceptualLoss.forward()</span></code></a></li>
+</ul>
+</li>
+<li class="toctree-l3"><a class="reference internal" href="#perceptual.TVLoss"><code class="docutils literal notranslate"><span class="pre">TVLoss</span></code></a><ul>
+<li class="toctree-l4"><a class="reference internal" href="#perceptual.TVLoss.__init__"><code class="docutils literal notranslate"><span class="pre">TVLoss.__init__()</span></code></a></li>
+<li class="toctree-l4"><a class="reference internal" href="#perceptual.TVLoss.forward"><code class="docutils literal notranslate"><span class="pre">TVLoss.forward()</span></code></a></li>
 </ul>
 </li>
 </ul>
@@ -95,6 +103,7 @@
 <li class="toctree-l2"><a class="reference internal" href="#musterlosung"><strong>Musterlösung</strong></a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../adversarialloss/index.html">Adversarial Loss</a></li>
 </ul>
 
         </div>
@@ -167,6 +176,21 @@ Die beiden zu vergleichenden Bilder (<span class="math notranslate nohighlight">
 VGG16-Netzwerk geleitet. Die Aktivierungen aus den Convolutional-Layern werden extrahiert und der L1-Abstand zwischen den
 entsprechenden Feature-Maps wird berechnet.</p>
 </section>
+<section id="total-variation-loss">
+<h2>Total Variation Loss<a class="headerlink" href="#total-variation-loss" title="Link to this heading"></a></h2>
+<p>Der <em>Total Variation Loss</em> (TV Loss) ist eine Regularisierungstechnik, die häufig in der Bildverarbeitung eingesetzt wird, um die Glätte und Konsistenz von Bildern zu fördern.
+Er wird oft in Kombination mit Perceptual Loss verwendet, um die Qualität der generierten Bilder weiter zu verbessern.
+Der TV Loss misst die Variation der Pixelwerte in einem Bild und bestraft große Änderungen zwischen benachbarten Pixeln.
+Dies führt zu glatteren Übergängen und reduziert Rauschen in den Bildern.
+Der TV Loss wird wie folgt berechnet:</p>
+<div class="math notranslate nohighlight">
+\[\text{TV}(x) = \sum_{i,j} \left( |x_{i+1,j} - x_{i,j}| + |x_{i,j+1} - x_{i,j}| \right)\]</div>
+<p>Die Summe wird über alle Pixel im Bild gebildet, wobei <span class="math notranslate nohighlight">\(x_{i,j}\)</span> den Pixelwert an der Position <span class="math notranslate nohighlight">\((i,j)\)</span> darstellt.
+Die obige Formel berechnet die absolute Differenz zwischen benachbarten Pixeln in horizontaler und vertikaler Richtung.
+Der TV Loss wird oft mit einem Gewicht multipliziert, um seinen Einfluss auf den Gesamtverlust zu steuern.</p>
+<a class="reference internal image-reference" href="../_images/tvloss.png"><img alt="../_images/tvloss.png" class="align-center" src="../_images/tvloss.png" style="width: 600px;" />
+</a>
+</section>
 <section id="image-upscaling">
 <h2>Image Upscaling<a class="headerlink" href="#image-upscaling" title="Link to this heading"></a></h2>
 <p>Die Bildvergrößerung, auch <em>Image Super-Resolution</em> genannt, ist ein zentrales Problem
@@ -224,9 +248,41 @@ LPIPS oder SSIM ergänzt.</p>
 <p>In dieser Arbeit wird PSNR als Referenzmaß genutzt, um klassische Fehlermaße mit
 perzeptuell motivierten Alternativen zu vergleichen.</p>
 </section>
-<section id="aufgabe-1-perceptual-loss-implementieren">
-<h2><strong>Aufgabe 1</strong>: Perceptual Loss implementieren<a class="headerlink" href="#aufgabe-1-perceptual-loss-implementieren" title="Link to this heading"></a></h2>
-<p>In dieser Aufgabe implementieren Sie den Perceptual Loss unter Verwendung des VGG16-Netzwerks.</p>
+<section id="pixelshuffle-in-pytorch">
+<h2>PixelShuffle in PyTorch<a class="headerlink" href="#pixelshuffle-in-pytorch" title="Link to this heading"></a></h2>
+<p>Die Klasse <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.PixelShuffle.html">torch.nn.PixelShuffle</a> wird in neuronalen Netzen verwendet, um die räumliche Auflösung von Tensoren zu erhöhen. Sie ist besonders nützlich in Super-Resolution-Netzen, bei denen ein niedrig aufgelöstes Bild in ein hochaufgelöstes umgewandelt werden soll.</p>
+<p><strong>Funktionsweise</strong></p>
+<p><code class="docutils literal notranslate"><span class="pre">PixelShuffle</span></code> nimmt einen Eingabetensor der Form <code class="docutils literal notranslate"><span class="pre">(N,</span> <span class="pre">C</span> <span class="pre">*</span> <span class="pre">r^2,</span> <span class="pre">H,</span> <span class="pre">W)</span></code> und reorganisiert ihn in einen Tensor der Form <code class="docutils literal notranslate"><span class="pre">(N,</span> <span class="pre">C,</span> <span class="pre">H</span> <span class="pre">*</span> <span class="pre">r,</span> <span class="pre">W</span> <span class="pre">*</span> <span class="pre">r)</span></code>, wobei:</p>
+<ul class="simple">
+<li><p><code class="docutils literal notranslate"><span class="pre">N</span></code>: Batchgröße</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">C</span></code>: Anzahl der Kanäle nach dem Shuffle</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">H,</span> <span class="pre">W</span></code>: Höhe und Breite</p></li>
+<li><p><code class="docutils literal notranslate"><span class="pre">r</span></code>: Upscale-Faktor</p></li>
+</ul>
+<p>Dabei werden die zusätzlichen Kanäle genutzt, um die räumliche Auflösung zu vergrößern. Intern wird dies durch eine Umordnung (Rearrangement) der Daten erreicht, nicht durch Interpolation.</p>
+<a class="reference internal image-reference" href="../_images/pixelshuffle.png"><img alt="../_images/pixelshuffle.png" class="align-center" src="../_images/pixelshuffle.png" style="width: 600px;" />
+</a>
+<p><strong>Beispiel</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+
+<span class="c1"># Upscale-Faktor</span>
+<span class="n">r</span> <span class="o">=</span> <span class="mi">2</span>
+<span class="n">pixel_shuffle</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">PixelShuffle</span><span class="p">(</span><span class="n">upscale_factor</span><span class="o">=</span><span class="n">r</span><span class="p">)</span>
+
+<span class="c1"># Beispiel-Input: (1, 4, 2, 2) → 4 Kanäle = 1 Kanal × 2^2</span>
+<span class="nb">input</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">randn</span><span class="p">(</span><span class="mi">1</span><span class="p">,</span> <span class="mi">4</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+<span class="n">output</span> <span class="o">=</span> <span class="n">pixel_shuffle</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+
+<span class="nb">print</span><span class="p">(</span><span class="n">output</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>  <span class="c1"># Ausgabe: torch.Size([1, 1, 4, 4])</span>
+</pre></div>
+</div>
+<p><strong>Verwendung</strong></p>
+<p>PixelShuffle wird oft in Decoder-Architekturen oder Autoencodern eingesetzt, um räumliche Auflösung effizient zu erhöhen, ohne auf kostenintensive Upsampling-Operationen wie <code class="docutils literal notranslate"><span class="pre">ConvTranspose2d</span></code> oder <code class="docutils literal notranslate"><span class="pre">Bilinear</span> <span class="pre">Upsampling</span></code> zurückzugreifen.</p>
+</section>
+<section id="aufgabe-1-perceptual-loss-und-total-variation-loss-implementieren">
+<h2><strong>Aufgabe 1</strong>: Perceptual Loss und Total Variation Loss implementieren<a class="headerlink" href="#aufgabe-1-perceptual-loss-und-total-variation-loss-implementieren" title="Link to this heading"></a></h2>
+<p>In dieser Aufgabe implementieren Sie den Perceptual Loss unter Verwendung des VGG16-Netzwerks sowie den Total Variation Loss.</p>
 <p>Sie arbeiten in der Datei <code class="file docutils literal notranslate"><span class="pre">perceptualloss/perceptual.py</span></code>.</p>
 <p>Zunächst müssen Sie das VGG16-Netzwerk laden und die erforderlichen Layer extrahieren.
 Verwenden Sie dazu die <cite>torchvision.models</cite>-Bibliothek, um das vortrainierte VGG16-Modell zu laden.
@@ -236,8 +292,6 @@ Sie können es mit <cite>torchvision.models.vgg16(pretrained=True)</cite> laden.
 Eine Liste mit allen Features können Sie mit <cite>model.features</cite> abrufen.</p>
 <p>Deaktiveren Sie die Gradientenberechnung für das VGG16-Netzwerk, da wir es nicht trainieren wollen.
 Setzen Sie dazu <cite>requires_grad</cite> auf <cite>False</cite> für alle Parameter des Modells.</p>
-<p>Achten Sie beim Vorwärts-Pass darauf, dass die Eingabebilder auf die Größe 224x224 skaliert werden,
-da VGG16 auf dieser Größe trainiert wurde. Verwenden Sie dazu <cite>torch.nn.functional.interpolate</cite>.</p>
 <p>Implementieren Sie nun die Klasse <cite>VGG16PerceptualLoss</cite> in der Datei <cite>perceptualloss/perceptual.py</cite>.</p>
 <dl class="py class">
 <dt class="sig sig-object py" id="perceptual.VGG16PerceptualLoss">
@@ -324,6 +378,64 @@ NOTE: Iterate through all parameters by using the <cite>self.vgg.parameters()</c
 </pre></div>
 </div>
 </div>
+<p>Implementieren Sie nun die Klasse <cite>TVLoss</cite>, ebenfalls in der Datei <cite>perceptualloss/perceptual.py</cite>.</p>
+<dl class="py class">
+<dt class="sig sig-object py" id="perceptual.TVLoss">
+<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">perceptual.</span></span><span class="sig-name descname"><span class="pre">TVLoss</span></span><a class="reference internal" href="../_modules/perceptual.html#TVLoss"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#perceptual.TVLoss" title="Link to this definition"></a></dt>
+<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
+<dl class="py method">
+<dt class="sig sig-object py" id="perceptual.TVLoss.__init__">
+<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptual.html#TVLoss.__init__"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#perceptual.TVLoss.__init__" title="Link to this definition"></a></dt>
+<dd><p>Initialize the Total Variation Loss.
+This loss encourages spatial smoothness in the output image.</p>
+</dd></dl>
+
+<dl class="py method">
+<dt class="sig sig-object py" id="perceptual.TVLoss.forward">
+<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">img</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptual.html#TVLoss.forward"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#perceptual.TVLoss.forward" title="Link to this definition"></a></dt>
+<dd><p>Compute the Total Variation Loss.</p>
+<section id="id1">
+<h3>Parameters:<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt>img (torch.Tensor):</dt><dd><p>The input image tensor.</p>
+</dd>
+</dl>
+</div></blockquote>
+</section>
+<section id="id2">
+<h3>Returns:<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<blockquote>
+<div><dl class="simple">
+<dt>torch.Tensor:</dt><dd><p>The computed Total Variation Loss.</p>
+</dd>
+</dl>
+</div></blockquote>
+<p><strong>TODO</strong>:</p>
+<ul class="simple">
+<li><p>Compute the total variation loss as the sum of the absolute differences between adjacent pixels in both dimensions.</p></li>
+</ul>
+<p><strong>Hint</strong>:
+Use <cite>torch.mean()</cite> to average the differences. Use slicing to access adjacent pixels in the height and width dimensions.Use <cite>torch.abs()</cite> to compute the absolute differences.</p>
+</section>
+</dd></dl>
+
+</dd></dl>
+
+<div class="toggle admonition">
+<p class="admonition-title">Musterlösung anzeigen</p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">TVLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+   <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+      <span class="nb">super</span><span class="p">(</span><span class="n">TVLoss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+   <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
+      <span class="k">return</span> <span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">:,</span> <span class="p">:]))</span>
+            <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">:]))</span>
+      <span class="p">)</span>
+</pre></div>
+</div>
+</div>
 </section>
 <section id="aufgabe-2-super-resolution-cnn-definieren">
 <h2><strong>Aufgabe 2</strong>: Super-Resolution CNN definieren<a class="headerlink" href="#aufgabe-2-super-resolution-cnn-definieren" title="Link to this heading"></a></h2>
@@ -337,8 +449,8 @@ NOTE: Iterate through all parameters by using the <cite>self.vgg.parameters()</c
 <dt class="sig sig-object py" id="perceptualloss.misc.ResNetBlock.__init__">
 <span class="sig-prename descclassname"><span class="pre">ResNetBlock.</span></span><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">kernel_size</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">9</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">padding</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/perceptualloss/misc.html#ResNetBlock.__init__"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#perceptualloss.misc.ResNetBlock.__init__" title="Link to this definition"></a></dt>
 <dd><p>Initialisiert einen ResNet-Block mit zwei Convolutional-Schichten, Batch-Normalisierung und ReLU-Aktivierung.</p>
-<section id="id1">
-<h3>Parameters:<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
+<section id="id3">
+<h3>Parameters:<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
 <dl class="simple">
 <dt>in_channels (int):</dt><dd><p>Anzahl der Eingabekanäle.</p>
 </dd>
@@ -352,24 +464,16 @@ NOTE: Iterate through all parameters by using the <cite>self.vgg.parameters()</c
 </section>
 </dd></dl>
 
-<p>Die Größe der Faltungsmasken variert dabei je nach Block. Das Padding wird stets so gewählt, dass die räumliche
+<p>Die Größe der Faltungsmasken ist dabei konstant 7x7 mit einem Padding von 3, so dass die räumliche
 Dimension der Eingabe gleich bleibt. Die Batch-Normalization-Schichten wurden hinter die nicht-linearität geschoben,
 um normalisierte Aktivierungen zu erhalten. Die Shortcut-Verbindung passt die Dimension der Eingabe an die des Outputs an.</p>
-<p>Wir werden <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Upsample.html">torch.nn.Upsample</a>
-zum Hochskalierung der Eingabe verwenden. Anschließend verwenden wir drei aufeinanderfolgende ResNet-Blöcke
-nach obiger Architektur, um die Merkmale weiter zu verarbeiten. Der erste Residual-Block
-verwendet dabei eine Faltung mit 9x9-Masken und erhöht die Anzahl der Kanäle von 3 (RGB) auf 64.
-Der zweite Block verwendet 7x7-Masken und veringert die Anzahl der Kanäle auf 32. Der dritte Block verwendet 5x5-Masken
-und reduziert die Anzahl der Kanäle weiter auf 16.</p>
-<p>Die Architektur endet dann mit einer klassischen 5x5 Faltung (kein ResidualBlock!) von 16 auf 3 Kanäle, um das hochskalierte Bild zu erzeugen.
-Beachten Sie das diese letzte Faltung keine Aktivierungsfunktion und auch keine Batch-Normalisierung verwendet, da sie das finale Bild erzeugt.
-Ähnlich wie bei den ResNet-Blöcken der vorherigen Aufgabe, wird auch hier eine Shortcut-Verbindung verwendet,
-die die hochskalierte Eingabe des Bildes mit dem Output dieser Faltung addiert. Dies ermöglicht eine bessere Informationsweitergabe und
-führt zu einer stabileren und schnelleren Konvergenz während des Trainings.</p>
-<p>Durch die durchgängige Verwendung von Shortcut-Verbindungen und die Verwendung von Upsampling lernen die
-Faltungsschichten, die hochskalierte Ausgabe so zu verfeinern und zu verbessern, dass fehlende Details
-und Strukturen aus dem niedrig aufgelösten Bild rekonstruiert werden können.</p>
-<a class="reference internal image-reference" href="../_images/srcnn.png"><img alt="../_images/srcnn.png" class="align-center" src="../_images/srcnn.png" style="width: 600px;" />
+<p>Wir verwenden vier aufeinanderfolgende ResNet-Blöcke mit zunächst 3 auf 16, dann 16 auf 32, dann 32 auf 64 und schließlich 64 auf 128 Kanäle.
+Anschließend verwenden wir ein PixelShuffle-Layer mit einem Upscale-Faktor von 2, um die räumliche Auflösung des Bildes zu verdoppeln.
+Dabei wird die Zahl der Kanäle auf 32 reduziert. Zum Schluß verwenden wir eine klassische Faltung mit einer weiteren 7x7 Maske, welche die 32 Kanäle auf 3 reduziert.</p>
+<p>Damit das Netzwerk nicht zunächst die Identitätsfunktion lernen muß addieren wir die mit <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Upsample.html">torch.nn.Upsample</a>
+hochskalierte Eingabe zum Output des Netzwerks hinzu. Der Faltungsteil muß also nur lernen die Details zu rekonstruieren, die in der hochskalierten Version fehlen.
+Entsprechend wichtig ist es auch das die letzte Faltung keine nicht-linearität enthält, damit die Addition mit der hochskalierten Eingabe funktioniert.</p>
+<a class="reference internal image-reference" href="../_images/srcnn2.png"><img alt="../_images/srcnn2.png" class="align-center" src="../_images/srcnn2.png" style="width: 600px;" />
 </a>
 <p>Implementieren Sie nun die Klasse <cite>SRCNN</cite> in der Datei <cite>perceptualloss/upscale2x.py</cite>, die das Super-Resolution-Netzwerk definiert.</p>
 <dl class="py class">
@@ -386,8 +490,9 @@ und Strukturen aus dem niedrig aufgelösten Bild rekonstruiert werden können.</
 <li><p>Call the <cite>__init__</cite> method of the base class <cite>nn.Module</cite>.</p></li>
 <li><p>Define an upsampling layer using <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Upsample.html">nn.Upsample(scale_factor=2, mode=“bilinear“, align_corners=True)</a>.</p></li>
 <li><p>Define a sequential model consisting of:</p></li>
-<li><p>Three <cite>ResNetBlock</cite> layers with 3-&gt;64, 64-&gt;32 and 32-&gt;16 channels as well as kernel sizes 9, 7, and 5 respectively.</p></li>
-<li><p>A final convolutional layer with 16 input channels, 3 output channels and kernel size 5 with padding 2.</p></li>
+<li><p>Four <cite>ResNetBlock</cite> layers with 3-&gt;16, 16-&gt;32 and 32-&gt;64 and 64-&gt;128 channels as well as kernel sizes 7.</p></li>
+<li><p>A PixelShuffle layer with an upscale factor of 2.</p></li>
+<li><p>A final convolutional layer with 32 input channels, 3 output channels and kernel size 7 with padding 3.</p></li>
 </ul>
 </dd></dl>
 
@@ -395,8 +500,8 @@ und Strukturen aus dem niedrig aufgelösten Bild rekonstruiert werden können.</
 <dt class="sig sig-object py" id="upscale2x.Upscale2x.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/upscale2x.html#Upscale2x.forward"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#upscale2x.Upscale2x.forward" title="Link to this definition"></a></dt>
 <dd><p>Perform the forward pass of the Upscale2x model.</p>
-<section id="id2">
-<h3>Parameters:<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
+<section id="id4">
+<h3>Parameters:<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
 <blockquote>
 <div><dl class="simple">
 <dt>x (torch.Tensor):</dt><dd><p>The input tensor to be upscaled.</p>
@@ -404,8 +509,8 @@ und Strukturen aus dem niedrig aufgelösten Bild rekonstruiert werden können.</
 </dl>
 </div></blockquote>
 </section>
-<section id="id3">
-<h3>Returns:<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
+<section id="id5">
+<h3>Returns:<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
 <blockquote>
 <div><dl class="simple">
 <dt>torch.Tensor:</dt><dd><p>The upscaled output tensor.</p>
@@ -414,8 +519,8 @@ und Strukturen aus dem niedrig aufgelösten Bild rekonstruiert werden können.</
 </div></blockquote>
 <p><strong>TODO</strong>:</p>
 <ul class="simple">
-<li><p>Apply the upsampling layer to the input tensor <cite>x</cite>.</p></li>
-<li><p>Pass the upsampled tensor through the model.</p></li>
+<li><p>Pass the input tensor through the model.</p></li>
+<li><p>Also, apply the upsampling layer to the input tensor <cite>x</cite>.</p></li>
 <li><p>Add the upsampled tensor to the output of the model.</p></li>
 </ul>
 </section>
@@ -430,10 +535,12 @@ und Strukturen aus dem niedrig aufgelösten Bild rekonstruiert werden können.</
      <span class="nb">super</span><span class="p">(</span><span class="n">Upscale2x</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
      <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Upsample</span><span class="p">(</span><span class="n">scale_factor</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
      <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-         <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">9</span><span class="p">),</span>
-         <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
-         <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
-         <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+           <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+           <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+           <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+           <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+           <span class="n">nn</span><span class="o">.</span><span class="n">PixelShuffle</span><span class="p">(</span><span class="n">upscale_factor</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>  <span class="c1"># First upsample</span>
+           <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>  <span class="c1"># Final conv to reduce channels</span>
      <span class="p">)</span>
 </pre></div>
 </div>
@@ -441,8 +548,8 @@ und Strukturen aus dem niedrig aufgelösten Bild rekonstruiert werden können.</
 <div class="toggle admonition">
 <p class="admonition-title">Musterlösung für den Forward-Pass anzeigen</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-   <span class="n">up</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-   <span class="n">x</span> <span class="o">=</span> <span class="n">up</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">up</span><span class="p">)</span>
+   <span class="n">p</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+   <span class="n">x</span> <span class="o">=</span> <span class="n">p</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
    <span class="k">return</span> <span class="n">x</span>
 </pre></div>
 </div>
@@ -562,9 +669,10 @@ Sie können dazu die <cite>Upscale2x</cite>-Klasse als Basis verwenden und diese
 <p><strong>TODO</strong>:</p>
 <ul class="simple">
 <li><p>Call the <cite>__init__</cite> method of the base class <cite>nn.Module</cite>.</p></li>
-<li><p>Define an upsampling layer using <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Upsample.html">nn.Upsample(scale_factor=2, mode=“bilinear“, align_corners=True)</a>.</p></li>
+<li><p>Define an upsampling layer using <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Upsample.html">nn.Upsample(scale_factor=4, mode=“bilinear“, align_corners=True)</a>.</p></li>
 <li><p>Define a sequential model consisting of:</p></li>
-<li><p>Three <cite>ResNetBlock</cite> layers with 3-&gt;64, 64-&gt;32 and 32-&gt;16 channels as well as kernel sizes 9, 7, and 5 respectively.</p></li>
+<li><p>Five <cite>ResNetBlock</cite> layers with 3-&gt;16, 16-&gt;32, 32-&gt;64, 64-&gt;128 and 128-&gt;256 channels as well as kernel sizes 7.</p></li>
+<li><p>A PixelShuffle layer with an upscale factor of 4.</p></li>
 <li><p>A final convolutional layer with 16 input channels, 3 output channels and kernel size 5 with padding 2.</p></li>
 </ul>
 </dd></dl>
@@ -573,8 +681,8 @@ Sie können dazu die <cite>Upscale2x</cite>-Klasse als Basis verwenden und diese
 <dt class="sig sig-object py" id="upscale4x.Upscale4x.forward">
 <span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/upscale4x.html#Upscale4x.forward"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#upscale4x.Upscale4x.forward" title="Link to this definition"></a></dt>
 <dd><p>Perform the forward pass of the Upscale2x model.</p>
-<section id="id5">
-<h3>Parameters:<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
+<section id="id6">
+<h3>Parameters:<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
 <blockquote>
 <div><dl class="simple">
 <dt>x (torch.Tensor):</dt><dd><p>The input tensor to be upscaled.</p>
@@ -582,8 +690,8 @@ Sie können dazu die <cite>Upscale2x</cite>-Klasse als Basis verwenden und diese
 </dl>
 </div></blockquote>
 </section>
-<section id="id6">
-<h3>Returns:<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
+<section id="id7">
+<h3>Returns:<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
 <blockquote>
 <div><dl class="simple">
 <dt>torch.Tensor:</dt><dd><p>The upscaled output tensor.</p>
@@ -592,8 +700,8 @@ Sie können dazu die <cite>Upscale2x</cite>-Klasse als Basis verwenden und diese
 </div></blockquote>
 <p><strong>TODO</strong>:</p>
 <ul class="simple">
-<li><p>Apply the upsampling layer to the input tensor <cite>x</cite>.</p></li>
-<li><p>Pass the upsampled tensor through the model.</p></li>
+<li><p>Pass the input tensor through the model.</p></li>
+<li><p>Also, apply the upsampling layer to the input tensor <cite>x</cite>.</p></li>
 <li><p>Add the upsampled tensor to the output of the model.</p></li>
 </ul>
 </section>
@@ -604,21 +712,23 @@ Sie können dazu die <cite>Upscale2x</cite>-Klasse als Basis verwenden und diese
 <div class="toggle admonition">
 <p class="admonition-title">Beispiel für einen Upscaler x4 anzeigen</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">Upscale4x</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-   <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-       <span class="nb">super</span><span class="p">(</span><span class="n">Upscale4x</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-       <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Upsample</span><span class="p">(</span><span class="n">scale_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-       <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-           <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span>  <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">9</span><span class="p">),</span>
-           <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
-           <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">48</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
-           <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
-           <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">24</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
-       <span class="p">)</span>
+     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Upscale4x</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Upsample</span><span class="p">(</span><span class="n">scale_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+              <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+              <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+              <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+              <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+              <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+              <span class="n">nn</span><span class="o">.</span><span class="n">PixelShuffle</span><span class="p">(</span><span class="n">upscale_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>  <span class="c1"># First upsample</span>
+              <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>  <span class="c1"># Final conv to reduce channels</span>
+        <span class="p">)</span>
 
-   <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-       <span class="n">up</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-       <span class="n">x</span> <span class="o">=</span> <span class="n">up</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">up</span><span class="p">)</span>
-       <span class="k">return</span> <span class="n">x</span>
+     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">up</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="n">up</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">up</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">x</span>
 </pre></div>
 </div>
 </div>
@@ -702,6 +812,7 @@ Sie können dazu die <cite>Upscale2x</cite>-Klasse als Basis verwenden und diese
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../embeddings/index.html" class="btn btn-neutral float-left" title="Embedding Vectors" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
+        <a href="../adversarialloss/index.html" class="btn btn-neutral float-right" title="Adversarial Loss" accesskey="n" rel="next">Weiter <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

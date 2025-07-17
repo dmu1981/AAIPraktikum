@@ -408,6 +408,10 @@ def train(prefix, trainer, dataloader):
                 input, target, epoch
             )
 
+            if scoresCritic is not None:
+                gradient_norm_score.update(scoresCritic["gradient_norm"])
+                loss_c_score.update(scoresCritic["loss_c"])
+
             if scoresGenerator is not None and output is not None:
                 generator_gradient_norm_score.update(scoresGenerator["gradient_norm"])
                 content_loss_score.update(scoresGenerator["content_loss"])
@@ -428,10 +432,6 @@ def train(prefix, trainer, dataloader):
                 bar.set_description(
                     f"[{epoch+1}], Content: {content_loss_score.compute(reset=False):.3f}, loss_C: {loss_c_score.compute(reset=False):.3f}"
                 )
-
-            if scoresCritic is not None:
-                gradient_norm_score.update(scoresCritic["gradient_norm"])
-                loss_c_score.update(scoresCritic["loss_c"])
 
             log_metrics(writer, scores)
 

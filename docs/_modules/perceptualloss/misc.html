@@ -65,6 +65,7 @@ window.addEventListener("load", () => mermaid.run());
 <li class="toctree-l1"><a class="reference internal" href="../../resnet/index.html">ResNet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../embeddings/index.html">Embeddings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../../perceptualloss/index.html">Perceptual Loss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../adversarialloss/index.html">Adversarial Loss</a></li>
 </ul>
 
         </div>
@@ -92,8 +93,7 @@ window.addEventListener("load", () => mermaid.run());
            <div itemprop="articleBody">
              
   <h1>Quellcode für perceptualloss.misc</h1><div class="highlight"><pre>
-<span></span>
-<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torchvision</span><span class="w"> </span><span class="kn">import</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">transforms</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
 <span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
@@ -152,49 +152,66 @@ window.addEventListener("load", () => mermaid.run());
         <span class="p">]</span>
     <span class="p">)</span>
 
-    <span class="n">root_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;../flower_dataset/flowersSquared&quot;</span><span class="p">)</span>
+    <span class="n">root_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;../flower_dataset/flowersSquared&quot;</span>
+    <span class="p">)</span>
 
     <span class="n">dataset</span> <span class="o">=</span> <span class="n">CustomImageDataset</span><span class="p">(</span>
-        <span class="n">root_dir</span><span class="o">=</span><span class="n">root_dir</span><span class="p">,</span> 
-        <span class="n">transformInput</span><span class="o">=</span><span class="n">transformInput</span><span class="p">,</span> 
-        <span class="n">transformOutput</span><span class="o">=</span><span class="n">transformOutput</span><span class="p">)</span>
-    
+        <span class="n">root_dir</span><span class="o">=</span><span class="n">root_dir</span><span class="p">,</span>
+        <span class="n">transformInput</span><span class="o">=</span><span class="n">transformInput</span><span class="p">,</span>
+        <span class="n">transformOutput</span><span class="o">=</span><span class="n">transformOutput</span><span class="p">,</span>
+    <span class="p">)</span>
+
     <span class="n">dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span><span class="n">dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
     <span class="k">return</span> <span class="n">dataloader</span>
 
-<span class="k">class</span><span class="w"> </span><span class="nc">ResNetBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span> 
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ResNetBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 <div class="viewcode-block" id="ResNetBlock.__init__">
 <a class="viewcode-back" href="../../perceptualloss/index.html#perceptualloss.misc.ResNetBlock.__init__">[Doku]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
 <span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialisiert einen ResNet-Block mit zwei Convolutional-Schichten, Batch-Normalisierung und ReLU-Aktivierung.</span>
-<span class="sd">        </span>
+
 <span class="sd">        Parameters:</span>
 <span class="sd">        -----------</span>
 
-<span class="sd">        in_channels (int): </span>
+<span class="sd">        in_channels (int):</span>
 <span class="sd">          Anzahl der Eingabekanäle.</span>
-<span class="sd">        </span>
-<span class="sd">        out_channels (int): </span>
+
+<span class="sd">        out_channels (int):</span>
 <span class="sd">            Anzahl der Ausgabekanäle.</span>
-<span class="sd">        </span>
-<span class="sd">        kernel_size (int, optional): </span>
+
+<span class="sd">        kernel_size (int, optional):</span>
 <span class="sd">            Größe des Convolutional-Kernels. Standard ist 9.</span>
-<span class="sd">        </span>
-<span class="sd">        padding (int, optional): </span>
+
+<span class="sd">        padding (int, optional):</span>
 <span class="sd">            Padding für die Convolutional-Schichten. Standard ist None. In dem Fall wird das Padding automatisch berechnet, so dass die Ausgabe die gleiche Größe wie die Eingabe hat.</span>
 <span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">ResNetBlock</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="k">if</span> <span class="n">padding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
             <span class="n">padding</span> <span class="o">=</span> <span class="p">(</span><span class="n">kernel_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
-            
-        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="n">kernel_size</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span>
+            <span class="n">in_channels</span><span class="p">,</span>
+            <span class="n">out_channels</span><span class="p">,</span>
+            <span class="n">kernel_size</span><span class="o">=</span><span class="n">kernel_size</span><span class="p">,</span>
+            <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">,</span>
+            <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">out_channels</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">relu</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">out_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="n">kernel_size</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span>
+            <span class="n">out_channels</span><span class="p">,</span>
+            <span class="n">out_channels</span><span class="p">,</span>
+            <span class="n">kernel_size</span><span class="o">=</span><span class="n">kernel_size</span><span class="p">,</span>
+            <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">,</span>
+            <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">bn2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">out_channels</span><span class="p">)</span>
-        
+
         <span class="k">if</span> <span class="n">in_channels</span> <span class="o">!=</span> <span class="n">out_channels</span><span class="p">:</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">shortcut</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
                 <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
@@ -210,6 +227,7 @@ window.addEventListener("load", () => mermaid.run());
         <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
         <span class="n">out</span> <span class="o">=</span> <span class="n">out</span> <span class="o">+</span> <span class="n">residual</span>
         <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">out</span><span class="p">))</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">save_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optimizer</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;checkpoint.pth&quot;</span><span class="p">):</span>
 <span class="w">    </span><span class="sd">&quot;&quot;&quot;Speichert den aktuellen Zustand des Modells und des Optimierers in einer Datei.&quot;&quot;&quot;</span>
@@ -229,7 +247,7 @@ window.addEventListener("load", () => mermaid.run());
         <span class="n">checkpoint</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
         <span class="n">model</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="s2">&quot;model_state_dict&quot;</span><span class="p">])</span>
         <span class="k">if</span> <span class="n">optimizer</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-          <span class="n">optimizer</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="s2">&quot;optimizer_state_dict&quot;</span><span class="p">])</span>
+            <span class="n">optimizer</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="s2">&quot;optimizer_state_dict&quot;</span><span class="p">])</span>
         <span class="k">return</span> <span class="n">checkpoint</span><span class="p">[</span><span class="s2">&quot;epoch&quot;</span><span class="p">]</span>
     <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fehler beim Laden des Checkpoints </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
@@ -237,15 +255,18 @@ window.addEventListener("load", () => mermaid.run());
         <span class="k">return</span> <span class="mi">0</span>
 
 
-<span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">total_loss</span><span class="p">,</span> <span class="n">total_lips</span><span class="p">,</span> <span class="n">total_mse</span><span class="p">,</span> <span class="n">total_psnr</span><span class="p">,</span> <span class="n">total_cnt</span><span class="p">):</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span>
+    <span class="n">writer</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">total_loss</span><span class="p">,</span> <span class="n">total_lips</span><span class="p">,</span> <span class="n">total_mse</span><span class="p">,</span> <span class="n">total_psnr</span><span class="p">,</span> <span class="n">total_cnt</span>
+<span class="p">):</span>
     <span class="n">avg_loss</span> <span class="o">=</span> <span class="n">total_loss</span> <span class="o">/</span> <span class="n">total_cnt</span>
     <span class="n">avg_lips</span> <span class="o">=</span> <span class="n">total_lips</span> <span class="o">/</span> <span class="n">total_cnt</span>
     <span class="n">avg_mse</span> <span class="o">=</span> <span class="n">total_mse</span> <span class="o">/</span> <span class="n">total_cnt</span>
     <span class="n">avg_psnr</span> <span class="o">=</span> <span class="n">total_psnr</span> <span class="o">/</span> <span class="n">total_cnt</span>
-    <span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="s1">&#39;Loss&#39;</span><span class="p">,</span> <span class="mf">1000.0</span> <span class="o">*</span> <span class="n">avg_loss</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
-    <span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="s1">&#39;LPIPS&#39;</span><span class="p">,</span> <span class="mf">1000.0</span> <span class="o">*</span> <span class="n">avg_lips</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
-    <span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="s1">&#39;MSE&#39;</span><span class="p">,</span> <span class="mf">1000.0</span> <span class="o">*</span> <span class="n">avg_mse</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
-    <span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="s1">&#39;PSNR&#39;</span><span class="p">,</span> <span class="n">avg_psnr</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
+    <span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="s2">&quot;Loss&quot;</span><span class="p">,</span> <span class="mf">1000.0</span> <span class="o">*</span> <span class="n">avg_loss</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
+    <span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="s2">&quot;LPIPS&quot;</span><span class="p">,</span> <span class="mf">1000.0</span> <span class="o">*</span> <span class="n">avg_lips</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
+    <span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="s2">&quot;MSE&quot;</span><span class="p">,</span> <span class="mf">1000.0</span> <span class="o">*</span> <span class="n">avg_mse</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
+    <span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="s2">&quot;PSNR&quot;</span><span class="p">,</span> <span class="n">avg_psnr</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">log_images</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">,</span> <span class="n">epoch</span><span class="p">):</span>
     <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
@@ -263,10 +284,17 @@ window.addEventListener("load", () => mermaid.run());
                 <span class="n">mean</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">])</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
                 <span class="n">std</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">])</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
                 <span class="k">return</span> <span class="n">tensor</span> <span class="o">*</span> <span class="n">std</span> <span class="o">+</span> <span class="n">mean</span>
+
             <span class="c1"># Rescale to 256x256 and stitch together</span>
-            <span class="n">input_resized</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;bilinear&#39;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="n">output_resized</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;bilinear&#39;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-            <span class="n">target_resized</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">target</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;bilinear&#39;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
+            <span class="n">input_resized</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
+                <span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+            <span class="n">output_resized</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
+                <span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+            <span class="n">target_resized</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
+                <span class="n">target</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
 
             <span class="n">input_norm</span> <span class="o">=</span> <span class="n">denormalize</span><span class="p">(</span><span class="n">input_resized</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
             <span class="n">output_norm</span> <span class="o">=</span> <span class="n">denormalize</span><span class="p">(</span><span class="n">output_resized</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
@@ -278,8 +306,9 @@ window.addEventListener("load", () => mermaid.run());
 
         <span class="c1"># Convert to grid and log</span>
         <span class="n">stitched</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">stiches</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
-        <span class="n">writer</span><span class="o">.</span><span class="n">add_image</span><span class="p">(</span><span class="sa">f</span><span class="s1">&#39;Images&#39;</span><span class="p">,</span> <span class="n">stitched</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">add_image</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Images&quot;</span><span class="p">,</span> <span class="n">stitched</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
     <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+
 
 <span class="k">class</span><span class="w"> </span><span class="nc">PSNR</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_val</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
@@ -291,48 +320,59 @@ window.addEventListener("load", () => mermaid.run());
         <span class="n">psnr</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_val</span> <span class="o">/</span> <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mse</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">psnr</span>
 
+<span class="c1"># Denormalize images</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">denormalize</span><span class="p">(</span><span class="n">tensor</span><span class="p">):</span>
+    <span class="n">mean</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">])</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+    <span class="n">std</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">])</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">tensor</span> <span class="o">*</span> <span class="n">std</span> <span class="o">+</span> <span class="n">mean</span>
+
 <span class="k">def</span><span class="w"> </span><span class="nf">train</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">):</span>
-  <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2"> model...&quot;</span><span class="p">)</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2"> model...&quot;</span><span class="p">)</span>
 
-  <span class="n">optim</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
-  <span class="n">metric</span> <span class="o">=</span> <span class="n">lpips</span><span class="o">.</span><span class="n">LPIPS</span><span class="p">(</span><span class="n">net</span><span class="o">=</span><span class="s1">&#39;vgg&#39;</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>  <span class="c1"># Using SqueezeNet for perceptual loss</span>
-  <span class="n">mseMetric</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
-  <span class="n">psnrMetric</span> <span class="o">=</span> <span class="n">PSNR</span><span class="p">()</span>
+    <span class="n">optim</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="n">model</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+    <span class="n">metric</span> <span class="o">=</span> <span class="n">lpips</span><span class="o">.</span><span class="n">LPIPS</span><span class="p">(</span><span class="n">net</span><span class="o">=</span><span class="s2">&quot;vgg&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>  <span class="c1"># Using SqueezeNet for perceptual loss</span>
+    <span class="n">mseMetric</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
+    <span class="n">psnrMetric</span> <span class="o">=</span> <span class="n">PSNR</span><span class="p">(</span><span class="n">max_val</span><span class="o">=</span><span class="mf">6.0</span><span class="p">)</span>
 
-  <span class="n">ep</span> <span class="o">=</span> <span class="n">load_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optim</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">.pt&quot;</span><span class="p">)</span>
+    <span class="n">ep</span> <span class="o">=</span> <span class="n">load_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optim</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">.pt&quot;</span><span class="p">)</span>
 
-  <span class="n">writer</span> <span class="o">=</span> <span class="n">SummaryWriter</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;runs/</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">SummaryWriter</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;runs/</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
 
-  <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ep</span><span class="p">,</span> <span class="n">ep</span> <span class="o">+</span> <span class="mi">30</span><span class="p">):</span>
-      <span class="n">total_loss</span> <span class="o">=</span> <span class="mf">0.0</span>
-      <span class="n">total_lips</span> <span class="o">=</span> <span class="mf">0.0</span>
-      <span class="n">total_mse</span> <span class="o">=</span> <span class="mf">0.0</span>
-      <span class="n">total_psnr</span> <span class="o">=</span> <span class="mf">0.0</span>
-      <span class="n">total_cnt</span> <span class="o">=</span> <span class="mi">0</span>
-      <span class="n">bar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">dataloader</span><span class="p">)</span>
-      <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">bar</span><span class="p">:</span>
-          <span class="nb">input</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">batch</span>
-          <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
-          <span class="n">target</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ep</span><span class="p">,</span> <span class="n">ep</span> <span class="o">+</span> <span class="mi">30</span><span class="p">):</span>
+        <span class="n">total_loss</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">total_lips</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">total_mse</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">total_psnr</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="n">total_cnt</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="n">bar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">dataloader</span><span class="p">)</span>
+        <span class="k">for</span> <span class="n">batch</span> <span class="ow">in</span> <span class="n">bar</span><span class="p">:</span>
+            <span class="nb">input</span><span class="p">,</span> <span class="n">target</span> <span class="o">=</span> <span class="n">batch</span>
+            <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
 
-          <span class="n">optim</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
-          <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
-          <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
-          <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
-          <span class="n">optim</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+            <span class="n">optim</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+            <span class="n">loss</span> <span class="o">=</span> <span class="n">loss_fn</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+            <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+            <span class="n">optim</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
 
-          <span class="n">total_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-          <span class="n">total_cnt</span> <span class="o">+=</span> <span class="nb">input</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+            <span class="n">total_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="n">total_cnt</span> <span class="o">+=</span> <span class="mi">1</span><span class="c1">#input.size(0)</span>
 
-          <span class="n">total_lips</span> <span class="o">+=</span> <span class="n">metric</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">output</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">target</span><span class="o">-</span><span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-          <span class="n">total_mse</span> <span class="o">+=</span> <span class="n">mseMetric</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-          <span class="n">total_psnr</span> <span class="o">+=</span> <span class="n">psnrMetric</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
 
-          <span class="n">bar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">], Loss: </span><span class="si">{</span><span class="mf">1000.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">total_loss</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">total_cnt</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, LPIPS: </span><span class="si">{</span><span class="mf">1000.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">total_lips</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">total_cnt</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, MSE: </span><span class="si">{</span><span class="mf">1000.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">total_mse</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">total_cnt</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, PSNR: </span><span class="si">{</span><span class="n">total_psnr</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">total_cnt</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+            <span class="n">total_lips</span> <span class="o">+=</span> <span class="n">metric</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">denormalize</span><span class="p">(</span><span class="n">output</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">denormalize</span><span class="p">(</span><span class="n">target</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="n">total_mse</span> <span class="o">+=</span> <span class="n">mseMetric</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="n">total_psnr</span> <span class="o">+=</span> <span class="n">psnrMetric</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
 
-      <span class="n">log_metrics</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">total_loss</span><span class="p">,</span> <span class="n">total_lips</span><span class="p">,</span> <span class="n">total_mse</span><span class="p">,</span> <span class="n">total_psnr</span><span class="p">,</span> <span class="n">total_cnt</span><span class="p">)</span>
-      <span class="n">log_images</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
-      <span class="n">save_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optim</span><span class="p">,</span> <span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">.pt&quot;</span><span class="p">)</span>
+            <span class="n">bar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span>
+                <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">], Loss: </span><span class="si">{</span><span class="mf">1000.0</span><span class="w"> </span><span class="o">*</span><span class="w"> </span><span class="n">total_loss</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">total_cnt</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, LPIPS: </span><span class="si">{</span><span class="n">total_lips</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">total_cnt</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, MSE: </span><span class="si">{</span><span class="n">total_mse</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">total_cnt</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, PSNR: </span><span class="si">{</span><span class="n">total_psnr</span><span class="w"> </span><span class="o">/</span><span class="w"> </span><span class="n">total_cnt</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span>
+            <span class="p">)</span>
+
+        <span class="n">log_metrics</span><span class="p">(</span>
+            <span class="n">writer</span><span class="p">,</span> <span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">total_loss</span><span class="p">,</span> <span class="n">total_lips</span><span class="p">,</span> <span class="n">total_mse</span><span class="p">,</span> <span class="n">total_psnr</span><span class="p">,</span> <span class="n">total_cnt</span>
+        <span class="p">)</span>
+        <span class="n">log_images</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">,</span> <span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">save_checkpoint</span><span class="p">(</span><span class="n">model</span><span class="p">,</span> <span class="n">optim</span><span class="p">,</span> <span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">.pt&quot;</span><span class="p">)</span>
 </pre></div>
 
            </div>

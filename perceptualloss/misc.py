@@ -222,6 +222,11 @@ class PSNR(nn.Module):
         psnr = 20 * torch.log10(self.max_val / torch.sqrt(mse))
         return psnr
 
+# Denormalize images
+def denormalize(tensor):
+    mean = torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1).cuda()
+    std = torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1).cuda()
+    return tensor * std + mean
 
 def train(prefix, model, dataloader, loss_fn):
     print(f"Training {prefix} model...")
@@ -229,7 +234,7 @@ def train(prefix, model, dataloader, loss_fn):
     optim = torch.optim.Adam(model.parameters(), lr=0.001)
     metric = lpips.LPIPS(net="vgg").cuda()  # Using SqueezeNet for perceptual loss
     mseMetric = nn.MSELoss()
-    psnrMetric = PSNR()
+    psnrMetric = PSNR(max_val=6.0)
 
     ep = load_checkpoint(model, optim, filename=f"{prefix}.pt")
 
@@ -254,14 +259,15 @@ def train(prefix, model, dataloader, loss_fn):
             optim.step()
 
             total_loss += loss.item()
-            total_cnt += input.size(0)
+            total_cnt += 1#input.size(0)
 
-            total_lips += metric(2.0 * output - 1.0, 2.0 * target - 1.0).mean().item()
+
+            total_lips += metric(2.0 * denormalize(output) - 1.0, 2.0 * denormalize(target) - 1.0).mean().item()
             total_mse += mseMetric(output, target).item()
             total_psnr += psnrMetric(output, target).item()
 
             bar.set_description(
-                f"[{epoch+1}], Loss: {1000.0 * total_loss / total_cnt:.3f}, LPIPS: {1000.0 * total_lips / total_cnt:.3f}, MSE: {1000.0 * total_mse / total_cnt:.3f}, PSNR: {total_psnr / total_cnt:.3f}"
+                f"[{epoch+1}], Loss: {1000.0 * total_loss / total_cnt:.3f}, LPIPS: {total_lips / total_cnt:.3f}, MSE: {total_mse / total_cnt:.3f}, PSNR: {total_psnr / total_cnt:.3f}"
             )
 
         log_metrics(

@@ -16,6 +16,7 @@ sys.path.insert(0, os.path.abspath("./tensorboard"))
 sys.path.insert(0, os.path.abspath("./resnet"))
 sys.path.insert(0, os.path.abspath("./embeddings"))
 sys.path.insert(0, os.path.abspath("./perceptualloss"))
+sys.path.insert(0, os.path.abspath("./adversarialloss"))
 
 
 project = "Advances in AI Praktikum"

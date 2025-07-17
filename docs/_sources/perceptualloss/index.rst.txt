@@ -53,6 +53,26 @@ Die beiden zu vergleichenden Bilder (:math:`x` und :math:`G(z)` für Ground Trut
 VGG16-Netzwerk geleitet. Die Aktivierungen aus den Convolutional-Layern werden extrahiert und der L1-Abstand zwischen den
 entsprechenden Feature-Maps wird berechnet.   
 
+Total Variation Loss
+----------------------
+Der *Total Variation Loss* (TV Loss) ist eine Regularisierungstechnik, die häufig in der Bildverarbeitung eingesetzt wird, um die Glätte und Konsistenz von Bildern zu fördern.
+Er wird oft in Kombination mit Perceptual Loss verwendet, um die Qualität der generierten Bilder weiter zu verbessern.  
+Der TV Loss misst die Variation der Pixelwerte in einem Bild und bestraft große Änderungen zwischen benachbarten Pixeln.
+Dies führt zu glatteren Übergängen und reduziert Rauschen in den Bildern.
+Der TV Loss wird wie folgt berechnet:
+
+.. math::
+
+   \text{TV}(x) = \sum_{i,j} \left( |x_{i+1,j} - x_{i,j}| + |x_{i,j+1} - x_{i,j}| \right)
+
+Die Summe wird über alle Pixel im Bild gebildet, wobei :math:`x_{i,j}` den Pixelwert an der Position :math:`(i,j)` darstellt.
+Die obige Formel berechnet die absolute Differenz zwischen benachbarten Pixeln in horizontaler und vertikaler Richtung.
+Der TV Loss wird oft mit einem Gewicht multipliziert, um seinen Einfluss auf den Gesamtverlust zu steuern.
+
+.. image:: tvloss.png
+   :width: 600px
+   :align: center
+
 
 Image Upscaling
 ---------------
@@ -131,10 +151,53 @@ In dieser Arbeit wird PSNR als Referenzmaß genutzt, um klassische Fehlermaße m
 perzeptuell motivierten Alternativen zu vergleichen.
 
 
+PixelShuffle in PyTorch
+-----------------------
 
-**Aufgabe 1**: Perceptual Loss implementieren
----------------------------------------------
-In dieser Aufgabe implementieren Sie den Perceptual Loss unter Verwendung des VGG16-Netzwerks.
+Die Klasse `torch.nn.PixelShuffle <https://docs.pytorch.org/docs/stable/generated/torch.nn.PixelShuffle.html>`_ wird in neuronalen Netzen verwendet, um die räumliche Auflösung von Tensoren zu erhöhen. Sie ist besonders nützlich in Super-Resolution-Netzen, bei denen ein niedrig aufgelöstes Bild in ein hochaufgelöstes umgewandelt werden soll.
+
+**Funktionsweise**
+
+``PixelShuffle`` nimmt einen Eingabetensor der Form ``(N, C * r^2, H, W)`` und reorganisiert ihn in einen Tensor der Form ``(N, C, H * r, W * r)``, wobei:
+
+- ``N``: Batchgröße
+- ``C``: Anzahl der Kanäle nach dem Shuffle
+- ``H, W``: Höhe und Breite
+- ``r``: Upscale-Faktor
+
+Dabei werden die zusätzlichen Kanäle genutzt, um die räumliche Auflösung zu vergrößern. Intern wird dies durch eine Umordnung (Rearrangement) der Daten erreicht, nicht durch Interpolation.
+
+.. image:: pixelshuffle.png
+   :width: 600px
+   :align: center
+
+**Beispiel**
+
+.. code-block:: python
+
+    import torch
+    import torch.nn as nn
+
+    # Upscale-Faktor
+    r = 2
+    pixel_shuffle = nn.PixelShuffle(upscale_factor=r)
+
+    # Beispiel-Input: (1, 4, 2, 2) → 4 Kanäle = 1 Kanal × 2^2
+    input = torch.randn(1, 4, 2, 2)
+    output = pixel_shuffle(input)
+
+    print(output.shape)  # Ausgabe: torch.Size([1, 1, 4, 4])
+
+**Verwendung**
+
+PixelShuffle wird oft in Decoder-Architekturen oder Autoencodern eingesetzt, um räumliche Auflösung effizient zu erhöhen, ohne auf kostenintensive Upsampling-Operationen wie ``ConvTranspose2d`` oder ``Bilinear Upsampling`` zurückzugreifen.
+
+
+
+**Aufgabe 1**: Perceptual Loss und Total Variation Loss implementieren
+----------------------------------------------------------------------
+
+In dieser Aufgabe implementieren Sie den Perceptual Loss unter Verwendung des VGG16-Netzwerks sowie den Total Variation Loss.
 
 Sie arbeiten in der Datei :file:`perceptualloss/perceptual.py`.
 
@@ -148,9 +211,6 @@ Eine Liste mit allen Features können Sie mit `model.features` abrufen.
 
 Deaktiveren Sie die Gradientenberechnung für das VGG16-Netzwerk, da wir es nicht trainieren wollen.
 Setzen Sie dazu `requires_grad` auf `False` für alle Parameter des Modells.
-
-Achten Sie beim Vorwärts-Pass darauf, dass die Eingabebilder auf die Größe 224x224 skaliert werden,
-da VGG16 auf dieser Größe trainiert wurde. Verwenden Sie dazu `torch.nn.functional.interpolate`.
 
 Implementieren Sie nun die Klasse `VGG16PerceptualLoss` in der Datei `perceptualloss/perceptual.py`.
 
@@ -191,6 +251,29 @@ Implementieren Sie nun die Klasse `VGG16PerceptualLoss` in der Datei `perceptual
 
           return self.l1_loss(f1, f2)
 
+Implementieren Sie nun die Klasse `TVLoss`, ebenfalls in der Datei `perceptualloss/perceptual.py`.          
+
+.. autoclass:: perceptual.TVLoss
+   :members:
+   :special-members: __init__, forward
+   :undoc-members:
+   :show-inheritance:
+
+.. admonition:: Musterlösung anzeigen
+   :class: toggle
+
+   .. code-block:: python
+
+         class TVLoss(nn.Module):
+            def __init__(self):
+               super(TVLoss, self).__init__()
+
+            def forward(self, img):
+               return (
+                     torch.mean(torch.abs(img[:, :, :-1, :] - img[:, :, 1:, :]))
+                     + torch.mean(torch.abs(img[:, :, :, :-1] - img[:, :, :, 1:]))
+               )
+
 **Aufgabe 2**: Super-Resolution CNN definieren
 ----------------------------------------------
 In dieser Aufgabe implementieren Sie ein einfaches Super-Resolution CNN welches wir später mit dem Perceptual Loss trainieren werden.
@@ -207,28 +290,20 @@ Der ResNet-Block ist bereits implementiert und kann verwendet werden.
 
 .. automethod:: perceptualloss.misc.ResNetBlock.__init__
 
-Die Größe der Faltungsmasken variert dabei je nach Block. Das Padding wird stets so gewählt, dass die räumliche 
+Die Größe der Faltungsmasken ist dabei konstant 7x7 mit einem Padding von 3, so dass die räumliche 
 Dimension der Eingabe gleich bleibt. Die Batch-Normalization-Schichten wurden hinter die nicht-linearität geschoben,
 um normalisierte Aktivierungen zu erhalten. Die Shortcut-Verbindung passt die Dimension der Eingabe an die des Outputs an.
 
-Wir werden `torch.nn.Upsample <https://pytorch.org/docs/stable/generated/torch.nn.Upsample.html>`_ 
-zum Hochskalierung der Eingabe verwenden. Anschließend verwenden wir drei aufeinanderfolgende ResNet-Blöcke
-nach obiger Architektur, um die Merkmale weiter zu verarbeiten. Der erste Residual-Block 
-verwendet dabei eine Faltung mit 9x9-Masken und erhöht die Anzahl der Kanäle von 3 (RGB) auf 64.
-Der zweite Block verwendet 7x7-Masken und veringert die Anzahl der Kanäle auf 32. Der dritte Block verwendet 5x5-Masken
-und reduziert die Anzahl der Kanäle weiter auf 16.
+Wir verwenden vier aufeinanderfolgende ResNet-Blöcke mit zunächst 3 auf 16, dann 16 auf 32, dann 32 auf 64 und schließlich 64 auf 128 Kanäle.
+Anschließend verwenden wir ein PixelShuffle-Layer mit einem Upscale-Faktor von 2, um die räumliche Auflösung des Bildes zu verdoppeln.
+Dabei wird die Zahl der Kanäle auf 32 reduziert. Zum Schluß verwenden wir eine klassische Faltung mit einer weiteren 7x7 Maske, welche die 32 Kanäle auf 3 reduziert.
 
-Die Architektur endet dann mit einer klassischen 5x5 Faltung (kein ResidualBlock!) von 16 auf 3 Kanäle, um das hochskalierte Bild zu erzeugen.
-Beachten Sie das diese letzte Faltung keine Aktivierungsfunktion und auch keine Batch-Normalisierung verwendet, da sie das finale Bild erzeugt.
-Ähnlich wie bei den ResNet-Blöcken der vorherigen Aufgabe, wird auch hier eine Shortcut-Verbindung verwendet,
-die die hochskalierte Eingabe des Bildes mit dem Output dieser Faltung addiert. Dies ermöglicht eine bessere Informationsweitergabe und
-führt zu einer stabileren und schnelleren Konvergenz während des Trainings.
+Damit das Netzwerk nicht zunächst die Identitätsfunktion lernen muß addieren wir die mit `torch.nn.Upsample <https://pytorch.org/docs/stable/generated/torch.nn.Upsample.html>`_ 
+hochskalierte Eingabe zum Output des Netzwerks hinzu. Der Faltungsteil muß also nur lernen die Details zu rekonstruieren, die in der hochskalierten Version fehlen.
+Entsprechend wichtig ist es auch das die letzte Faltung keine nicht-linearität enthält, damit die Addition mit der hochskalierten Eingabe funktioniert.
 
-Durch die durchgängige Verwendung von Shortcut-Verbindungen und die Verwendung von Upsampling lernen die 
-Faltungsschichten, die hochskalierte Ausgabe so zu verfeinern und zu verbessern, dass fehlende Details
-und Strukturen aus dem niedrig aufgelösten Bild rekonstruiert werden können.
 
-.. image:: srcnn.png
+.. image:: srcnn2.png
    :width: 600px
    :align: center 
 
@@ -250,10 +325,12 @@ Implementieren Sie nun die Klasse `SRCNN` in der Datei `perceptualloss/upscale2x
             super(Upscale2x, self).__init__()
             self.upsample = nn.Upsample(scale_factor=2, mode="bilinear", align_corners=True)
             self.model = nn.Sequential(
-                ResNetBlock(3, 64, kernel_size=9),
-                ResNetBlock(64, 32, kernel_size=7),
-                ResNetBlock(32, 16, kernel_size=5),
-                nn.Conv2d(16, 3, kernel_size=5, padding=2),
+                  ResNetBlock(3, 16, kernel_size=7),
+                  ResNetBlock(16, 32, kernel_size=7),
+                  ResNetBlock(32, 64, kernel_size=7),
+                  ResNetBlock(64, 128, kernel_size=7),
+                  nn.PixelShuffle(upscale_factor=2),  # First upsample
+                  nn.Conv2d(32, 3, kernel_size=7, padding=3),  # Final conv to reduce channels
             )
 
 .. admonition:: Musterlösung für den Forward-Pass anzeigen
@@ -261,10 +338,10 @@ Implementieren Sie nun die Klasse `SRCNN` in der Datei `perceptualloss/upscale2x
 
    .. code-block:: python
 
-       def forward(self, x):
-          up = self.upsample(x)
-          x = up + self.model(up)
-          return x
+         def forward(self, x):
+            p = self.upsample(x)
+            x = p + self.model(x)
+            return x
 
 **Aufgabe 3:** Super-Resolution mit Perceptual Loss trainieren
 --------------------------------------------------------------
@@ -463,21 +540,23 @@ Sie können dazu die `Upscale2x`-Klasse als Basis verwenden und diese entspreche
    .. code-block:: python
 
        class Upscale4x(nn.Module):
-          def __init__(self):
-              super(Upscale4x, self).__init__()
-              self.upsample = nn.Upsample(scale_factor=4, mode="bilinear", align_corners=True)
-              self.model = nn.Sequential(
-                  ResNetBlock(3,  64, kernel_size=9),
-                  ResNetBlock(64, 48, kernel_size=7),
-                  ResNetBlock(48, 32, kernel_size=5),
-                  ResNetBlock(32, 24, kernel_size=5),
-                  nn.Conv2d(24, 3, kernel_size=5, padding=2),
-              )
+            def __init__(self):
+               super(Upscale4x, self).__init__()
+               self.upsample = nn.Upsample(scale_factor=4, mode="bilinear", align_corners=True)
+               self.model = nn.Sequential(
+                     ResNetBlock(3, 16, kernel_size=7),
+                     ResNetBlock(16, 32, kernel_size=7),
+                     ResNetBlock(32, 64, kernel_size=7),
+                     ResNetBlock(64, 128, kernel_size=7),
+                     ResNetBlock(128, 256, kernel_size=7),
+                     nn.PixelShuffle(upscale_factor=4),  # First upsample
+                     nn.Conv2d(16, 3, kernel_size=7, padding=3),  # Final conv to reduce channels
+               )
 
-          def forward(self, x):
-              up = self.upsample(x)
-              x = up + self.model(up)
-              return x
+            def forward(self, x):
+               up = self.upsample(x)
+               x = up + self.model(up)
+               return x
 
 Trainieren Sie dann ihren Upscaler sowohl mit dem Perceptual Loss als auch mit dem MSE-Loss. Vergleichen Sie wieder.
 

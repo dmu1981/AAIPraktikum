@@ -53,3 +53,35 @@ class VGG16PerceptualLoss(nn.Module):
         - Compute and return the L2 loss between `f1` and `f2` using `self.l2_loss(f1, f2)`.
         """
         pass
+
+class TVLoss(nn.Module):
+    def __init__(self):
+        """Initialize the Total Variation Loss.
+        This loss encourages spatial smoothness in the output image.
+        """
+        super(TVLoss, self).__init__()
+
+    def forward(self, img):
+        """Compute the Total Variation Loss.
+        
+        Parameters:
+        -----------
+            img (torch.Tensor):
+              The input image tensor. 
+
+        Returns:
+        --------
+            torch.Tensor:
+              The computed Total Variation Loss.  
+
+        **TODO**:
+        
+        - Compute the total variation loss as the sum of the absolute differences between adjacent pixels in both dimensions.
+        
+        **Hint**:
+        Use `torch.mean()` to average the differences. Use slicing to access adjacent pixels in the height and width dimensions.Use `torch.abs()` to compute the absolute differences.          
+        """
+        return (
+            torch.mean(torch.abs(img[:, :, :-1, :] - img[:, :, 1:, :]))
+            + torch.mean(torch.abs(img[:, :, :, :-1] - img[:, :, :, 1:]))
+        )

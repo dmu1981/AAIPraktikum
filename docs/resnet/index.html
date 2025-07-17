@@ -28,6 +28,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Stichwortverzeichnis" href="../genindex.html" />
     <link rel="search" title="Suche" href="../search.html" />
+    <link rel="next" title="Embedding Vectors" href="../embeddings/index.html" />
     <link rel="prev" title="TensorBoard" href="../tensorboard/index.html" /> 
 </head>
 
@@ -57,22 +58,14 @@
 <li class="toctree-l1"><a class="reference internal" href="../checkpoints/index.html">Checkpoints</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../tensorboard/index.html">Tensor Board</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">ResNet</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#aufgabe-1-resnet-block-implementieren"><strong>Aufgabe 1</strong>: ResNet-Block implementieren</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#resnet.ResidualBlock"><code class="docutils literal notranslate"><span class="pre">ResidualBlock</span></code></a><ul>
-<li class="toctree-l4"><a class="reference internal" href="#resnet.ResidualBlock.__init__"><code class="docutils literal notranslate"><span class="pre">ResidualBlock.__init__()</span></code></a></li>
-<li class="toctree-l4"><a class="reference internal" href="#resnet.ResidualBlock.forward"><code class="docutils literal notranslate"><span class="pre">ResidualBlock.forward()</span></code></a></li>
-</ul>
-</li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#aufgabe-2-ein-einfaches-resnet-modell-implementieren"><strong>Aufgabe 2</strong>: Ein einfaches ResNet-Modell implementieren</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#resnet.ResNet.make_layer"><code class="docutils literal notranslate"><span class="pre">ResNet.make_layer()</span></code></a></li>
-<li class="toctree-l3"><a class="reference internal" href="#resnet.ResNet.__init__"><code class="docutils literal notranslate"><span class="pre">ResNet.__init__()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-1-resnet-block-implementieren"><strong>Aufgabe 1</strong>: ResNet-Block implementieren</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-2-ein-einfaches-resnet-modell-implementieren"><strong>Aufgabe 2</strong>: Ein einfaches ResNet-Modell implementieren</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#musterlosung"><strong>Musterlösung</strong>:</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../embeddings/index.html">Embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../perceptualloss/index.html">Perceptual Loss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adversarialloss/index.html">Adversarial Loss</a></li>
 </ul>
 
         </div>
@@ -124,56 +117,6 @@ Dazu verwenden wir eine 1x1 Convolutional-Schicht, die die Anzahl der Kanäle an
 <p>Alle Faltungen sind mit einer Kernelgröße von 3x3 und Padding von 1 konfiguriert, um die räumliche Größe der Eingabe beizubehalten.
 Sie verwenden ausserdem keinen Bias.</p>
 <p>Implementieren Sie die Klasse <cite>ResidualBlock</cite> in der Datei <cite>resnet/resnet.py</cite>, die den ResNet-Block mit und ohne Downsampling enthält.</p>
-<dl class="py class">
-<dt class="sig sig-object py" id="resnet.ResidualBlock">
-<em class="property"><span class="pre">class</span><span class="w"> </span></em><span class="sig-prename descclassname"><span class="pre">resnet.</span></span><span class="sig-name descname"><span class="pre">ResidualBlock</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/resnet.html#ResidualBlock"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#resnet.ResidualBlock" title="Link to this definition"></a></dt>
-<dd><p>Bases: <code class="xref py py-class docutils literal notranslate"><span class="pre">Module</span></code></p>
-<dl class="py method">
-<dt class="sig sig-object py" id="resnet.ResidualBlock.__init__">
-<span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">1</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/resnet.html#ResidualBlock.__init__"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#resnet.ResidualBlock.__init__" title="Link to this definition"></a></dt>
-<dd><p>Initialisiert einen Residual Block.</p>
-<section id="parameters">
-<h3>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt>in_channels (int):</dt><dd><p>Anzahl der Eingabekanäle.</p>
-</dd>
-<dt>out_channels (int):</dt><dd><p>Anzahl der Ausgabekanäle.</p>
-</dd>
-<dt>stride (int):</dt><dd><p>Schrittweite für die Faltung. Standard ist 1.</p>
-</dd>
-</dl>
-<p><strong>TODO</strong>:</p>
-<ul class="simple">
-<li><p>Rufen Sie die <cite>__init__</cite> Methode der Basisklasse <cite>nn.Module</cite> auf.</p></li>
-<li><p>Initialisieren Sie dann die Schichten des Residual Blocks.</p></li>
-<li><p>Verwenden Sie <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.html">nn.Conv2d</a> für die Faltungsschichten. Setzen Sie <cite>kernel_size=3</cite>, <cite>padding=1</cite> und <cite>bias=False</cite>.</p></li>
-<li><p>Die erste Faltungsschicht sollte <cite>in_channels</cite> zu <cite>out_channels</cite> transformieren, die zweite Faltungsschicht sollte <cite>out_channels</cite> zu <cite>out_channels</cite> transformieren.</p></li>
-<li><p>Die ersten Faltungsschicht sollte <cite>stride</cite> als Schrittweite verwenden.</p></li>
-<li><p>Fügen Sie <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm2d.html">nn.BatchNorm2d</a> nach jeder Faltungsschicht hinzu. Achten Sie darauf, dass die Batch-Normalisierung die gleiche Anzahl an Ausgabekanälen wie die Faltungsschicht hat.</p></li>
-<li><p>Verwenden Sie <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.ReLU.html">nn.ReLU</a> als Aktivierungsfunktion.</p></li>
-<li><p>Implementieren Sie die Shortcut-Verbindung. Wenn <cite>stride</cite> nicht 1 ist oder <cite>in_channels</cite> nicht gleich <cite>out_channels</cite>, verwenden Sie eine 1x1 Faltung, um die Dimensionen anzupassen. Andernfalls verwenden Sie <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.nn.Identity.html">nn.Identity()</a>.</p></li>
-</ul>
-</section>
-</dd></dl>
-
-<dl class="py method">
-<dt class="sig sig-object py" id="resnet.ResidualBlock.forward">
-<span class="sig-name descname"><span class="pre">forward</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">x</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/resnet.html#ResidualBlock.forward"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#resnet.ResidualBlock.forward" title="Link to this definition"></a></dt>
-<dd><p>Führt den Vorwärtsdurchlauf des Residual Blocks aus.</p>
-<section id="id1">
-<h3>Parameters:<a class="headerlink" href="#id1" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt>x (torch.Tensor):</dt><dd><p>Eingabetensor.</p>
-</dd>
-</dl>
-<p><strong>TODO</strong>:
-Implementieren Sie den Vorwärtsdurchlauf des Residual Blocks.
-Orientieren Sie sich an der in der Aufgabenstellung gegebenen Beschreibung sowie der Grafik.</p>
-</section>
-</dd></dl>
-
-</dd></dl>
-
 <div class="toggle admonition">
 <p class="admonition-title">Musterlösung für den Konstruktur __init__ anzeigen</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ResidualBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
@@ -233,45 +176,6 @@ Stride von 2 im ersten Block die räumliche Auflösung wieder halbiert.</p>
 Anschließend folgt eine voll verbundene Schicht, die die Anzahl der Kanäle auf 10 reduziert, um die 10 Klassen des
 CIFAR-10-Datensatzes zu klassifizieren.</p>
 <p><strong>Implementieren</strong> Sie nun zunächst die Methode <cite>Resnet._make_layer</cite> in der Datei <cite>resnet/resnet.py</cite>, die eine Sequenz von ResNet-Blöcken erstellt.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="resnet.ResNet.make_layer">
-<span class="sig-prename descclassname"><span class="pre">ResNet.</span></span><span class="sig-name descname"><span class="pre">make_layer</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">in_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">out_channels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">num_blocks</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">stride</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/resnet.html#ResNet.make_layer"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#resnet.ResNet.make_layer" title="Link to this definition"></a></dt>
-<dd><p>Erstellt eine Sequenz von Residual Blocks.</p>
-<section id="id2">
-<h3>Parameters:<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt>in_channels (int):</dt><dd><p>Anzahl der Eingabekanäle.</p>
-</dd>
-<dt>out_channels (int):</dt><dd><p>Anzahl der Ausgabekanäle.</p>
-</dd>
-<dt>num_blocks (int):</dt><dd><p>Anzahl der Residual Blocks in dieser Schicht.</p>
-</dd>
-<dt>stride (int):</dt><dd><p>Schrittweite für die erste Faltungsschicht des ersten Blocks.</p>
-</dd>
-</dl>
-</section>
-<section id="returns">
-<h3>Returns:<a class="headerlink" href="#returns" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt>nn.Sequential:</dt><dd><p>Eine Sequenz von Residual Blocks.</p>
-</dd>
-</dl>
-<p><strong>TODO</strong>:</p>
-<ul class="simple">
-<li><p>Erstellen Sie eine Liste von Schichten, die die Residual Blocks enthalten.</p></li>
-<li><p>Die erste Schicht sollte einen Residual Block mit <cite>in_channels</cite>, <cite>out_channels</cite> und <cite>stride</cite> sein.</p></li>
-<li><p>Die folgenden Schichten sollten Residual Blocks mit gleichbleibender Kanalanzahl sein. Verwenden Sie <cite>out_channels</cite> sowohl für die Eingabe- als auch für die Ausgabekanäle.</p></li>
-<li><p>Verwenden Sie <cite>nn.Sequential</cite> um die Schichten zu kombinieren und zurückzugeben.</p></li>
-</ul>
-<p><strong>Hinweis</strong>:</p>
-<ul class="simple">
-<li><p>Die erste Schicht sollte die Schrittweite <cite>stride</cite> verwenden, während die anderen Schichten eine Schrittweite von 1 haben.</p></li>
-<li><p>Sie können die gewünschten Layer mit <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Sequential.html">nn.Sequential</a> kombinieren.</p></li>
-<li><p>Dazu können Sie die Blöcke zunächst in einer Liste (z.B. <cite>layers</cite>) sammeln und dann <cite>nn.Sequential(*layers)</cite> verwenden, um sie zu kombinieren.</p></li>
-</ul>
-</section>
-</dd></dl>
-
 <div class="toggle admonition">
 <p class="admonition-title">Musterlösung anzeigen</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">make_layer</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">block</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">blocks</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">):</span>
@@ -286,35 +190,6 @@ CIFAR-10-Datensatzes zu klassifizieren.</p>
 </div>
 </div>
 <p><strong>Implementieren</strong> Sie anschließend den Konstruktor der Klasse <cite>ResNet</cite> in der Datei <cite>resnet/resnet.py</cite>, die das gesamte ResNet-Modell definiert.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="resnet.ResNet.__init__">
-<span class="sig-prename descclassname"><span class="pre">ResNet.</span></span><span class="sig-name descname"><span class="pre">__init__</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">num_classes</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">10</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/resnet.html#ResNet.__init__"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#resnet.ResNet.__init__" title="Link to this definition"></a></dt>
-<dd><p>Initialisiert das ResNet Modell.</p>
-<section id="id3">
-<h3>Parameters:<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt>num_classes (int):</dt><dd><p>Anzahl der Klassen für die Klassifikation.</p>
-</dd>
-</dl>
-<p><strong>TODO</strong>:</p>
-<ul class="simple">
-<li><p>Rufen Sie die <cite>__init__</cite> Methode der Basisklasse <cite>nn.Module</cite> auf.</p></li>
-<li><p>Definieren Sie dann die Schichten des ResNet Modells.</p></li>
-<li><p>Verwenden Sie <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Conv2d.html">nn.Conv2d</a> für die erste Faltungsschichten um von 3 auf 32 Kanäle zu transformieren. Setzen Sie <cite>kernel_size=7</cite>, <cite>padding=3</cite> und <cite>stride=2</cite> für diese Schicht.</p></li>
-<li><p>Fügen Sie <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.BatchNorm2d.html">nn.BatchNorm2d</a> und <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.ReLU.html">nn.ReLU</a> nach der ersten Faltungsschicht hinzu.</p></li>
-<li><p>Hinweis: Sie können die <cite>nn.Sequential</cite> Klasse verwenden, um mehrere Schichten zu kombinieren.</p></li>
-<li><p>Erstellen Sie dann drei Ebenen mit der Methode <cite>make_layer</cite>.</p></li>
-<li><p>Die erste Ebene sollte 6 Residual Blocks mit <cite>in_channels=32</cite>, <cite>out_channels=32</cite> und <cite>stride=1</cite> enthalten.</p></li>
-<li><p>Die zweite Ebene sollte 6 Residual Blocks mit <cite>in_channels=32</cite>, <cite>out_channels=64</cite> und <cite>stride=2</cite> enthalten.</p></li>
-<li><p>Die dritte Ebene sollte 12 Residual Blocks mit <cite>in_channels=64</cite>, <cite>out_channels=128</cite> und <cite>stride=2</cite> enthalten.</p></li>
-<li><p>Fügen Sie eine <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.AvgPool2d.html">nn.AvgPool2d</a> Schicht mit einem Kernel von (4, 4) hinzu, um die räumliche Dimension der Feature-Maps zu reduzieren.</p></li>
-<li><p>Fügen Sie eine voll verbundene Schicht <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Linear.html">nn.Linear</a> hinzu, die die Ausgabe der Durchschnittspooling-Schicht auf <cite>num_classes</cite> transformiert.</p></li>
-<li><p>Die Eingabegröße für die voll verbundene Schicht sollte 128 sein, da die letzte Residual Block Schicht 128 Kanäle hat.</p></li>
-<li><p>Verwenden Sie <a class="reference external" href="https://pytorch.org/docs/stable/generated/torch.flatten.html">torch.flatten</a> um die Ausgabe der Durchschnittspooling-Schicht in einen Vektor umzuwandeln, bevor Sie sie an die voll verbundene Schicht weitergeben.</p></li>
-</ul>
-</section>
-</dd></dl>
-
 <div class="toggle admonition">
 <p class="admonition-title">Musterlösung anzeigen</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">class</span><span class="w"> </span><span class="nc">ResNet</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
@@ -372,6 +247,7 @@ Sie sollten eine stabil steigende Genauigkeit sowie einen stabil sinkenden Loss 
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../tensorboard/index.html" class="btn btn-neutral float-left" title="TensorBoard" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
+        <a href="../embeddings/index.html" class="btn btn-neutral float-right" title="Embedding Vectors" accesskey="n" rel="next">Weiter <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

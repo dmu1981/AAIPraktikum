@@ -58,6 +58,7 @@
 <li class="toctree-l1"><a class="reference internal" href="../resnet/index.html">ResNet</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../embeddings/index.html">Embeddings</a></li>
 <li class="toctree-l1"><a class="reference internal" href="index.html">Perceptual Loss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adversarialloss/index.html">Adversarial Loss</a></li>
 </ul>
 
         </div>
@@ -87,31 +88,31 @@
   <section id="perceptual-loss-musterlosung">
 <h1>Perceptual Loss - Musterlösung<a class="headerlink" href="#perceptual-loss-musterlosung" title="Link to this heading"></a></h1>
 <p><strong>perceptual.py</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>
-<span class="linenos"> 2</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
-<span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">torchvision.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">vgg16</span>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
+<span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">torchvision.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">vgg16</span>
+<span class="linenos"> 4</span>
 <span class="linenos"> 5</span>
 <span class="linenos"> 6</span><span class="k">class</span><span class="w"> </span><span class="nc">VGG16PerceptualLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 <span class="linenos"> 7</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
 <span class="linenos"> 8</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the VGG16 perceptual loss model.</span>
-<span class="linenos"> 9</span><span class="sd">        </span>
+<span class="linenos"> 9</span>
 <span class="linenos">10</span><span class="sd">        It computes the perceptual loss as the mean squared error between the features.</span>
-<span class="linenos">11</span><span class="sd">        </span>
+<span class="linenos">11</span>
 <span class="linenos">12</span><span class="sd">        The model is set to evaluation mode and the parameters are frozen.</span>
-<span class="linenos">13</span><span class="sd">        </span>
+<span class="linenos">13</span>
 <span class="linenos">14</span><span class="sd">        **TODO**:</span>
 <span class="linenos">15</span>
-<span class="linenos">16</span><span class="sd">        - Load the VGG16 model with pretrained weights. Use `torchvision.models.vgg16(pretrained=True)`.        </span>
+<span class="linenos">16</span><span class="sd">        - Load the VGG16 model with pretrained weights. Use `torchvision.models.vgg16(pretrained=True)`.</span>
 <span class="linenos">17</span>
 <span class="linenos">18</span><span class="sd">        - Restrict the VGG16 model to the first 16 layers by using `self.vgg = vgg16(pretrained=True).features[:16]`.</span>
 <span class="linenos">19</span>
 <span class="linenos">20</span><span class="sd">        - Set the model to evaluation mode using `.eval()`.</span>
 <span class="linenos">21</span>
-<span class="linenos">22</span><span class="sd">        - Freeze the parameters of the VGG16 model by setting `param.requires_grad = False` for all parameters. </span>
+<span class="linenos">22</span><span class="sd">        - Freeze the parameters of the VGG16 model by setting `param.requires_grad = False` for all parameters.</span>
 <span class="linenos">23</span><span class="sd">          NOTE: Iterate through all parameters by using the `self.vgg.parameters()`-Iterator.</span>
 <span class="linenos">24</span>
-<span class="linenos">25</span><span class="sd">        - Initialize the L2 loss function using `nn.MSELoss()`.  </span>
+<span class="linenos">25</span><span class="sd">        - Initialize the L2 loss function using `nn.MSELoss()`.</span>
 <span class="linenos">26</span><span class="sd">        &quot;&quot;&quot;</span>
 <span class="linenos">27</span>        <span class="nb">super</span><span class="p">(</span><span class="n">VGG16PerceptualLoss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
 <span class="linenos">28</span>        <span class="bp">self</span><span class="o">.</span><span class="n">vgg</span> <span class="o">=</span> <span class="n">vgg16</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">features</span><span class="p">[:</span><span class="mi">16</span><span class="p">]</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
@@ -123,39 +124,50 @@
 <span class="linenos">34</span>
 <span class="linenos">35</span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
 <span class="linenos">36</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the perceptual loss between two images.</span>
-<span class="linenos">37</span><span class="sd">        </span>
+<span class="linenos">37</span>
 <span class="linenos">38</span><span class="sd">        Parameters:</span>
 <span class="linenos">39</span><span class="sd">        -----------</span>
-<span class="linenos">40</span><span class="sd">            output (torch.Tensor): </span>
+<span class="linenos">40</span><span class="sd">            output (torch.Tensor):</span>
 <span class="linenos">41</span><span class="sd">              The output image tensor from the upscaler network.</span>
 <span class="linenos">42</span>
-<span class="linenos">43</span><span class="sd">            target (torch.Tensor): </span>
+<span class="linenos">43</span><span class="sd">            target (torch.Tensor):</span>
 <span class="linenos">44</span><span class="sd">              The target image tensor from ground truth.</span>
 <span class="linenos">45</span>
 <span class="linenos">46</span><span class="sd">        Returns:</span>
-<span class="linenos">47</span><span class="sd">        --------  </span>
-<span class="linenos">48</span><span class="sd">            torch.Tensor: </span>
+<span class="linenos">47</span><span class="sd">        --------</span>
+<span class="linenos">48</span><span class="sd">            torch.Tensor:</span>
 <span class="linenos">49</span><span class="sd">              The computed perceptual loss as the mean squared error between the features of the two images.</span>
 <span class="linenos">50</span>
 <span class="linenos">51</span><span class="sd">        **TODO**:</span>
-<span class="linenos">52</span>
-<span class="linenos">53</span><span class="sd">        - Resize `output` and `target` to 224x224 using `torch.nn.functional.interpolate()`. Use `mode=&#39;bilinear&#39;` and `align_corners=False`. </span>
-<span class="linenos">54</span><span class="sd">        </span>
-<span class="linenos">55</span><span class="sd">        - Pass `output` through the VGG16 model to get the features `f1`.</span>
-<span class="linenos">56</span>
-<span class="linenos">57</span><span class="sd">        - Pass `target` through the VGG16 model to get the features `f2`. Note: You should use `torch.no_grad()` to avoid computing gradients for the target image.</span>
-<span class="linenos">58</span>
-<span class="linenos">59</span><span class="sd">        - Compute and return the L2 loss between `f1` and `f2` using `self.l2_loss(f1, f2)`.</span>
-<span class="linenos">60</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">61</span>        <span class="n">output</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;bilinear&#39;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="linenos">62</span>        <span class="n">target</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">224</span><span class="p">,</span> <span class="mi">224</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s1">&#39;bilinear&#39;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span>
-<span class="linenos">63</span>
-<span class="linenos">64</span>        <span class="n">f1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vgg</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
-<span class="linenos">65</span>
-<span class="linenos">66</span>        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
-<span class="linenos">67</span>          <span class="n">f2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vgg</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
-<span class="linenos">68</span>
-<span class="linenos">69</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">l1_loss</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span>
+<span class="linenos">52</span><span class="sd">        - Pass `output` through the VGG16 model to get the features `f1`.</span>
+<span class="linenos">53</span>
+<span class="linenos">54</span><span class="sd">        - Pass `target` through the VGG16 model to get the features `f2`. Note: You should use `torch.no_grad()` to avoid computing gradients for the target image.</span>
+<span class="linenos">55</span>
+<span class="linenos">56</span><span class="sd">        - Compute and return the L2 loss between `f1` and `f2` using `self.l2_loss(f1, f2)`.</span>
+<span class="linenos">57</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">58</span>        <span class="c1"># output = torch.nn.functional.interpolate(</span>
+<span class="linenos">59</span>        <span class="c1">#     output, size=(224, 224), mode=&quot;bilinear&quot;, align_corners=False</span>
+<span class="linenos">60</span>        <span class="c1"># )</span>
+<span class="linenos">61</span>        <span class="c1"># target = torch.nn.functional.interpolate(</span>
+<span class="linenos">62</span>        <span class="c1">#     target, size=(224, 224), mode=&quot;bilinear&quot;, align_corners=False</span>
+<span class="linenos">63</span>        <span class="c1"># )</span>
+<span class="linenos">64</span>
+<span class="linenos">65</span>        <span class="n">f1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vgg</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+<span class="linenos">66</span>
+<span class="linenos">67</span>        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+<span class="linenos">68</span>            <span class="n">f2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vgg</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+<span class="linenos">69</span>
+<span class="linenos">70</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">l1_loss</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span>
+<span class="linenos">71</span>
+<span class="linenos">72</span><span class="k">class</span><span class="w"> </span><span class="nc">TVLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="linenos">73</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">74</span>        <span class="nb">super</span><span class="p">(</span><span class="n">TVLoss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<span class="linenos">75</span>
+<span class="linenos">76</span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
+<span class="linenos">77</span>        <span class="k">return</span> <span class="p">(</span>
+<span class="linenos">78</span>            <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">:,</span> <span class="p">:]))</span>
+<span class="linenos">79</span>            <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">:]))</span>
+<span class="linenos">80</span>        <span class="p">)</span>
 </pre></div>
 </div>
 <p><strong>upscale2x.py</strong></p>
@@ -163,88 +175,15 @@
 <span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
 <span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">torchvision.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">vgg16</span>
 <span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_dataloader</span><span class="p">,</span> <span class="n">train</span><span class="p">,</span> <span class="n">ResNetBlock</span>
-<span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">perceptual</span><span class="w"> </span><span class="kn">import</span> <span class="n">VGG16PerceptualLoss</span>
+<span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">perceptual_solution</span><span class="w"> </span><span class="kn">import</span> <span class="n">VGG16PerceptualLoss</span><span class="p">,</span> <span class="n">TVLoss</span>
 <span class="linenos"> 6</span>
-<span class="linenos"> 7</span><span class="k">class</span><span class="w"> </span><span class="nc">Upscale2x</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-<span class="linenos"> 8</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="linenos"> 9</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Upscale2x model.</span>
-<span class="linenos">10</span><span class="sd">        </span>
-<span class="linenos">11</span><span class="sd">        This model performs 2x upscaling using a series of ResNet blocks and an upsampling layer.</span>
-<span class="linenos">12</span><span class="sd">        </span>
-<span class="linenos">13</span><span class="sd">        **TODO**:</span>
-<span class="linenos">14</span>
-<span class="linenos">15</span><span class="sd">        - Call the `__init__` method of the base class `nn.Module`.</span>
-<span class="linenos">16</span>
-<span class="linenos">17</span><span class="sd">        - Define an upsampling layer using `nn.Upsample(scale_factor=2, mode=&quot;bilinear&quot;, align_corners=True) &lt;https://docs.pytorch.org/docs/stable/generated/torch.nn.Upsample.html&gt;`_.</span>
-<span class="linenos">18</span>
-<span class="linenos">19</span><span class="sd">        - Define a sequential model consisting of:</span>
-<span class="linenos">20</span>
-<span class="linenos">21</span><span class="sd">        - Three `ResNetBlock` layers with 3-&gt;64, 64-&gt;32 and 32-&gt;16 channels as well as kernel sizes 9, 7, and 5 respectively.</span>
-<span class="linenos">22</span>
-<span class="linenos">23</span><span class="sd">        - A final convolutional layer with 16 input channels, 3 output channels and kernel size 5 with padding 2.</span>
-<span class="linenos">24</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">25</span>        <span class="nb">super</span><span class="p">(</span><span class="n">Upscale2x</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-<span class="linenos">26</span>        <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Upsample</span><span class="p">(</span><span class="n">scale_factor</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="linenos">27</span>        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-<span class="linenos">28</span>            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">9</span><span class="p">),</span>
-<span class="linenos">29</span>            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
-<span class="linenos">30</span>            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
-<span class="linenos">31</span>            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
-<span class="linenos">32</span>        <span class="p">)</span>
-<span class="linenos">33</span>
-<span class="linenos">34</span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-<span class="linenos">35</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform the forward pass of the Upscale2x model.</span>
-<span class="linenos">36</span>
-<span class="linenos">37</span><span class="sd">        Parameters:</span>
-<span class="linenos">38</span><span class="sd">        -----------</span>
-<span class="linenos">39</span><span class="sd">            x (torch.Tensor): </span>
-<span class="linenos">40</span><span class="sd">              The input tensor to be upscaled.</span>
-<span class="linenos">41</span>
-<span class="linenos">42</span><span class="sd">        Returns:</span>
-<span class="linenos">43</span><span class="sd">        --------  </span>
-<span class="linenos">44</span><span class="sd">            torch.Tensor: </span>
-<span class="linenos">45</span><span class="sd">              The upscaled output tensor. </span>
-<span class="linenos">46</span>
-<span class="linenos">47</span><span class="sd">        **TODO**: </span>
-<span class="linenos">48</span>
-<span class="linenos">49</span><span class="sd">        - Apply the upsampling layer to the input tensor `x`.</span>
-<span class="linenos">50</span>
-<span class="linenos">51</span><span class="sd">        - Pass the upsampled tensor through the model.</span>
-<span class="linenos">52</span>
-<span class="linenos">53</span><span class="sd">        - Add the upsampled tensor to the output of the model.  </span>
-<span class="linenos">54</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">55</span>        <span class="n">up</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="linenos">56</span>        <span class="n">x</span> <span class="o">=</span> <span class="n">up</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">up</span><span class="p">)</span>
-<span class="linenos">57</span>        <span class="k">return</span> <span class="n">x</span>
-<span class="linenos">58</span>
-<span class="linenos">59</span>
-<span class="linenos">60</span>
-<span class="linenos">61</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>    
-<span class="linenos">62</span>  <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;upscale2x_mse&quot;</span>
-<span class="linenos">63</span>
-<span class="linenos">64</span>  <span class="n">upscaler</span> <span class="o">=</span> <span class="n">Upscale2x</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
-<span class="linenos">65</span>  <span class="n">dataloader</span> <span class="o">=</span> <span class="n">get_dataloader</span><span class="p">(</span><span class="n">inputSize</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">outputSize</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">64</span><span class="p">)</span>
-<span class="linenos">66</span>  <span class="n">perceptualLoss</span> <span class="o">=</span> <span class="n">VGG16PerceptualLoss</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
-<span class="linenos">67</span>  <span class="n">mseLoss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
-<span class="linenos">68</span>
-<span class="linenos">69</span>  <span class="c1"># TODO Aufgabe 3: Use mseLoss instead of perceptualLoss for training</span>
-<span class="linenos">70</span>  <span class="n">train</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">upscaler</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">,</span> <span class="n">mseLoss</span><span class="p">)</span>
-</pre></div>
-</div>
-<p><strong>upscale4x.py</strong></p>
-<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span>
-<span class="linenos"> 2</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
-<span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
-<span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">torchvision.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">vgg16</span>
-<span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_dataloader</span><span class="p">,</span> <span class="n">train</span><span class="p">,</span> <span class="n">ResNetBlock</span>
-<span class="linenos"> 6</span><span class="kn">from</span><span class="w"> </span><span class="nn">perceptual</span><span class="w"> </span><span class="kn">import</span> <span class="n">VGG16PerceptualLoss</span>
 <span class="linenos"> 7</span>
-<span class="linenos"> 8</span><span class="k">class</span><span class="w"> </span><span class="nc">Upscale4x</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="linenos"> 8</span><span class="k">class</span><span class="w"> </span><span class="nc">Upscale2x</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
 <span class="linenos"> 9</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
-<span class="linenos">10</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Upscale4x model.</span>
-<span class="linenos">11</span><span class="sd">        </span>
-<span class="linenos">12</span><span class="sd">        This model performs 4x upscaling using a series of ResNet blocks and an upsampling layer.</span>
-<span class="linenos">13</span><span class="sd">        </span>
+<span class="linenos">10</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Upscale2x model.</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span><span class="sd">        This model performs 2x upscaling using a series of ResNet blocks and an upsampling layer.</span>
+<span class="linenos">13</span>
 <span class="linenos">14</span><span class="sd">        **TODO**:</span>
 <span class="linenos">15</span>
 <span class="linenos">16</span><span class="sd">        - Call the `__init__` method of the base class `nn.Module`.</span>
@@ -253,57 +192,155 @@
 <span class="linenos">19</span>
 <span class="linenos">20</span><span class="sd">        - Define a sequential model consisting of:</span>
 <span class="linenos">21</span>
-<span class="linenos">22</span><span class="sd">        - Three `ResNetBlock` layers with 3-&gt;64, 64-&gt;32 and 32-&gt;16 channels as well as kernel sizes 9, 7, and 5 respectively.</span>
+<span class="linenos">22</span><span class="sd">        - Four `ResNetBlock` layers with 3-&gt;16, 16-&gt;32 and 32-&gt;64 and 64-&gt;128 channels as well as kernel sizes 7.</span>
 <span class="linenos">23</span>
-<span class="linenos">24</span><span class="sd">        - A final convolutional layer with 16 input channels, 3 output channels and kernel size 5 with padding 2.</span>
-<span class="linenos">25</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">26</span>        <span class="nb">super</span><span class="p">(</span><span class="n">Upscale4x</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
-<span class="linenos">27</span>        <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Upsample</span><span class="p">(</span><span class="n">scale_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
-<span class="linenos">28</span>        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
-<span class="linenos">29</span>            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span>  <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">9</span><span class="p">),</span>
-<span class="linenos">30</span>            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">48</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
-<span class="linenos">31</span>            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">48</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
-<span class="linenos">32</span>            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">24</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">),</span>
-<span class="linenos">33</span>            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">24</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
-<span class="linenos">34</span>        <span class="p">)</span>
-<span class="linenos">35</span>
-<span class="linenos">36</span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-<span class="linenos">37</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform the forward pass of the Upscale2x model.</span>
+<span class="linenos">24</span><span class="sd">        - A PixelShuffle layer with an upscale factor of 2.</span>
+<span class="linenos">25</span>
+<span class="linenos">26</span><span class="sd">        - A final convolutional layer with 32 input channels, 3 output channels and kernel size 7 with padding 3.</span>
+<span class="linenos">27</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">28</span>        <span class="nb">super</span><span class="p">(</span><span class="n">Upscale2x</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<span class="linenos">29</span>        <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Upsample</span><span class="p">(</span><span class="n">scale_factor</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">30</span>        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+<span class="linenos">31</span>            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+<span class="linenos">32</span>            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+<span class="linenos">33</span>            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+<span class="linenos">34</span>            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+<span class="linenos">35</span>            <span class="n">nn</span><span class="o">.</span><span class="n">PixelShuffle</span><span class="p">(</span><span class="n">upscale_factor</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>  <span class="c1"># First upsample</span>
+<span class="linenos">36</span>            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>  <span class="c1"># Final conv to reduce channels</span>
+<span class="linenos">37</span>        <span class="p">)</span>
 <span class="linenos">38</span>
-<span class="linenos">39</span><span class="sd">        Parameters:</span>
-<span class="linenos">40</span><span class="sd">        -----------</span>
-<span class="linenos">41</span><span class="sd">            x (torch.Tensor): </span>
-<span class="linenos">42</span><span class="sd">              The input tensor to be upscaled.</span>
-<span class="linenos">43</span>
-<span class="linenos">44</span><span class="sd">        Returns:</span>
-<span class="linenos">45</span><span class="sd">        --------  </span>
-<span class="linenos">46</span><span class="sd">            torch.Tensor: </span>
-<span class="linenos">47</span><span class="sd">              The upscaled output tensor. </span>
-<span class="linenos">48</span>
-<span class="linenos">49</span><span class="sd">        **TODO**: </span>
-<span class="linenos">50</span>
-<span class="linenos">51</span><span class="sd">        - Apply the upsampling layer to the input tensor `x`.</span>
-<span class="linenos">52</span>
-<span class="linenos">53</span><span class="sd">        - Pass the upsampled tensor through the model.</span>
-<span class="linenos">54</span>
-<span class="linenos">55</span><span class="sd">        - Add the upsampled tensor to the output of the model.  </span>
-<span class="linenos">56</span><span class="sd">        &quot;&quot;&quot;</span>
-<span class="linenos">57</span>        <span class="n">up</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
-<span class="linenos">58</span>        <span class="n">x</span> <span class="o">=</span> <span class="n">up</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">up</span><span class="p">)</span>
-<span class="linenos">59</span>        <span class="k">return</span> <span class="n">x</span>
-<span class="linenos">60</span>
-<span class="linenos">61</span>
-<span class="linenos">62</span>
-<span class="linenos">63</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>    
-<span class="linenos">64</span>  <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;upscale4x_mse&quot;</span>
-<span class="linenos">65</span>
-<span class="linenos">66</span>  <span class="n">upscaler</span> <span class="o">=</span> <span class="n">Upscale4x</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
-<span class="linenos">67</span>  <span class="n">dataloader</span> <span class="o">=</span> <span class="n">get_dataloader</span><span class="p">(</span><span class="n">inputSize</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">outputSize</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">16</span><span class="p">)</span>
-<span class="linenos">68</span>  <span class="n">perceptualLoss</span> <span class="o">=</span> <span class="n">VGG16PerceptualLoss</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
-<span class="linenos">69</span>  <span class="n">mseLoss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+<span class="linenos">39</span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="linenos">40</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform the forward pass of the Upscale2x model.</span>
+<span class="linenos">41</span>
+<span class="linenos">42</span><span class="sd">        Parameters:</span>
+<span class="linenos">43</span><span class="sd">        -----------</span>
+<span class="linenos">44</span><span class="sd">            x (torch.Tensor):</span>
+<span class="linenos">45</span><span class="sd">              The input tensor to be upscaled.</span>
+<span class="linenos">46</span>
+<span class="linenos">47</span><span class="sd">        Returns:</span>
+<span class="linenos">48</span><span class="sd">        --------</span>
+<span class="linenos">49</span><span class="sd">            torch.Tensor:</span>
+<span class="linenos">50</span><span class="sd">              The upscaled output tensor.</span>
+<span class="linenos">51</span>
+<span class="linenos">52</span><span class="sd">        **TODO**:</span>
+<span class="linenos">53</span>
+<span class="linenos">54</span><span class="sd">        - Pass the input tensor through the model.</span>
+<span class="linenos">55</span>
+<span class="linenos">56</span><span class="sd">        - Also, apply the upsampling layer to the input tensor `x`.</span>
+<span class="linenos">57</span>
+<span class="linenos">58</span><span class="sd">        - Add the upsampled tensor to the output of the model.</span>
+<span class="linenos">59</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">60</span>        <span class="n">up</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="linenos">61</span>        <span class="n">x</span> <span class="o">=</span> <span class="n">up</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="linenos">62</span>        <span class="k">return</span> <span class="n">x</span>
+<span class="linenos">63</span>
+<span class="linenos">64</span><span class="k">class</span><span class="w"> </span><span class="nc">GeneratorLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="linenos">65</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">66</span>        <span class="nb">super</span><span class="p">(</span><span class="n">GeneratorLoss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<span class="linenos">67</span>        <span class="bp">self</span><span class="o">.</span><span class="n">perceptualLoss</span> <span class="o">=</span> <span class="n">VGG16PerceptualLoss</span><span class="p">()</span>
+<span class="linenos">68</span>        <span class="bp">self</span><span class="o">.</span><span class="n">mseLoss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
+<span class="linenos">69</span>        <span class="bp">self</span><span class="o">.</span><span class="n">tvLoss</span> <span class="o">=</span> <span class="n">TVLoss</span><span class="p">()</span>
 <span class="linenos">70</span>
-<span class="linenos">71</span>  <span class="c1"># TODO Aufgabe 3: Use mseLoss instead of perceptualLoss for training</span>
-<span class="linenos">72</span>  <span class="n">train</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">upscaler</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">,</span> <span class="n">mseLoss</span><span class="p">)</span>
+<span class="linenos">71</span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<span class="linenos">72</span>          <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">perceptualLoss</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvLoss</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+<span class="linenos">73</span>
+<span class="linenos">74</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">75</span>    <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;upscale2x_perceptual&quot;</span>
+<span class="linenos">76</span>
+<span class="linenos">77</span>    <span class="n">upscaler</span> <span class="o">=</span> <span class="n">Upscale2x</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+<span class="linenos">78</span>    <span class="n">dataloader</span> <span class="o">=</span> <span class="n">get_dataloader</span><span class="p">(</span><span class="n">inputSize</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">outputSize</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+<span class="linenos">79</span>
+<span class="linenos">80</span>    <span class="n">loss</span> <span class="o">=</span> <span class="n">GeneratorLoss</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+<span class="linenos">81</span>
+<span class="linenos">82</span>    <span class="c1"># TODO Aufgabe 3: Use mseLoss instead of perceptualLoss for training</span>
+<span class="linenos">83</span>    <span class="n">train</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">upscaler</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">,</span> <span class="n">loss</span><span class="p">)</span>
+</pre></div>
+</div>
+<p><strong>upscale4x.py</strong></p>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos"> 1</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="linenos"> 2</span><span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
+<span class="linenos"> 3</span><span class="kn">from</span><span class="w"> </span><span class="nn">torchvision.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">vgg16</span>
+<span class="linenos"> 4</span><span class="kn">from</span><span class="w"> </span><span class="nn">misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">get_dataloader</span><span class="p">,</span> <span class="n">train</span><span class="p">,</span> <span class="n">ResNetBlock</span>
+<span class="linenos"> 5</span><span class="kn">from</span><span class="w"> </span><span class="nn">perceptual_solution</span><span class="w"> </span><span class="kn">import</span> <span class="n">VGG16PerceptualLoss</span><span class="p">,</span> <span class="n">TVLoss</span>
+<span class="linenos"> 6</span>
+<span class="linenos"> 7</span>
+<span class="linenos"> 8</span><span class="k">class</span><span class="w"> </span><span class="nc">Upscale4x</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="linenos"> 9</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">10</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Upscale4x model.</span>
+<span class="linenos">11</span>
+<span class="linenos">12</span><span class="sd">        This model performs 4x upscaling using a series of ResNet blocks and an upsampling layer.</span>
+<span class="linenos">13</span>
+<span class="linenos">14</span><span class="sd">        **TODO**:</span>
+<span class="linenos">15</span>
+<span class="linenos">16</span><span class="sd">        - Call the `__init__` method of the base class `nn.Module`.</span>
+<span class="linenos">17</span>
+<span class="linenos">18</span><span class="sd">        - Define an upsampling layer using `nn.Upsample(scale_factor=4, mode=&quot;bilinear&quot;, align_corners=True) &lt;https://docs.pytorch.org/docs/stable/generated/torch.nn.Upsample.html&gt;`_.</span>
+<span class="linenos">19</span>
+<span class="linenos">20</span><span class="sd">        - Define a sequential model consisting of:</span>
+<span class="linenos">21</span>
+<span class="linenos">22</span><span class="sd">        - Five `ResNetBlock` layers with 3-&gt;16, 16-&gt;32, 32-&gt;64, 64-&gt;128 and 128-&gt;256 channels as well as kernel sizes 7.</span>
+<span class="linenos">23</span>
+<span class="linenos">24</span><span class="sd">        - A PixelShuffle layer with an upscale factor of 4.</span>
+<span class="linenos">25</span>
+<span class="linenos">26</span><span class="sd">        - A final convolutional layer with 16 input channels, 3 output channels and kernel size 5 with padding 2.</span>
+<span class="linenos">27</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">28</span>        <span class="nb">super</span><span class="p">(</span><span class="n">Upscale4x</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<span class="linenos">29</span>        <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Upsample</span><span class="p">(</span><span class="n">scale_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">30</span>        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+<span class="linenos">31</span>            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+<span class="linenos">32</span>            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+<span class="linenos">33</span>            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+<span class="linenos">34</span>            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+<span class="linenos">35</span>            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+<span class="linenos">36</span>            <span class="n">nn</span><span class="o">.</span><span class="n">PixelShuffle</span><span class="p">(</span><span class="n">upscale_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>  <span class="c1"># First upsample</span>
+<span class="linenos">37</span>            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>  <span class="c1"># Final conv to reduce channels</span>
+<span class="linenos">38</span>        <span class="p">)</span>
+<span class="linenos">39</span>
+<span class="linenos">40</span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="linenos">41</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform the forward pass of the Upscale2x model.</span>
+<span class="linenos">42</span>
+<span class="linenos">43</span><span class="sd">        Parameters:</span>
+<span class="linenos">44</span><span class="sd">        -----------</span>
+<span class="linenos">45</span><span class="sd">            x (torch.Tensor):</span>
+<span class="linenos">46</span><span class="sd">              The input tensor to be upscaled.</span>
+<span class="linenos">47</span>
+<span class="linenos">48</span><span class="sd">        Returns:</span>
+<span class="linenos">49</span><span class="sd">        --------</span>
+<span class="linenos">50</span><span class="sd">            torch.Tensor:</span>
+<span class="linenos">51</span><span class="sd">              The upscaled output tensor.</span>
+<span class="linenos">52</span>
+<span class="linenos">53</span><span class="sd">        **TODO**:</span>
+<span class="linenos">54</span>
+<span class="linenos">55</span><span class="sd">        - Pass the input tensor through the model.</span>
+<span class="linenos">56</span>
+<span class="linenos">57</span><span class="sd">        - Also, apply the upsampling layer to the input tensor `x`.</span>
+<span class="linenos">58</span>
+<span class="linenos">59</span><span class="sd">        - Add the upsampled tensor to the output of the model.</span>
+<span class="linenos">60</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">61</span>        <span class="n">up</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upsample</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="linenos">62</span>        <span class="n">x</span> <span class="o">=</span> <span class="n">up</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="linenos">63</span>        <span class="k">return</span> <span class="n">x</span>
+<span class="linenos">64</span>
+<span class="linenos">65</span>
+<span class="linenos">66</span><span class="k">class</span><span class="w"> </span><span class="nc">GeneratorLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="linenos">67</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">68</span>        <span class="nb">super</span><span class="p">(</span><span class="n">GeneratorLoss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<span class="linenos">69</span>        <span class="bp">self</span><span class="o">.</span><span class="n">perceptualLoss</span> <span class="o">=</span> <span class="n">VGG16PerceptualLoss</span><span class="p">()</span>
+<span class="linenos">70</span>        <span class="bp">self</span><span class="o">.</span><span class="n">mseLoss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
+<span class="linenos">71</span>        <span class="bp">self</span><span class="o">.</span><span class="n">tvLoss</span> <span class="o">=</span> <span class="n">TVLoss</span><span class="p">()</span>
+<span class="linenos">72</span>
+<span class="linenos">73</span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<span class="linenos">74</span>          <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">perceptualLoss</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvLoss</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+<span class="linenos">75</span>
+<span class="linenos">76</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">77</span>    <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;upscale4x_perceptual&quot;</span>
+<span class="linenos">78</span>
+<span class="linenos">79</span>    <span class="n">upscaler</span> <span class="o">=</span> <span class="n">Upscale4x</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+<span class="linenos">80</span>    <span class="n">dataloader</span> <span class="o">=</span> <span class="n">get_dataloader</span><span class="p">(</span><span class="n">inputSize</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">outputSize</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">)</span>
+<span class="linenos">81</span>    <span class="n">loss</span> <span class="o">=</span> <span class="n">GeneratorLoss</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+<span class="linenos">82</span>
+<span class="linenos">83</span>    <span class="c1"># TODO Aufgabe 3: Use mseLoss instead of perceptualLoss for training</span>
+<span class="linenos">84</span>    <span class="n">train</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">upscaler</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">,</span> <span class="n">loss</span><span class="p">)</span>
 </pre></div>
 </div>
 </section>

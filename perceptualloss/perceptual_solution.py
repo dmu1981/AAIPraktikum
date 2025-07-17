@@ -49,21 +49,18 @@ class VGG16PerceptualLoss(nn.Module):
               The computed perceptual loss as the mean squared error between the features of the two images.
 
         **TODO**:
-
-        - Resize `output` and `target` to 224x224 using `torch.nn.functional.interpolate()`. Use `mode='bilinear'` and `align_corners=False`.
-
         - Pass `output` through the VGG16 model to get the features `f1`.
 
         - Pass `target` through the VGG16 model to get the features `f2`. Note: You should use `torch.no_grad()` to avoid computing gradients for the target image.
 
         - Compute and return the L2 loss between `f1` and `f2` using `self.l2_loss(f1, f2)`.
         """
-        output = torch.nn.functional.interpolate(
-            output, size=(224, 224), mode="bilinear", align_corners=False
-        )
-        target = torch.nn.functional.interpolate(
-            target, size=(224, 224), mode="bilinear", align_corners=False
-        )
+        # output = torch.nn.functional.interpolate(
+        #     output, size=(224, 224), mode="bilinear", align_corners=False
+        # )
+        # target = torch.nn.functional.interpolate(
+        #     target, size=(224, 224), mode="bilinear", align_corners=False
+        # )
 
         f1 = self.vgg(output)
 
@@ -71,3 +68,13 @@ class VGG16PerceptualLoss(nn.Module):
             f2 = self.vgg(target)
 
         return self.l1_loss(f1, f2)
+
+class TVLoss(nn.Module):
+    def __init__(self):
+        super(TVLoss, self).__init__()
+
+    def forward(self, img):
+        return (
+            torch.mean(torch.abs(img[:, :, :-1, :] - img[:, :, 1:, :]))
+            + torch.mean(torch.abs(img[:, :, :, :-1] - img[:, :, :, 1:]))
+        )

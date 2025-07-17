@@ -29,6 +29,7 @@
     <script src="../_static/js/theme.js"></script>
     <link rel="index" title="Stichwortverzeichnis" href="../genindex.html" />
     <link rel="search" title="Suche" href="../search.html" />
+    <link rel="next" title="Perceptual Loss" href="../perceptualloss/index.html" />
     <link rel="prev" title="ResNet" href="../resnet/index.html" /> 
 </head>
 
@@ -59,25 +60,15 @@
 <li class="toctree-l1"><a class="reference internal" href="../tensorboard/index.html">Tensor Board</a></li>
 <li class="toctree-l1"><a class="reference internal" href="../resnet/index.html">ResNet</a></li>
 <li class="toctree-l1 current"><a class="current reference internal" href="#">Embeddings</a><ul>
-<li class="toctree-l2"><a class="reference internal" href="#aufgabe-1-embedding-vektoren-extrahieren"><strong>Aufgabe 1</strong>: Embedding Vektoren extrahieren</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#embeddings.EmbeddingLogger.calculate_embeddings"><code class="docutils literal notranslate"><span class="pre">EmbeddingLogger.calculate_embeddings()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#aufgabe-2-t-sne-visualisierung"><strong>Aufgabe 2</strong>: t-SNE Visualisierung</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#embeddings.EmbeddingLogger.calculate_tsne"><code class="docutils literal notranslate"><span class="pre">EmbeddingLogger.calculate_tsne()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#aufgabe-3-die-alte-und-neue-punktwolke-gegeneinander-registrieren"><strong>Aufgabe 3</strong>: Die alte und neue Punktwolke gegeneinander registrieren</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#embeddings.EmbeddingLogger.register_embeddings_2d"><code class="docutils literal notranslate"><span class="pre">EmbeddingLogger.register_embeddings_2d()</span></code></a></li>
-</ul>
-</li>
-<li class="toctree-l2"><a class="reference internal" href="#aufgabe-4-die-embeddings-visualisieren"><strong>Aufgabe 4</strong>: Die Embeddings visualisieren</a><ul>
-<li class="toctree-l3"><a class="reference internal" href="#embeddings.EmbeddingLogger.visualize_embeddings"><code class="docutils literal notranslate"><span class="pre">EmbeddingLogger.visualize_embeddings()</span></code></a></li>
-</ul>
-</li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-1-embedding-vektoren-extrahieren"><strong>Aufgabe 1</strong>: Embedding Vektoren extrahieren</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-2-t-sne-visualisierung"><strong>Aufgabe 2</strong>: t-SNE Visualisierung</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-3-die-alte-und-neue-punktwolke-gegeneinander-registrieren"><strong>Aufgabe 3</strong>: Die alte und neue Punktwolke gegeneinander registrieren</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#aufgabe-4-die-embeddings-visualisieren"><strong>Aufgabe 4</strong>: Die Embeddings visualisieren</a></li>
 <li class="toctree-l2"><a class="reference internal" href="#musterlosung"><strong>Musterlösung</strong>:</a></li>
 </ul>
 </li>
+<li class="toctree-l1"><a class="reference internal" href="../perceptualloss/index.html">Perceptual Loss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../adversarialloss/index.html">Adversarial Loss</a></li>
 </ul>
 
         </div>
@@ -120,40 +111,6 @@ Anders als die <a class="reference external" href="https://scikit-learn.org/stab
 Das Modell liefert in seinem forward-Pass bereits neben den Logits auch die Ausgabe der letzten Schicht vor der Klassifikation, also die Embedding-Vektoren.
 Diese sind in diesem Fall 128-dimensional, da das ResNet-Model eine letzte Faltungsschicht mit 128 Kanälen hat.</p>
 <p>Öffnen Sie die Datei <cite>embeddings.py</cite> und implementieren Sie die Methode <cite>embeddings.calculate_embeddings</cite>, welche die Embedding Vektoren aus dem Modell extrahiert.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="embeddings.EmbeddingLogger.calculate_embeddings">
-<span class="sig-prename descclassname"><span class="pre">EmbeddingLogger.</span></span><span class="sig-name descname"><span class="pre">calculate_embeddings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">model</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/embeddings.html#EmbeddingLogger.calculate_embeddings"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#embeddings.EmbeddingLogger.calculate_embeddings" title="Link to this definition"></a></dt>
-<dd><p>Berechnet alle Embeddings für die Daten im Dataloader.</p>
-<section id="parameters">
-<h3>Parameters:<a class="headerlink" href="#parameters" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt>model (nn.Module):</dt><dd><p>Das Modell, das die Embeddings berechnet.</p>
-</dd>
-</dl>
-</section>
-<section id="returns">
-<h3>Returns:<a class="headerlink" href="#returns" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt>embeddings (np.ndarray):</dt><dd><p>Die berechneten Embeddings als NumPy-Array.</p>
-</dd>
-<dt>labels (np.ndarray):</dt><dd><p>Die zugehörigen Labels als NumPy-Array.</p>
-</dd>
-</dl>
-<p><strong>TODO</strong>:</p>
-<ul class="simple">
-<li><p>Setzen Sie das Modell in den Evaluationsmodus (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.eval">model.eval()</a>), um sicherzustellen, dass die Batch-Normalisierung deaktiviert ist.</p></li>
-<li><p>Erstellen Sie leere Listen für <cite>embeddings</cite> und <cite>labels</cite>, um die Ergebnisse zu speichern.</p></li>
-<li><p>Verwenden Sie <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.no_grad.html">torch.no_grad()</a>, um den Gradientenfluss zu deaktivieren, da wir nur die Embeddings berechnen und nicht trainieren.</p></li>
-<li><p>Iterieren Sie über <cite>self.validation_set</cite> und berechnen Sie die Embeddings für jedes Batch indem Sie die Eingaben auf das Gerät (<cite>DEVICE</cite>) verschieben und das Modell aufrufen.</p></li>
-<li><p>Das Modell liefert ein Tupel zurück, wobei der zweite Wert die Embeddings sind.</p></li>
-<li><p>Verschieben Sie die Embeddings und Labels auf die CPU (rufen Sie <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.Tensor.cpu.html">tensor.cpu()</a> auf ) und speichern Sie sie in den Listen <cite>embeddings</cite> und <cite>labels</cite>.</p></li>
-<li><p>Konvertieren Sie die Listen <cite>embeddings</cite> und <cite>labels</cite> in NumPy-Arrays, indem Sie <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.cat.html">torch.cat(embeddings, dim=0)</a> <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.Tensor.numpy.html">.numpy()</a> und <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.cat.html">torch.cat(labels, dim=0)</a> <a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.Tensor.numpy.html">.numpy()</a> verwenden.</p></li>
-<li><p>Setzen Sie das Modell wieder in den Trainingsmodus (<a class="reference external" href="https://docs.pytorch.org/docs/stable/generated/torch.nn.Module.html#torch.nn.Module.train">model.train()</a>), um sicherzustellen, dass es für zukünftige Trainingsschritte bereit ist.</p></li>
-<li><p>Geben Sie die berechneten Embeddings und Labels zurück.</p></li>
-</ul>
-</section>
-</dd></dl>
-
 <div class="toggle admonition">
 <p class="admonition-title">Lösung anzeigen</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">calculate_embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">model</span><span class="p">):</span>
@@ -254,38 +211,6 @@ verschieben oder auseinanderfallen.</p></li>
 <p>Um die Vergleichbarkeit der t-SNE-Visualisierungen über verschiedene Trainingsschritte zusätzlich zu verbessern
 normalisieren wir die 2D-Embeddings zusätzlich, sodass sie einen Mittelwert von 0 und eine Standardabweichung von 1 haben.</p>
 <p>Implementieren Sie nun die Methode <cite>embeddings.calculate_tsne</cite>, die die t-SNE-Visualisierung der Embedding Vektoren erstellt.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="embeddings.EmbeddingLogger.calculate_tsne">
-<span class="sig-prename descclassname"><span class="pre">EmbeddingLogger.</span></span><span class="sig-name descname"><span class="pre">calculate_tsne</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embeddings</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_embeddings_2d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/embeddings.html#EmbeddingLogger.calculate_tsne"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#embeddings.EmbeddingLogger.calculate_tsne" title="Link to this definition"></a></dt>
-<dd><p>Berechnet das t-SNE-Modell für die Embeddings.</p>
-<section id="id2">
-<h3>Parameters:<a class="headerlink" href="#id2" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt>embeddings (np.ndarray):</dt><dd><p>Die Embeddings, die in 2D projiziert werden sollen.</p>
-</dd>
-</dl>
-</section>
-<section id="id3">
-<h3>Returns:<a class="headerlink" href="#id3" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt>embeddings_2d (np.ndarray):</dt><dd><p>Die 2D-Projektion der Embeddings.</p>
-</dd>
-</dl>
-<p><strong>TODO</strong>:</p>
-<ul class="simple">
-<li><p>Verwenden Sie <a class="reference external" href="https://scikit-learn.org/stable/modules/generated/sklearn.manifold.TSNE.html">sklearn.manifold.TSNE</a> um die Embeddings in 2D zu projizieren.
-Setzen Sie <cite>n_components=2</cite> und verwenden Sie <cite>init=“pca“</cite> für die Initialisierung.
-Wenn <cite>self.previous_embeddings_2d</cite> nicht <cite>None</cite> ist, verwenden Sie stattdessen diese als Initialisierung.</p></li>
-<li><p>Konvertieren Sie die 2D-Embeddings in ein <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.array.html">NumPy-Array</a> mit <cite>dtype=np.float32</cite>.</p></li>
-<li><p>Normalisieren Sie die 2D-Embeddings, indem Sie den Mittelwert und die Standardabweichung berechnen und
-die Embeddings so transformieren, dass sie einen Mittelwert von 0 und eine Standardabweichung von 1 haben.</p></li>
-<li><p>Verwenden Sie <a class="reference external" href="https://numpy.org/doc/2.2/reference/generated/numpy.mean.html">np.mean(embeddings_2d, axis=0, keepdims=True)</a> für den Mittelwert und <a class="reference external" href="https://numpy.org/doc/stable/reference/generated/numpy.std.html">np.std(embeddings_2d, axis=0, keepdims=True)</a> für die Standardabweichung.</p></li>
-<li><p>Normalisieren Sie die Embeddings mit <cite>(embeddings_2d - m) / s</cite>, wobei <cite>m</cite> der Mittelwert und <cite>s</cite> die Standardabweichung ist.</p></li>
-<li><p>Geben Sie die normalisierten 2D-Embeddings zurück.</p></li>
-</ul>
-</section>
-</dd></dl>
-
 <div class="toggle admonition">
 <p class="admonition-title">Lösung anzeigen</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">calculate_tsne</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embeddings</span><span class="p">,</span> <span class="n">previous_embeddings_2d</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
@@ -335,36 +260,6 @@ Registrierungsschritt entscheidend für die <strong>visuelle Kohärenz</strong>.
 <p>Wir verwenden die Implementierung der Prokrustes-Analyse aus <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.spatial.procrustes.html">scipy</a>,
 insbesondere die Funktion <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.orthogonal_procrustes.html">scipy.linalg.orthogonal_procrustes</a>.</p>
 <p>Implementieren Sie nun die Methode <cite>embeddings.register_embeddings_2d</cite>, die die alte und neue Punktwolke gegeneinander registriert.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="embeddings.EmbeddingLogger.register_embeddings_2d">
-<span class="sig-prename descclassname"><span class="pre">EmbeddingLogger.</span></span><span class="sig-name descname"><span class="pre">register_embeddings_2d</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embeddings_2d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">previous_embeddings_2d</span></span><span class="o"><span class="pre">=</span></span><span class="default_value"><span class="pre">None</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/embeddings.html#EmbeddingLogger.register_embeddings_2d"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#embeddings.EmbeddingLogger.register_embeddings_2d" title="Link to this definition"></a></dt>
-<dd><p>Registriert die 2D-Embeddings, um sie mit den vorherigen Embeddings zu vergleichen.</p>
-<section id="id4">
-<h3>Parameters:<a class="headerlink" href="#id4" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt>embeddings_2d (np.ndarray):</dt><dd><p>Die 2D-Embeddings, die registriert werden sollen.</p>
-</dd>
-<dt>previous_embeddings_2d (np.ndarray, optional):</dt><dd><p>Die vorherigen 2D-Embeddings, die für die Registrierung verwendet werden sollen. Standardmäßig None.</p>
-</dd>
-</dl>
-</section>
-<section id="id5">
-<h3>Returns:<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt>embeddings_2d (np.ndarray):</dt><dd><p>Die registrierten 2D-Embeddings.</p>
-</dd>
-</dl>
-<p><strong>TODO</strong>:</p>
-<ul class="simple">
-<li><p>Wenn <cite>previous_embeddings_2d</cite> nicht <cite>None</cite> ist, verwenden Sie <a class="reference external" href="https://docs.scipy.org/doc/scipy/reference/generated/scipy.linalg.orthogonal_procrustes.html">scipy.linalg.orthogonal_procrustes</a> um die 2D-Embeddings zu registrieren.
-Dies hilft, die Embeddings so zu transformieren, dass sie mit den vorherigen bestmöglich Embeddings übereinstimmen.</p></li>
-<li><p>Die Funktion liefert die orthogonale Rotationsmatrix <cite>R</cite> und die Skala <cite>s</cite>, aber wir verwenden nur <cite>R</cite>, um die 2D-Embeddings zu transformieren.</p></li>
-<li><p>Transformieren Sie die 2D-Embeddings mit <cite>embeddings_2d &#64; R</cite>, um sie an die vorherigen Embeddings anzupassen.</p></li>
-<li><p>Geben Sie die transformierten 2D-Embeddings zurück.</p></li>
-</ul>
-</section>
-</dd></dl>
-
 <div class="toggle admonition">
 <p class="admonition-title">Lösung anzeigen</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">register_embeddings_2d</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embeddings_2d</span><span class="p">,</span> <span class="n">previous_embeddings_2d</span><span class="p">):</span>
@@ -383,34 +278,6 @@ Dies hilft, die Embeddings so zu transformieren, dass sie mit den vorherigen bes
 Dazu verwenden wir <a class="reference external" href="https://seaborn.pydata.org/generated/seaborn.scatterplot.html">seaborn.scatterplot</a> und Matplotlib, um die 2D-Embeddings zu
 plotten und die Labels der Bilder anzuzeigen.</p>
 <p>Implementieren Sie nun die Methode <cite>embeddings.visualize_embeddings</cite>, die die Embeddings visualisiert.</p>
-<dl class="py method">
-<dt class="sig sig-object py" id="embeddings.EmbeddingLogger.visualize_embeddings">
-<span class="sig-prename descclassname"><span class="pre">EmbeddingLogger.</span></span><span class="sig-name descname"><span class="pre">visualize_embeddings</span></span><span class="sig-paren">(</span><em class="sig-param"><span class="n"><span class="pre">embeddings_2d</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">labels</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">step</span></span></em>, <em class="sig-param"><span class="n"><span class="pre">axs</span></span></em><span class="sig-paren">)</span><a class="reference internal" href="../_modules/embeddings.html#EmbeddingLogger.visualize_embeddings"><span class="viewcode-link"><span class="pre">[Quellcode]</span></span></a><a class="headerlink" href="#embeddings.EmbeddingLogger.visualize_embeddings" title="Link to this definition"></a></dt>
-<dd><p>Visualisiert die 2D-Embeddings mit t-SNE und speichert das Bild.</p>
-<section id="id7">
-<h3>Parameters:<a class="headerlink" href="#id7" title="Link to this heading"></a></h3>
-<dl class="simple">
-<dt>embeddings_2d (np.ndarray):</dt><dd><p>Die 2D-Embeddings, die visualisiert werden sollen.</p>
-</dd>
-<dt>labels (np.ndarray):</dt><dd><p>Die zugehörigen Labels für die Embeddings.</p>
-</dd>
-<dt>step (int):</dt><dd><p>Der aktuelle Schritt oder die Epoche, die für den Titel des Plots verwendet wird.</p>
-</dd>
-<dt>axs (matplotlib.axes.Axes):</dt><dd><p>Die Achsen, auf denen die Embeddings visualisiert werden sollen.</p>
-</dd>
-</dl>
-<p><strong>TODO</strong>:</p>
-<ul class="simple">
-<li><p>Erstellen Sie mit Pandas ein DataFrame mit den 2D-Embeddings und den zugehörigen Labels,
-um die Daten für die Visualisierung vorzubereiten.</p></li>
-<li><p>Verwenden Sie <a class="reference external" href="https://seaborn.pydata.org/generated/seaborn.scatterplot.html">seaborn.scatterplot</a> um die 2D-Embeddings zu visualisieren.</p></li>
-<li><p>Setzen Sie die Achsenlimits auf (-3.0, 3.0) für beide Achsen, um eine konsistente Darstellung zu gewährleisten.</p></li>
-<li><p>Entfernen Sie die Legende (<cite>axs.get_legend().remove()</cite>), um den Plot übersichtlicher zu gestalten.</p></li>
-<li><p>Setzen Sie den Titel des Plots sinnvoll.</p></li>
-</ul>
-</section>
-</dd></dl>
-
 <div class="toggle admonition">
 <p class="admonition-title">Lösung anzeigen</p>
 <div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="k">def</span><span class="w"> </span><span class="nf">visualize_embeddings</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">embeddings_2d</span><span class="p">,</span> <span class="n">labels</span><span class="p">,</span> <span class="n">step</span><span class="p">,</span> <span class="n">axs</span><span class="p">):</span>
@@ -440,6 +307,7 @@ um die Daten für die Visualisierung vorzubereiten.</p></li>
           </div>
           <footer><div class="rst-footer-buttons" role="navigation" aria-label="Footer">
         <a href="../resnet/index.html" class="btn btn-neutral float-left" title="ResNet" accesskey="p" rel="prev"><span class="fa fa-arrow-circle-left" aria-hidden="true"></span> Zurück</a>
+        <a href="../perceptualloss/index.html" class="btn btn-neutral float-right" title="Perceptual Loss" accesskey="n" rel="next">Weiter <span class="fa fa-arrow-circle-right" aria-hidden="true"></span></a>
     </div>
 
   <hr/>

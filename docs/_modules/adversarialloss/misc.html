@@ -1,0 +1,571 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>adversarialloss.misc &mdash; Advances in AI Praktikum  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+
+  
+    <link rel="canonical" href="https://dmu1981.github.io/MPTPraktikum/_modules/adversarialloss/misc.html" />
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=245627df"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script src="../../_static/translations.js?v=79cc9f76"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
+    <link rel="search" title="Suche" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Advances in AI Praktikum
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Aufgaben:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pytorch/index.html">PyTorch - Grundlagen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pytorch/cnn.html">Convolutional Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../checkpoints/index.html">Checkpoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tensorboard/index.html">Tensor Board</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../resnet/index.html">ResNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../embeddings/index.html">Embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../perceptualloss/index.html">Perceptual Loss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../adversarialloss/index.html">Adversarial Loss</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Advances in AI Praktikum</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Modul-Quellcode</a></li>
+      <li class="breadcrumb-item active">adversarialloss.misc</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für adversarialloss.misc</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchvision.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">vgg16</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">VGG16PerceptualLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the VGG16 perceptual loss model.</span>
+
+<span class="sd">        It computes the perceptual loss as the mean squared error between the features.</span>
+
+<span class="sd">        The model is set to evaluation mode and the parameters are frozen.</span>
+
+<span class="sd">        **TODO**:</span>
+
+<span class="sd">        - Load the VGG16 model with pretrained weights. Use `torchvision.models.vgg16(pretrained=True)`.</span>
+
+<span class="sd">        - Restrict the VGG16 model to the first 16 layers by using `self.vgg = vgg16(pretrained=True).features[:16]`.</span>
+
+<span class="sd">        - Set the model to evaluation mode using `.eval()`.</span>
+
+<span class="sd">        - Freeze the parameters of the VGG16 model by setting `param.requires_grad = False` for all parameters.</span>
+<span class="sd">          NOTE: Iterate through all parameters by using the `self.vgg.parameters()`-Iterator.</span>
+
+<span class="sd">        - Initialize the L2 loss function using `nn.MSELoss()`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">VGG16PerceptualLoss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">vgg</span> <span class="o">=</span> <span class="n">vgg16</span><span class="p">(</span><span class="n">pretrained</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span><span class="o">.</span><span class="n">features</span><span class="p">[:</span><span class="mi">16</span><span class="p">]</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+
+        <span class="k">for</span> <span class="n">param</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">vgg</span><span class="o">.</span><span class="n">parameters</span><span class="p">():</span>
+            <span class="n">param</span><span class="o">.</span><span class="n">requires_grad</span> <span class="o">=</span> <span class="kc">False</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">l1_loss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">L1Loss</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the perceptual loss between two images.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">            output (torch.Tensor):</span>
+<span class="sd">              The output image tensor from the upscaler network.</span>
+
+<span class="sd">            target (torch.Tensor):</span>
+<span class="sd">              The target image tensor from ground truth.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        --------</span>
+<span class="sd">            torch.Tensor:</span>
+<span class="sd">              The computed perceptual loss as the mean squared error between the features of the two images.</span>
+
+<span class="sd">        **TODO**:</span>
+
+<span class="sd">        - Resize `output` and `target` to 224x224 using `torch.nn.functional.interpolate()`. Use `mode=&#39;bilinear&#39;` and `align_corners=False`.</span>
+
+<span class="sd">        - Pass `output` through the VGG16 model to get the features `f1`.</span>
+
+<span class="sd">        - Pass `target` through the VGG16 model to get the features `f2`. Note: You should use `torch.no_grad()` to avoid computing gradients for the target image.</span>
+
+<span class="sd">        - Compute and return the L2 loss between `f1` and `f2` using `self.l2_loss(f1, f2)`.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">f1</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vgg</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+
+        <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+            <span class="n">f2</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">vgg</span><span class="p">(</span><span class="n">target</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">l1_loss</span><span class="p">(</span><span class="n">f1</span><span class="p">,</span> <span class="n">f2</span><span class="p">)</span>
+
+
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchvision</span><span class="w"> </span><span class="kn">import</span> <span class="n">datasets</span><span class="p">,</span> <span class="n">transforms</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.data</span><span class="w"> </span><span class="kn">import</span> <span class="n">DataLoader</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">PIL</span><span class="w"> </span><span class="kn">import</span> <span class="n">Image</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">nn</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.functional</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">F</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">os</span>
+
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lpips</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.tensorboard</span><span class="w"> </span><span class="kn">import</span> <span class="n">SummaryWriter</span>
+
+
+<span class="c1"># Load the dataset from flowersSquared folder</span>
+<span class="k">class</span><span class="w"> </span><span class="nc">CustomImageDataset</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">data</span><span class="o">.</span><span class="n">Dataset</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">root_dir</span><span class="p">,</span> <span class="n">transformInput</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">transformOutput</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">root_dir</span> <span class="o">=</span> <span class="n">root_dir</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transformInput</span> <span class="o">=</span> <span class="n">transformInput</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">transformOutput</span> <span class="o">=</span> <span class="n">transformOutput</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">image_files</span> <span class="o">=</span> <span class="p">[</span>
+            <span class="n">f</span>
+            <span class="k">for</span> <span class="n">f</span> <span class="ow">in</span> <span class="n">os</span><span class="o">.</span><span class="n">listdir</span><span class="p">(</span><span class="n">root_dir</span><span class="p">)</span>
+            <span class="k">if</span> <span class="n">f</span><span class="o">.</span><span class="n">lower</span><span class="p">()</span><span class="o">.</span><span class="n">endswith</span><span class="p">((</span><span class="s2">&quot;.png&quot;</span><span class="p">,</span> <span class="s2">&quot;.jpg&quot;</span><span class="p">,</span> <span class="s2">&quot;.jpeg&quot;</span><span class="p">,</span> <span class="s2">&quot;.bmp&quot;</span><span class="p">,</span> <span class="s2">&quot;.tiff&quot;</span><span class="p">))</span>
+        <span class="p">]</span>
+
+        <span class="c1"># img_paths = [os.path.join(self.root_dir, self.image_files[idx]) for idx in range(len(self.image_files))]</span>
+        <span class="c1"># self.images = [Image.open(img_path).convert(&quot;RGB&quot;) for img_path in img_paths]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__len__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">image_files</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="fm">__getitem__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="n">img_path</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">root_dir</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">image_files</span><span class="p">[</span><span class="n">idx</span><span class="p">])</span>
+        <span class="n">image</span> <span class="o">=</span> <span class="n">Image</span><span class="o">.</span><span class="n">open</span><span class="p">(</span><span class="n">img_path</span><span class="p">)</span><span class="o">.</span><span class="n">convert</span><span class="p">(</span><span class="s2">&quot;RGB&quot;</span><span class="p">)</span>
+        <span class="c1"># image = self.images[idx]</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformInput</span><span class="p">:</span>
+            <span class="n">imageInput</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformInput</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformOutput</span><span class="p">:</span>
+            <span class="n">imageOutput</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">transformOutput</span><span class="p">(</span><span class="n">image</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">imageInput</span><span class="p">,</span> <span class="n">imageOutput</span>  <span class="c1"># Return both inputs and outputs</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">get_dataloader</span><span class="p">(</span><span class="n">inputSize</span><span class="o">=</span><span class="mi">128</span><span class="p">,</span> <span class="n">outputSize</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">32</span><span class="p">):</span>
+    <span class="n">transformInput</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">transforms</span><span class="o">.</span><span class="n">Resize</span><span class="p">((</span><span class="n">inputSize</span><span class="p">,</span> <span class="n">inputSize</span><span class="p">)),</span>
+            <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+            <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="p">[</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">],</span> <span class="n">std</span><span class="o">=</span><span class="p">[</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">]),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="n">transformOutput</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">Compose</span><span class="p">(</span>
+        <span class="p">[</span>
+            <span class="n">transforms</span><span class="o">.</span><span class="n">Resize</span><span class="p">((</span><span class="n">outputSize</span><span class="p">,</span> <span class="n">outputSize</span><span class="p">)),</span>
+            <span class="n">transforms</span><span class="o">.</span><span class="n">ToTensor</span><span class="p">(),</span>
+            <span class="n">transforms</span><span class="o">.</span><span class="n">Normalize</span><span class="p">(</span><span class="n">mean</span><span class="o">=</span><span class="p">[</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">],</span> <span class="n">std</span><span class="o">=</span><span class="p">[</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">]),</span>
+        <span class="p">]</span>
+    <span class="p">)</span>
+
+    <span class="n">root_dir</span> <span class="o">=</span> <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">join</span><span class="p">(</span>
+        <span class="n">os</span><span class="o">.</span><span class="n">path</span><span class="o">.</span><span class="n">dirname</span><span class="p">(</span><span class="vm">__file__</span><span class="p">),</span> <span class="s2">&quot;../flower_dataset/flowersSquared&quot;</span>
+    <span class="p">)</span>
+
+    <span class="n">dataset</span> <span class="o">=</span> <span class="n">CustomImageDataset</span><span class="p">(</span>
+        <span class="n">root_dir</span><span class="o">=</span><span class="n">root_dir</span><span class="p">,</span>
+        <span class="n">transformInput</span><span class="o">=</span><span class="n">transformInput</span><span class="p">,</span>
+        <span class="n">transformOutput</span><span class="o">=</span><span class="n">transformOutput</span><span class="p">,</span>
+    <span class="p">)</span>
+
+    <span class="n">dataloader</span> <span class="o">=</span> <span class="n">DataLoader</span><span class="p">(</span>
+        <span class="n">dataset</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="n">batch_size</span><span class="p">,</span> <span class="n">shuffle</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">pin_memory</span><span class="o">=</span><span class="kc">True</span>  <span class="c1"># , num_workers=8</span>
+    <span class="p">)</span>
+
+    <span class="k">return</span> <span class="n">dataloader</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">ResNetBlock</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="ResNetBlock.__init__">
+<a class="viewcode-back" href="../../adversarialloss/index.html#adversarialloss.misc.ResNetBlock.__init__">[Doku]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialisiert einen ResNet-Block mit zwei Convolutional-Schichten, Batch-Normalisierung und ReLU-Aktivierung.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+
+<span class="sd">        in_channels (int):</span>
+<span class="sd">          Anzahl der Eingabekanäle.</span>
+
+<span class="sd">        out_channels (int):</span>
+<span class="sd">            Anzahl der Ausgabekanäle.</span>
+
+<span class="sd">        kernel_size (int, optional):</span>
+<span class="sd">            Größe des Convolutional-Kernels. Standard ist 9.</span>
+
+<span class="sd">        padding (int, optional):</span>
+<span class="sd">            Padding für die Convolutional-Schichten. Standard ist None. In dem Fall wird das Padding automatisch berechnet, so dass die Ausgabe die gleiche Größe wie die Eingabe hat.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ResNetBlock</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">padding</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+            <span class="n">padding</span> <span class="o">=</span> <span class="p">(</span><span class="n">kernel_size</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">//</span> <span class="mi">2</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span>
+            <span class="n">in_channels</span><span class="p">,</span>
+            <span class="n">out_channels</span><span class="p">,</span>
+            <span class="n">kernel_size</span><span class="o">=</span><span class="n">kernel_size</span><span class="p">,</span>
+            <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">,</span>
+            <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">out_channels</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">relu</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">ReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span>
+            <span class="n">out_channels</span><span class="p">,</span>
+            <span class="n">out_channels</span><span class="p">,</span>
+            <span class="n">kernel_size</span><span class="o">=</span><span class="n">kernel_size</span><span class="p">,</span>
+            <span class="n">stride</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span>
+            <span class="n">padding</span><span class="o">=</span><span class="n">padding</span><span class="p">,</span>
+            <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span>
+        <span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">bn2</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">BatchNorm2d</span><span class="p">(</span><span class="n">out_channels</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="n">in_channels</span> <span class="o">!=</span> <span class="n">out_channels</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shortcut</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+                <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="n">in_channels</span><span class="p">,</span> <span class="n">out_channels</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>
+            <span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">shortcut</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Identity</span><span class="p">()</span></div>
+
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="n">residual</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">shortcut</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv1</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn1</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">out</span><span class="p">))</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">conv2</span><span class="p">(</span><span class="n">out</span><span class="p">)</span>
+        <span class="n">out</span> <span class="o">=</span> <span class="n">out</span> <span class="o">+</span> <span class="n">residual</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">bn2</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">relu</span><span class="p">(</span><span class="n">out</span><span class="p">))</span>
+
+<span class="k">def</span><span class="w"> </span><span class="nf">save_checkpoint</span><span class="p">(</span><span class="n">checkpoint_dict</span><span class="p">,</span> <span class="n">epoch</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;checkpoint.pth&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Speichert den aktuellen Zustand des Modells und des Optimierers in einer Datei.&quot;&quot;&quot;</span>
+
+    <span class="n">checkpoint_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="n">key</span><span class="p">:</span> <span class="n">value</span><span class="o">.</span><span class="n">state_dict</span><span class="p">()</span> <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">checkpoint_dict</span><span class="o">.</span><span class="n">items</span><span class="p">()</span>
+    <span class="p">}</span>
+
+    <span class="n">checkpoint_dict</span><span class="p">[</span><span class="s2">&quot;epoch&quot;</span><span class="p">]</span> <span class="o">=</span> <span class="n">epoch</span>
+
+    <span class="n">torch</span><span class="o">.</span><span class="n">save</span><span class="p">(</span>
+        <span class="n">checkpoint_dict</span><span class="p">,</span>
+        <span class="n">filename</span><span class="p">,</span>
+    <span class="p">)</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">load_checkpoint</span><span class="p">(</span><span class="n">checkpoint_dict</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="s2">&quot;checkpoint.pth&quot;</span><span class="p">):</span>
+<span class="w">    </span><span class="sd">&quot;&quot;&quot;Lädt den Zustand des Modells und des Optimierers aus einer Datei.&quot;&quot;&quot;</span>
+    <span class="k">try</span><span class="p">:</span>
+        <span class="n">checkpoint</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">filename</span><span class="p">,</span> <span class="n">weights_only</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">checkpoint_dict</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">key</span> <span class="ow">in</span> <span class="n">checkpoint</span><span class="p">:</span>
+                <span class="n">checkpoint_dict</span><span class="p">[</span><span class="n">key</span><span class="p">]</span><span class="o">.</span><span class="n">load_state_dict</span><span class="p">(</span><span class="n">checkpoint</span><span class="p">[</span><span class="n">key</span><span class="p">])</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="k">raise</span> <span class="ne">KeyError</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Key </span><span class="si">{</span><span class="n">key</span><span class="si">}</span><span class="s2"> not found in checkpoint.&quot;</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">checkpoint</span><span class="p">[</span><span class="s2">&quot;epoch&quot;</span><span class="p">]</span>
+    <span class="k">except</span> <span class="ne">Exception</span> <span class="k">as</span> <span class="n">e</span><span class="p">:</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Fehler beim Laden des Checkpoints </span><span class="si">{</span><span class="n">filename</span><span class="si">}</span><span class="s2">: </span><span class="si">{</span><span class="n">e</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="s2">&quot;Starte ohne gespeicherten Zustand.&quot;</span><span class="p">)</span>
+        <span class="k">return</span> <span class="mi">0</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">log_metrics</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">metrics</span><span class="p">):</span>
+    <span class="k">for</span> <span class="n">key</span><span class="p">,</span> <span class="n">value</span> <span class="ow">in</span> <span class="n">metrics</span><span class="o">.</span><span class="n">items</span><span class="p">():</span>
+        <span class="n">step</span> <span class="o">=</span> <span class="n">value</span><span class="o">.</span><span class="n">step</span>
+        <span class="k">if</span> <span class="n">value</span><span class="o">.</span><span class="n">count</span> <span class="o">&lt;=</span> <span class="mi">20</span><span class="p">:</span>
+            <span class="k">continue</span>
+
+        <span class="n">writer</span><span class="o">.</span><span class="n">add_scalar</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="n">value</span><span class="o">.</span><span class="n">compute</span><span class="p">(),</span> <span class="n">global_step</span><span class="o">=</span><span class="n">step</span><span class="p">)</span>
+
+    <span class="n">writer</span><span class="o">.</span><span class="n">flush</span><span class="p">()</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">TVLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">TVLoss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">img</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">,</span> <span class="p">:]</span> <span class="o">-</span> <span class="n">img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">:,</span> <span class="p">:]))</span>
+            <span class="o">+</span> <span class="n">torch</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">torch</span><span class="o">.</span><span class="n">abs</span><span class="p">(</span><span class="n">img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="p">:</span><span class="o">-</span><span class="mi">1</span><span class="p">]</span> <span class="o">-</span> <span class="n">img</span><span class="p">[:,</span> <span class="p">:,</span> <span class="p">:,</span> <span class="mi">1</span><span class="p">:]))</span>
+        <span class="p">)</span>
+    
+<span class="c1"># Denormalize images</span>
+<span class="k">def</span><span class="w"> </span><span class="nf">denormalize</span><span class="p">(</span><span class="n">tensor</span><span class="p">):</span>
+    <span class="n">mean</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">])</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+    <span class="n">std</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">])</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+    <span class="k">return</span> <span class="n">tensor</span> <span class="o">*</span> <span class="n">std</span> <span class="o">+</span> <span class="n">mean</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">log_images</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">,</span> <span class="n">epoch</span><span class="p">):</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">eval</span><span class="p">()</span>
+    <span class="k">with</span> <span class="n">torch</span><span class="o">.</span><span class="n">no_grad</span><span class="p">():</span>
+        <span class="n">stiches</span> <span class="o">=</span> <span class="p">[]</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="n">dataloader</span><span class="p">):</span>
+            <span class="k">if</span> <span class="n">i</span> <span class="o">&gt;=</span> <span class="mi">3</span><span class="p">:</span>  <span class="c1"># Log only first 3 images</span>
+                <span class="k">break</span>
+            <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">model</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+
+            <span class="c1"># Rescale to 256x256 and stitch together</span>
+            <span class="n">input_resized</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
+                <span class="nb">input</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+            <span class="n">output_resized</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
+                <span class="n">output</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+            <span class="n">target_resized</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">functional</span><span class="o">.</span><span class="n">interpolate</span><span class="p">(</span>
+                <span class="n">target</span><span class="p">[</span><span class="mi">0</span><span class="p">:</span><span class="mi">1</span><span class="p">],</span> <span class="n">size</span><span class="o">=</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">256</span><span class="p">),</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">False</span>
+            <span class="p">)</span>
+
+            <span class="n">input_norm</span> <span class="o">=</span> <span class="n">denormalize</span><span class="p">(</span><span class="n">input_resized</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">output_norm</span> <span class="o">=</span> <span class="n">denormalize</span><span class="p">(</span><span class="n">output_resized</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+            <span class="n">target_norm</span> <span class="o">=</span> <span class="n">denormalize</span><span class="p">(</span><span class="n">target_resized</span><span class="p">[</span><span class="mi">0</span><span class="p">])</span><span class="o">.</span><span class="n">clamp</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span>
+
+            <span class="c1"># Stitch images horizontally</span>
+            <span class="n">stitched</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">([</span><span class="n">input_norm</span><span class="p">,</span> <span class="n">output_norm</span><span class="p">,</span> <span class="n">target_norm</span><span class="p">],</span> <span class="n">dim</span><span class="o">=</span><span class="mi">2</span><span class="p">)</span>
+            <span class="n">stiches</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">stitched</span><span class="p">)</span>
+
+        <span class="c1"># Convert to grid and log</span>
+        <span class="n">stitched</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">cat</span><span class="p">(</span><span class="n">stiches</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">writer</span><span class="o">.</span><span class="n">add_image</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Images&quot;</span><span class="p">,</span> <span class="n">stitched</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
+    <span class="n">model</span><span class="o">.</span><span class="n">train</span><span class="p">()</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">PSNR</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">max_val</span><span class="o">=</span><span class="mf">1.0</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">PSNR</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">max_val</span> <span class="o">=</span> <span class="n">max_val</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="n">mse</span> <span class="o">=</span> <span class="n">F</span><span class="o">.</span><span class="n">mse_loss</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="n">psnr</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_val</span> <span class="o">/</span> <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mse</span><span class="p">))</span>
+        <span class="k">return</span> <span class="n">psnr</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Metric</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">factor</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="nb">abs</span><span class="o">=</span><span class="kc">False</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factor</span> <span class="o">=</span> <span class="n">factor</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">abs</span> <span class="o">=</span> <span class="nb">abs</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;total&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">total</span><span class="p">,</span>
+            <span class="s2">&quot;count&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span><span class="p">,</span>
+            <span class="s2">&quot;step&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">step</span><span class="p">,</span>
+            <span class="s2">&quot;factor&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">factor</span><span class="p">,</span>
+            <span class="s2">&quot;abs&quot;</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">abs</span><span class="p">,</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">load_state_dict</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">state_dict</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span> <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;total&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;count&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">=</span> <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;step&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">factor</span> <span class="o">=</span> <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;factor&quot;</span><span class="p">]</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">abs</span> <span class="o">=</span> <span class="n">state_dict</span><span class="p">[</span><span class="s2">&quot;abs&quot;</span><span class="p">]</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">update</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">total</span> <span class="o">+=</span> <span class="n">value</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">+=</span> <span class="mi">1</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">step</span> <span class="o">+=</span> <span class="mi">1</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">reset</span><span class="o">=</span><span class="kc">True</span><span class="p">):</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">==</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="n">avg</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">avg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">total</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">count</span>
+
+        <span class="k">if</span> <span class="n">reset</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">total</span> <span class="o">=</span> <span class="mf">0.0</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">count</span> <span class="o">=</span> <span class="mi">0</span>
+
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">abs</span><span class="p">:</span>
+            <span class="n">avg</span> <span class="o">=</span> <span class="nb">abs</span><span class="p">(</span><span class="n">avg</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">factor</span> <span class="o">*</span> <span class="n">avg</span>
+
+
+<span class="k">def</span><span class="w"> </span><span class="nf">train</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">trainer</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">):</span>
+    <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2"> model...&quot;</span><span class="p">)</span>
+
+    <span class="n">metric</span> <span class="o">=</span> <span class="n">lpips</span><span class="o">.</span><span class="n">LPIPS</span><span class="p">(</span><span class="n">net</span><span class="o">=</span><span class="s2">&quot;vgg&quot;</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>  <span class="c1"># Using SqueezeNet for perceptual loss</span>
+    <span class="n">mseMetric</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
+    <span class="n">psnrMetric</span> <span class="o">=</span> <span class="n">PSNR</span><span class="p">(</span><span class="n">max_val</span><span class="o">=</span><span class="mf">6.0</span><span class="p">)</span>
+
+    <span class="n">writer</span> <span class="o">=</span> <span class="n">SummaryWriter</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;runs/</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="n">lpips_score</span> <span class="o">=</span> <span class="n">Metric</span><span class="p">()</span>
+    <span class="n">mse_score</span> <span class="o">=</span> <span class="n">Metric</span><span class="p">()</span>
+    <span class="n">psnr_score</span> <span class="o">=</span> <span class="n">Metric</span><span class="p">()</span>
+    <span class="n">content_loss_score</span> <span class="o">=</span> <span class="n">Metric</span><span class="p">()</span>
+    <span class="n">loss_c_score</span> <span class="o">=</span> <span class="n">Metric</span><span class="p">(</span><span class="nb">abs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">generator_loss_score</span> <span class="o">=</span> <span class="n">Metric</span><span class="p">()</span>
+    <span class="n">adversarial_loss_score</span> <span class="o">=</span> <span class="n">Metric</span><span class="p">(</span><span class="nb">abs</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+    <span class="n">gradient_norm_score</span> <span class="o">=</span> <span class="n">Metric</span><span class="p">()</span>
+    <span class="n">generator_gradient_norm_score</span> <span class="o">=</span> <span class="n">Metric</span><span class="p">()</span>
+
+    <span class="n">scores</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;LPIPS&quot;</span><span class="p">:</span> <span class="n">lpips_score</span><span class="p">,</span>
+        <span class="s2">&quot;MSE&quot;</span><span class="p">:</span> <span class="n">mse_score</span><span class="p">,</span>
+        <span class="s2">&quot;PSNR&quot;</span><span class="p">:</span> <span class="n">psnr_score</span><span class="p">,</span>
+        <span class="s2">&quot;Content&quot;</span><span class="p">:</span> <span class="n">content_loss_score</span><span class="p">,</span>
+        <span class="s2">&quot;loss_C&quot;</span><span class="p">:</span> <span class="n">loss_c_score</span><span class="p">,</span>
+        <span class="s2">&quot;Generator&quot;</span><span class="p">:</span> <span class="n">generator_loss_score</span><span class="p">,</span>
+        <span class="s2">&quot;Adversarial&quot;</span><span class="p">:</span> <span class="n">adversarial_loss_score</span><span class="p">,</span>
+        <span class="s2">&quot;Critic Gradient Norm&quot;</span><span class="p">:</span> <span class="n">gradient_norm_score</span><span class="p">,</span>
+        <span class="s2">&quot;Generator Gradient Norm&quot;</span><span class="p">:</span> <span class="n">generator_gradient_norm_score</span><span class="p">,</span>
+    <span class="p">}</span>
+
+    <span class="n">checkpoint_dict</span> <span class="o">=</span> <span class="p">{</span>
+        <span class="s2">&quot;generator&quot;</span><span class="p">:</span> <span class="n">trainer</span><span class="o">.</span><span class="n">generator</span><span class="p">,</span>
+        <span class="s2">&quot;critic&quot;</span><span class="p">:</span> <span class="n">trainer</span><span class="o">.</span><span class="n">critic</span><span class="p">,</span>
+        <span class="s2">&quot;optimGenerator&quot;</span><span class="p">:</span> <span class="n">trainer</span><span class="o">.</span><span class="n">optimGenerator</span><span class="p">,</span>
+        <span class="s2">&quot;optimCritic&quot;</span><span class="p">:</span> <span class="n">trainer</span><span class="o">.</span><span class="n">optimCritic</span><span class="p">,</span>
+    <span class="p">}</span> <span class="o">|</span> <span class="n">scores</span>
+
+    <span class="n">ep</span> <span class="o">=</span> <span class="n">load_checkpoint</span><span class="p">(</span><span class="n">checkpoint_dict</span><span class="p">,</span> <span class="n">filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">_checkpoint.pt&quot;</span><span class="p">)</span>
+
+    <span class="k">for</span> <span class="n">epoch</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">ep</span><span class="p">,</span> <span class="n">ep</span> <span class="o">+</span> <span class="mi">1000</span><span class="p">):</span>
+        <span class="n">bar</span> <span class="o">=</span> <span class="n">tqdm</span><span class="p">(</span><span class="n">dataloader</span><span class="p">)</span>
+
+        <span class="k">for</span> <span class="nb">input</span><span class="p">,</span> <span class="n">target</span> <span class="ow">in</span> <span class="n">bar</span><span class="p">:</span>
+            <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+            <span class="n">target</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+
+            <span class="n">scoresCritic</span><span class="p">,</span> <span class="n">scoresGenerator</span><span class="p">,</span> <span class="n">output</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">train_batch</span><span class="p">(</span>
+                <span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">epoch</span>
+            <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">scoresGenerator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">generator_gradient_norm_score</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">scoresGenerator</span><span class="p">[</span><span class="s2">&quot;gradient_norm&quot;</span><span class="p">])</span>
+                <span class="n">content_loss_score</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">scoresGenerator</span><span class="p">[</span><span class="s2">&quot;content_loss&quot;</span><span class="p">])</span>
+                <span class="n">adversarial_loss_score</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">scoresGenerator</span><span class="p">[</span><span class="s2">&quot;adversarial_loss&quot;</span><span class="p">])</span>
+                <span class="n">generator_loss_score</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">scoresGenerator</span><span class="p">[</span><span class="s2">&quot;loss&quot;</span><span class="p">])</span>
+
+                <span class="n">lpips_score</span><span class="o">.</span><span class="n">update</span><span class="p">(</span>
+                    <span class="n">metric</span><span class="p">(</span>
+                        <span class="mf">2.0</span> <span class="o">*</span> <span class="n">denormalize</span><span class="p">(</span><span class="n">output</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">denormalize</span><span class="p">(</span><span class="n">target</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span>
+                    <span class="p">)</span>
+                    <span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+                    <span class="o">.</span><span class="n">item</span><span class="p">()</span>
+                <span class="p">)</span>
+
+                <span class="n">mse_score</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">mseMetric</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+                <span class="n">psnr_score</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">psnrMetric</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">())</span>
+
+                <span class="n">bar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span>
+                    <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">], Content: </span><span class="si">{</span><span class="n">content_loss_score</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, loss_C: </span><span class="si">{</span><span class="n">loss_c_score</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span>
+                <span class="p">)</span>
+
+            <span class="k">if</span> <span class="n">scoresCritic</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">gradient_norm_score</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">scoresCritic</span><span class="p">[</span><span class="s2">&quot;gradient_norm&quot;</span><span class="p">])</span>
+                <span class="n">loss_c_score</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">scoresCritic</span><span class="p">[</span><span class="s2">&quot;loss_c&quot;</span><span class="p">])</span>
+
+            <span class="n">log_metrics</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">scores</span><span class="p">)</span>
+
+        <span class="n">log_images</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">trainer</span><span class="o">.</span><span class="n">generator</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">,</span> <span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">)</span>
+        <span class="n">save_checkpoint</span><span class="p">(</span>
+            <span class="n">checkpoint_dict</span><span class="p">,</span>
+            <span class="n">epoch</span> <span class="o">+</span> <span class="mi">1</span><span class="p">,</span>
+            <span class="n">filename</span><span class="o">=</span><span class="sa">f</span><span class="s2">&quot;</span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2">_checkpoint.pt&quot;</span><span class="p">,</span>
+        <span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Prof. Dr. Dennis Müller.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

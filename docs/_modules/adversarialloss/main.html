@@ -1,0 +1,375 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../../">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>adversarialloss.main &mdash; Advances in AI Praktikum  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../../_static/togglebutton.css?v=13237357" />
+
+  
+    <link rel="canonical" href="https://dmu1981.github.io/MPTPraktikum/_modules/adversarialloss/main.html" />
+      <script src="../../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../../_static/documentation_options.js?v=245627df"></script>
+      <script src="../../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script src="../../_static/translations.js?v=79cc9f76"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs"></script>
+      <script type="module" src="https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs"></script>
+      <script type="module">import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";import elkLayouts from "https://cdn.jsdelivr.net/npm/@mermaid-js/layout-elk@0.1.4/dist/mermaid-layout-elk.esm.min.mjs";mermaid.registerLayoutLoaders(elkLayouts);mermaid.initialize({startOnLoad:false});</script>
+      <script src="https://cdn.jsdelivr.net/npm/d3@7.9.0/dist/d3.min.js"></script>
+      <script type="module">
+import mermaid from "https://cdn.jsdelivr.net/npm/mermaid@11.2.0/dist/mermaid.esm.min.mjs";
+window.addEventListener("load", () => mermaid.run());
+</script>
+    <script src="../../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../../genindex.html" />
+    <link rel="search" title="Suche" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../../index.html" class="icon icon-home">
+            Advances in AI Praktikum
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Aufgaben:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../../pytorch/index.html">PyTorch - Grundlagen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../pytorch/cnn.html">Convolutional Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../checkpoints/index.html">Checkpoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../tensorboard/index.html">Tensor Board</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../resnet/index.html">ResNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../embeddings/index.html">Embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../perceptualloss/index.html">Perceptual Loss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../adversarialloss/index.html">Adversarial Loss</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">Advances in AI Praktikum</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../../index.html" class="icon icon-home" aria-label="Home"></a></li>
+          <li class="breadcrumb-item"><a href="../index.html">Modul-Quellcode</a></li>
+      <li class="breadcrumb-item active">adversarialloss.main</li>
+      <li class="wy-breadcrumbs-aside">
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <h1>Quellcode für adversarialloss.main</h1><div class="highlight"><pre>
+<span></span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torchvision.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">vgg16</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.init</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">init</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">misc</span><span class="w"> </span><span class="kn">import</span> <span class="n">denormalize</span><span class="p">,</span> <span class="n">get_dataloader</span><span class="p">,</span> <span class="n">ResNetBlock</span><span class="p">,</span> <span class="n">VGG16PerceptualLoss</span><span class="p">,</span> <span class="n">train</span><span class="p">,</span> <span class="n">TVLoss</span>
+<span class="kn">import</span><span class="w"> </span><span class="nn">lpips</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+<span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.tensorboard</span><span class="w"> </span><span class="kn">import</span> <span class="n">SummaryWriter</span>
+
+
+<div class="viewcode-block" id="Generator">
+<a class="viewcode-back" href="../../adversarialloss/index.html#adversarialloss.main.Generator">[Doku]</a>
+<span class="k">class</span><span class="w"> </span><span class="nc">Generator</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="Generator.__init__">
+<a class="viewcode-back" href="../../adversarialloss/index.html#adversarialloss.main.Generator.__init__">[Doku]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Upscale4x model.</span>
+
+<span class="sd">        This model performs 4x upscaling using a series of ResNet blocks and an upsampling layer.</span>
+
+<span class="sd">        **TODO**:</span>
+
+<span class="sd">        - Call the `__init__` method of the base class `nn.Module`.</span>
+
+<span class="sd">        - Define an upsampling layer using `nn.Upsample(scale_factor=4, mode=&quot;bilinear&quot;, align_corners=True) &lt;https://docs.pytorch.org/docs/stable/generated/torch.nn.Upsample.html&gt;`_.</span>
+
+<span class="sd">        - Define a sequential model consisting of:</span>
+
+<span class="sd">        - Five `ResNetBlock` layers with 3-&gt;16, 16-&gt;32, 32-&gt;64, 64-&gt;128 and 128-&gt;256 channels as well as kernel sizes 7.</span>
+
+<span class="sd">        - A PixelShuffle layer with an upscale factor of 4.</span>
+
+<span class="sd">        - A final convolutional layer with 16 input channels, 3 output channels and kernel size 5 with padding 2.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Generator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">upBilinear</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Upsample</span><span class="p">(</span>
+            <span class="n">scale_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">PixelShuffle</span><span class="p">(</span><span class="n">upscale_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>  <span class="c1"># First upsample</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>  <span class="c1"># Final conv to reduce channels</span>
+        <span class="p">)</span></div>
+
+
+<div class="viewcode-block" id="Generator.forward">
+<a class="viewcode-back" href="../../adversarialloss/index.html#adversarialloss.main.Generator.forward">[Doku]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform the forward pass of the Upscale2x model.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">            x (torch.Tensor):</span>
+<span class="sd">              The input tensor to be upscaled.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        --------</span>
+<span class="sd">            torch.Tensor:</span>
+<span class="sd">              The upscaled output tensor.</span>
+
+<span class="sd">        **TODO**:</span>
+
+<span class="sd">        - Pass the input tensor through the model.</span>
+
+<span class="sd">        - Also, apply the upsampling layer to the input tensor `x`.</span>
+
+<span class="sd">        - Add the upsampled tensor to the output of the model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upBilinear</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+        <span class="k">return</span> <span class="n">x</span></div>
+</div>
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">Critic</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Critic</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 16x128x128</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 32x64x64</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 64x32x32</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 128x16x16</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 256x8x8</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 512x4x4</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">AvgPool2d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span>  <span class="c1"># 1024x1x1</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Flatten</span><span class="p">(),</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>  <span class="c1"># Final output layer</span>
+        <span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+
+
+
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">GeneratorLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">critic</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">GeneratorLoss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">perceptualLoss</span> <span class="o">=</span> <span class="n">VGG16PerceptualLoss</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">mseLoss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">tvLoss</span> <span class="o">=</span> <span class="n">TVLoss</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">critic</span> <span class="o">=</span> <span class="n">critic</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">epoch</span><span class="p">):</span>
+        <span class="n">adversarial_loss</span> <span class="o">=</span> <span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="mf">0.01</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="p">(</span><span class="n">output</span><span class="p">))</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+        <span class="k">if</span> <span class="n">epoch</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
+            <span class="n">adversarial_lambda</span> <span class="o">=</span> <span class="mf">0.0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">adversarial_lambda</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="p">(</span><span class="n">epoch</span> <span class="o">-</span> <span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="mf">5.0</span><span class="p">)</span>
+
+        <span class="n">content_loss</span> <span class="o">=</span> <span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">perceptualLoss</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+            <span class="c1">#+ 2.0 * self.mseLoss(output, target)</span>
+            <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvLoss</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+        <span class="p">)</span>
+
+        <span class="k">return</span> <span class="p">(</span>
+            <span class="n">content_loss</span> <span class="o">+</span> <span class="n">adversarial_lambda</span> <span class="o">*</span> <span class="n">adversarial_loss</span><span class="p">,</span>
+            <span class="n">content_loss</span><span class="p">,</span>
+            <span class="n">adversarial_loss</span><span class="p">,</span>
+        <span class="p">)</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">CriticLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CriticLoss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_gradient_penalty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">critic</span><span class="p">,</span> <span class="n">real</span><span class="p">,</span> <span class="n">fake</span><span class="p">,</span> <span class="n">lambda_gp</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">real</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">epsilon</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">real</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+        <span class="n">interpolated</span> <span class="o">=</span> <span class="p">(</span><span class="n">epsilon</span> <span class="o">*</span> <span class="n">real</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">epsilon</span><span class="p">)</span> <span class="o">*</span> <span class="n">fake</span><span class="p">)</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+
+        <span class="n">critic_output</span> <span class="o">=</span> <span class="n">critic</span><span class="p">(</span><span class="n">interpolated</span><span class="p">)</span>
+        <span class="n">grad_outputs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">critic_output</span><span class="p">)</span>
+
+        <span class="n">gradients</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span>
+            <span class="n">outputs</span><span class="o">=</span><span class="n">critic_output</span><span class="p">,</span>
+            <span class="n">inputs</span><span class="o">=</span><span class="n">interpolated</span><span class="p">,</span>
+            <span class="n">grad_outputs</span><span class="o">=</span><span class="n">grad_outputs</span><span class="p">,</span>
+            <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">retain_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+            <span class="n">only_inputs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+
+        <span class="n">gradients</span> <span class="o">=</span> <span class="n">gradients</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">gradient_norm</span> <span class="o">=</span> <span class="n">gradients</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+        <span class="n">gradient_penalty</span> <span class="o">=</span> <span class="p">((</span><span class="n">gradient_norm</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">*</span> <span class="n">lambda_gp</span>
+        <span class="k">return</span> <span class="n">gradient_penalty</span><span class="p">,</span> <span class="n">gradient_norm</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">critic</span><span class="p">,</span> <span class="n">real</span><span class="p">,</span> <span class="n">fake</span><span class="p">):</span>
+        <span class="n">gp</span><span class="p">,</span> <span class="n">gradient_norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_gradient_penalty</span><span class="p">(</span><span class="n">critic</span><span class="p">,</span> <span class="n">real</span><span class="p">,</span> <span class="n">fake</span><span class="p">)</span>
+
+        <span class="n">loss_c</span> <span class="o">=</span> <span class="o">-</span><span class="n">critic</span><span class="p">(</span><span class="n">real</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">+</span> <span class="n">critic</span><span class="p">(</span><span class="n">fake</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">loss_c</span> <span class="o">+</span> <span class="n">gp</span><span class="p">,</span> <span class="n">gradient_norm</span><span class="p">,</span> <span class="n">loss_c</span>
+
+
+<span class="k">class</span><span class="w"> </span><span class="nc">UpscaleTrainer</span><span class="p">:</span>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">criticUpdates</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">critic</span> <span class="o">=</span> <span class="n">Critic</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">generatorLoss</span> <span class="o">=</span> <span class="n">GeneratorLoss</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">criticLoss</span> <span class="o">=</span> <span class="n">CriticLoss</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimGenerator</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.005</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimCritic</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+
+        <span class="c1"># Count and print parameters</span>
+        <span class="n">gen_params</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+        <span class="n">critic_params</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generator parameters: </span><span class="si">{</span><span class="n">gen_params</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Critic parameters: </span><span class="si">{</span><span class="n">critic_params</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_critic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimCritic</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">critic_loss</span><span class="p">,</span> <span class="n">gradient_norm</span><span class="p">,</span> <span class="n">loss_c</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">criticLoss</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">output</span>
+        <span class="p">)</span>
+        <span class="n">critic_loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimCritic</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;gradient_norm&quot;</span><span class="p">:</span> <span class="n">gradient_norm</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+            <span class="s2">&quot;loss_c&quot;</span><span class="p">:</span> <span class="n">loss_c</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+        <span class="p">}</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">epoch</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimGenerator</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+
+        <span class="n">loss</span><span class="p">,</span> <span class="n">content_loss</span><span class="p">,</span> <span class="n">adversarial_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generatorLoss</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
+
+        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+
+        <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">clip_grad_norm_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">max_norm</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+        <span class="n">gen_norm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">clip_grad_norm_</span><span class="p">(</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">max_norm</span><span class="o">=</span><span class="mf">1e9</span>
+        <span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimGenerator</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+
+        <span class="k">return</span> <span class="p">{</span>
+            <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+            <span class="s2">&quot;content_loss&quot;</span><span class="p">:</span> <span class="n">content_loss</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+            <span class="s2">&quot;adversarial_loss&quot;</span><span class="p">:</span> <span class="n">adversarial_loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+            <span class="s2">&quot;gradient_norm&quot;</span><span class="p">:</span> <span class="n">gen_norm</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+        <span class="p">},</span> <span class="n">output</span>
+
+    <span class="k">def</span><span class="w"> </span><span class="nf">train_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">epoch</span><span class="p">):</span>
+        <span class="c1"># Train Critic every step</span>
+        <span class="n">scoresCritic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_critic</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">criticUpdates</span> <span class="o">+=</span> <span class="mi">1</span>
+
+        <span class="c1"># Train Generator only every 4th step</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">criticUpdates</span> <span class="o">==</span> <span class="mi">4</span> <span class="ow">or</span> <span class="n">epoch</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
+            <span class="n">scoresGenerator</span><span class="p">,</span> <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_generator</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">criticUpdates</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">scoresGenerator</span> <span class="o">=</span> <span class="kc">None</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="kc">None</span>
+
+        <span class="k">return</span> <span class="n">scoresCritic</span><span class="p">,</span> <span class="n">scoresGenerator</span><span class="p">,</span> <span class="n">output</span>
+
+
+<span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+    <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;upscale4x_mse&quot;</span>
+
+    <span class="n">dataloader</span> <span class="o">=</span> <span class="n">get_dataloader</span><span class="p">(</span><span class="n">inputSize</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">outputSize</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">48</span><span class="p">)</span>
+
+    <span class="n">trainer</span> <span class="o">=</span> <span class="n">UpscaleTrainer</span><span class="p">()</span>
+
+    <span class="n">train</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">trainer</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">)</span>
+</pre></div>
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Prof. Dr. Dennis Müller.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>
