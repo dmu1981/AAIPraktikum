@@ -502,9 +502,14 @@ window.addEventListener("load", () => mermaid.run());
             <span class="nb">input</span> <span class="o">=</span> <span class="nb">input</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
             <span class="n">target</span> <span class="o">=</span> <span class="n">target</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
 
-            <span class="n">scoresCritic</span><span class="p">,</span> <span class="n">scoresGenerator</span><span class="p">,</span> <span class="n">output</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">train_batch</span><span class="p">(</span>
+            <span class="n">scoresCritic</span><span class="p">,</span> <span class="n">scoresGenerator</span> <span class="o">=</span> <span class="n">trainer</span><span class="o">.</span><span class="n">train_batch</span><span class="p">(</span>
                 <span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">epoch</span>
             <span class="p">)</span>
+            <span class="n">output</span> <span class="o">=</span> <span class="n">scoresGenerator</span><span class="p">[</span><span class="s2">&quot;output&quot;</span><span class="p">]</span> <span class="k">if</span> <span class="n">scoresGenerator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span>
+
+            <span class="k">if</span> <span class="n">scoresCritic</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
+                <span class="n">gradient_norm_score</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">scoresCritic</span><span class="p">[</span><span class="s2">&quot;gradient_norm&quot;</span><span class="p">])</span>
+                <span class="n">loss_c_score</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">scoresCritic</span><span class="p">[</span><span class="s2">&quot;loss_c&quot;</span><span class="p">])</span>
 
             <span class="k">if</span> <span class="n">scoresGenerator</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="ow">and</span> <span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
                 <span class="n">generator_gradient_norm_score</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">scoresGenerator</span><span class="p">[</span><span class="s2">&quot;gradient_norm&quot;</span><span class="p">])</span>
@@ -526,10 +531,6 @@ window.addEventListener("load", () => mermaid.run());
                 <span class="n">bar</span><span class="o">.</span><span class="n">set_description</span><span class="p">(</span>
                     <span class="sa">f</span><span class="s2">&quot;[</span><span class="si">{</span><span class="n">epoch</span><span class="o">+</span><span class="mi">1</span><span class="si">}</span><span class="s2">], Content: </span><span class="si">{</span><span class="n">content_loss_score</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">, loss_C: </span><span class="si">{</span><span class="n">loss_c_score</span><span class="o">.</span><span class="n">compute</span><span class="p">(</span><span class="n">reset</span><span class="o">=</span><span class="kc">False</span><span class="p">)</span><span class="si">:</span><span class="s2">.3f</span><span class="si">}</span><span class="s2">&quot;</span>
                 <span class="p">)</span>
-
-            <span class="k">if</span> <span class="n">scoresCritic</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span><span class="p">:</span>
-                <span class="n">gradient_norm_score</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">scoresCritic</span><span class="p">[</span><span class="s2">&quot;gradient_norm&quot;</span><span class="p">])</span>
-                <span class="n">loss_c_score</span><span class="o">.</span><span class="n">update</span><span class="p">(</span><span class="n">scoresCritic</span><span class="p">[</span><span class="s2">&quot;loss_c&quot;</span><span class="p">])</span>
 
             <span class="n">log_metrics</span><span class="p">(</span><span class="n">writer</span><span class="p">,</span> <span class="n">scores</span><span class="p">)</span>
 

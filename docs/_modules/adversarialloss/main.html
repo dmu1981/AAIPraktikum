@@ -174,73 +174,213 @@ window.addEventListener("load", () => mermaid.run());
 
 
 
+<div class="viewcode-block" id="Critic">
+<a class="viewcode-back" href="../../adversarialloss/index.html#adversarialloss.main.Critic">[Doku]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">Critic</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="Critic.__init__">
+<a class="viewcode-back" href="../../adversarialloss/index.html#adversarialloss.main.Critic.__init__">[Doku]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Critic model.</span>
+<span class="sd">        </span>
+<span class="sd">        This model is a convolutional neural network that takes an image as input and outputs a single score indicating the quality of the image.</span>
+<span class="sd">        </span>
+<span class="sd">        **TODO**:</span>
+<span class="sd">        </span>
+<span class="sd">        - Call the `__init__` method of the base class `nn.Module`.</span>
+
+<span class="sd">        - Define a sequential model consisting of:</span>
+<span class="sd">            - A convolutional layer with 3 input channels, 32 output channels, kernel size 9, stride 2, and padding 4.</span>
+<span class="sd">            - A LeakyReLU activation function with an inplace operation.</span>
+<span class="sd">            - A convolutional layer with 32 input channels, 64 output channels, kernel size 5, stride 2, and padding 2.</span>
+<span class="sd">            - A LeakyReLU activation function with an inplace operation.        </span>
+<span class="sd">            - A convolutional layer with 64 input channels, 128 output channels, kernel size 5, stride 2, and padding 2.</span>
+<span class="sd">            - A LeakyReLU activation function with an inplace operation.            </span>
+<span class="sd">            - A convolutional layer with 128 input channels, 256 output channels, kernel size 5, stride 2, and padding 2.</span>
+<span class="sd">            - A LeakyReLU activation function with an inplace operation.</span>
+<span class="sd">            - A convolutional layer with 256 input channels, 512 output channels, kernel size 5, stride 2, and padding 2.</span>
+<span class="sd">            - A LeakyReLU activation function with an inplace operation.</span>
+<span class="sd">            - A convolutional layer with 512 input channels, 1024 output channels, kernel size 5, stride 2, and padding 2.</span>
+<span class="sd">            - A LeakyReLU activation function with an inplace operation.</span>
+<span class="sd">            - An average pooling layer with kernel size (4, 4) to reduce the spatial dimensions.</span>
+<span class="sd">            - A flattening layer to convert the output to a 1D tensor.</span>
+<span class="sd">            - A linear layer with 1024 input features and 1 output feature (no bias).</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">Critic</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
             <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 16x128x128</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 32x128x128</span>
             <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 32x64x64</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 64x64x64</span>
             <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 64x32x32</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 128x32x32</span>
             <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 128x16x16</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 256x16x16</span>
             <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 256x8x8</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 512x8x8</span>
             <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
-            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 512x4x4</span>
+            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 1024x4x4</span>
             <span class="n">nn</span><span class="o">.</span><span class="n">AvgPool2d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span>  <span class="c1"># 1024x1x1</span>
             <span class="n">nn</span><span class="o">.</span><span class="n">Flatten</span><span class="p">(),</span>
             <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>  <span class="c1"># Final output layer</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="Critic.forward">
+<a class="viewcode-back" href="../../adversarialloss/index.html#adversarialloss.main.Critic.forward">[Doku]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
-        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="sd">        Perform the forward pass of the Critic model.</span>
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">            x (torch.Tensor):</span>
+<span class="sd">              The input tensor to be processed by the Critic model.</span>
+<span class="sd">              </span>
+<span class="sd">        Returns:</span>
+<span class="sd">        --------</span>
+<span class="sd">            torch.Tensor: The output score from the Critic model.</span>
+<span class="sd">        </span>
+<span class="sd">        **TODO**:</span>
+<span class="sd">        </span>
+<span class="sd">        - Pass the input tensor through the model.</span>
+<span class="sd">        </span>
+<span class="sd">        - Return the output score from the model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span></div>
+</div>
 
 
 
-
-
+<div class="viewcode-block" id="GeneratorLoss">
+<a class="viewcode-back" href="../../adversarialloss/index.html#adversarialloss.main.GeneratorLoss">[Doku]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">GeneratorLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<div class="viewcode-block" id="GeneratorLoss.__init__">
+<a class="viewcode-back" href="../../adversarialloss/index.html#adversarialloss.main.GeneratorLoss.__init__">[Doku]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">critic</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the GeneratorLoss module.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">            critic (nn.Module):</span>
+<span class="sd">              The critic model used for adversarial loss computation.</span>
+<span class="sd">              </span>
+<span class="sd">        **TODO**:</span>
+<span class="sd">        </span>
+<span class="sd">        - Call the `__init__` method of the base class `nn.Module`.</span>
+
+<span class="sd">        - Initialize the `VGG16PerceptualLoss` for perceptual loss computation.</span>
+
+<span class="sd">        - Initialize the `TVLoss` for total variation loss computation.</span>
+
+<span class="sd">        - Store the critic model for adversarial loss computation.  </span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">GeneratorLoss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">perceptualLoss</span> <span class="o">=</span> <span class="n">VGG16PerceptualLoss</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">mseLoss</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">MSELoss</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">tvLoss</span> <span class="o">=</span> <span class="n">TVLoss</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">critic</span> <span class="o">=</span> <span class="n">critic</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">critic</span> <span class="o">=</span> <span class="n">critic</span></div>
 
+
+<div class="viewcode-block" id="GeneratorLoss.forward">
+<a class="viewcode-back" href="../../adversarialloss/index.html#adversarialloss.main.GeneratorLoss.forward">[Doku]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">epoch</span><span class="p">):</span>
-        <span class="n">adversarial_loss</span> <span class="o">=</span> <span class="o">-</span><span class="n">torch</span><span class="o">.</span><span class="n">tanh</span><span class="p">(</span><span class="mf">0.01</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="p">(</span><span class="n">output</span><span class="p">))</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the generator loss.</span>
 
-        <span class="k">if</span> <span class="n">epoch</span> <span class="o">&lt;</span> <span class="mi">5</span><span class="p">:</span>
-            <span class="n">adversarial_lambda</span> <span class="o">=</span> <span class="mf">0.0</span>
-        <span class="k">else</span><span class="p">:</span>
-            <span class="n">adversarial_lambda</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="p">(</span><span class="n">epoch</span> <span class="o">-</span> <span class="mi">3</span><span class="p">)</span> <span class="o">/</span> <span class="mf">5.0</span><span class="p">)</span>
+<span class="sd">        The generator loss is a combination of perceptual loss, total variation loss, and adversarial loss.</span>
+
+<span class="sd">        The sum of the perceptual loss and total variation loss is called content loss as it is used to measure the quality of the generated image in terms </span>
+<span class="sd">        of content similarity to the target image.</span>
+
+<span class="sd">        The adversarial loss is computed using the critic model, which is trained to distinguish between real and generated images.</span>
+<span class="sd">        The generator aims to maximize the critic&#39;s output for generated images, thus it tries to fool the critic. Mathematically, this is achieved by negating</span>
+<span class="sd">        the critic&#39;s output. </span>
+
+<span class="sd">        Since the critic is not yet fully trained during the initial epochs, we apply a linear scaling factor to the adversarial loss based on the current epoch. </span>
+<span class="sd">        This allows the generator to focus more on content loss in the early stages of training and gradually increase the importance of adversarial loss as </span>
+<span class="sd">        training progresses. In the first epoch, the adversarial loss is not applied at all, and it starts to increase linearly until it reaches its full weight at epoch 5 epoch.</span>
+
+<span class="sd">        The generator shall minimize the content loss while maximizing the adversarial loss, which is achieved by negating the critic&#39;s output.</span>
+
+<span class="sd">        </span>
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">            output (torch.Tensor):</span>
+<span class="sd">              The output tensor from the generator.</span>
+
+<span class="sd">            target (torch.Tensor):</span>
+<span class="sd">              The target tensor for comparison.</span>
+
+<span class="sd">            epoch (int):</span>
+<span class="sd">              The current training epoch.</span>
+<span class="sd">              </span>
+<span class="sd">        Returns:</span>
+<span class="sd">        --------</span>
+<span class="sd">            Tuple:</span>
+
+<span class="sd">            - torch.Tensor: The total generator loss, which includes perceptual loss, TV loss, and adversarial loss.</span>
+
+<span class="sd">            - torch.Tensor: The content loss (perceptual loss).         </span>
+
+<span class="sd">            - torch.Tensor: The adversarial loss computed from the critic.</span>
+<span class="sd">        </span>
+<span class="sd">        **TODO**:</span>
+
+<span class="sd">        - Compute the adversarial loss by running the generator images through the critic and **taking the mean**. Then scale it by 0.01.</span>
+
+<span class="sd">        - Compute the linear scaling factor for the adversarial loss based on the current epoch. The scaling factor should be 0 in the first epoch and increase linearly to 1 by epoch 5.</span>
+<span class="sd">        </span>
+<span class="sd">        - Compute the content loss as the sum of perceptual loss and TV loss. Scale the TV loss by 0.1 to reduce its impact on the total loss.</span>
+
+<span class="sd">        - Compute the total generator loss as the sum of content loss and the **negative** adversarial loss scaled by the linear scaling factor.</span>
+
+<span class="sd">        - Return a tuple containing the total generator loss, content loss, and adversarial loss.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">adversarial_loss</span> <span class="o">=</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+
+        <span class="n">adversarial_lambda</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">epoch</span> <span class="o">/</span> <span class="mf">5.0</span><span class="p">)</span>
 
         <span class="n">content_loss</span> <span class="o">=</span> <span class="p">(</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">perceptualLoss</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
-            <span class="c1">#+ 2.0 * self.mseLoss(output, target)</span>
             <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvLoss</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
         <span class="p">)</span>
 
         <span class="k">return</span> <span class="p">(</span>
-            <span class="n">content_loss</span> <span class="o">+</span> <span class="n">adversarial_lambda</span> <span class="o">*</span> <span class="n">adversarial_loss</span><span class="p">,</span>
+            <span class="n">content_loss</span> <span class="o">-</span> <span class="n">adversarial_lambda</span> <span class="o">*</span> <span class="n">adversarial_loss</span><span class="p">,</span>
             <span class="n">content_loss</span><span class="p">,</span>
             <span class="n">adversarial_loss</span><span class="p">,</span>
-        <span class="p">)</span>
+        <span class="p">)</span></div>
+</div>
 
 
+
+<div class="viewcode-block" id="CriticLoss">
+<a class="viewcode-back" href="../../adversarialloss/index.html#adversarialloss.main.CriticLoss">[Doku]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">CriticLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
-    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<div class="viewcode-block" id="CriticLoss.__init__">
+<a class="viewcode-back" href="../../adversarialloss/index.html#adversarialloss.main.CriticLoss.__init__">[Doku]</a>
+    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">critic</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Initialize the CriticLoss module.</span>
+<span class="sd">        This module computes the loss for the critic model, including the gradient penalty to enforce the Lipschitz constraint.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="nb">super</span><span class="p">(</span><span class="n">CriticLoss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">critic</span> <span class="o">=</span> <span class="n">critic</span></div>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">compute_gradient_penalty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">critic</span><span class="p">,</span> <span class="n">real</span><span class="p">,</span> <span class="n">fake</span><span class="p">,</span> <span class="n">lambda_gp</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+
+<div class="viewcode-block" id="CriticLoss.compute_gradient_penalty">
+<a class="viewcode-back" href="../../adversarialloss/index.html#adversarialloss.main.CriticLoss.compute_gradient_penalty">[Doku]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">compute_gradient_penalty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">real</span><span class="p">,</span> <span class="n">fake</span><span class="p">,</span> <span class="n">lambda_gp</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Compute the gradient penalty for the critic.</span>
+<span class="sd">        This function calculates the gradient penalty to enforce the Lipschitz constraint on the critic model.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="c1"># Generate random interpolation between real and fake images</span>
         <span class="n">batch_size</span> <span class="o">=</span> <span class="n">real</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
         <span class="n">epsilon</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">real</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
         <span class="n">interpolated</span> <span class="o">=</span> <span class="p">(</span><span class="n">epsilon</span> <span class="o">*</span> <span class="n">real</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">epsilon</span><span class="p">)</span> <span class="o">*</span> <span class="n">fake</span><span class="p">)</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 
-        <span class="n">critic_output</span> <span class="o">=</span> <span class="n">critic</span><span class="p">(</span><span class="n">interpolated</span><span class="p">)</span>
+        <span class="c1"># Compute the critic&#39;s output for the interpolated images</span>
+        <span class="n">critic_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="p">(</span><span class="n">interpolated</span><span class="p">)</span>
+
+        <span class="c1"># Compute the gradients of the critic&#39;s output with respect to the interpolated images</span>
         <span class="n">grad_outputs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">critic_output</span><span class="p">)</span>
 
         <span class="n">gradients</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span>
@@ -252,37 +392,112 @@ window.addEventListener("load", () => mermaid.run());
             <span class="n">only_inputs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
         <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
 
+        <span class="c1"># Compute the gradient penalty</span>
         <span class="n">gradients</span> <span class="o">=</span> <span class="n">gradients</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">gradient_norm</span> <span class="o">=</span> <span class="n">gradients</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
         <span class="n">gradient_penalty</span> <span class="o">=</span> <span class="p">((</span><span class="n">gradient_norm</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">*</span> <span class="n">lambda_gp</span>
-        <span class="k">return</span> <span class="n">gradient_penalty</span><span class="p">,</span> <span class="n">gradient_norm</span>
 
-    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">critic</span><span class="p">,</span> <span class="n">real</span><span class="p">,</span> <span class="n">fake</span><span class="p">):</span>
-        <span class="n">gp</span><span class="p">,</span> <span class="n">gradient_norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_gradient_penalty</span><span class="p">(</span><span class="n">critic</span><span class="p">,</span> <span class="n">real</span><span class="p">,</span> <span class="n">fake</span><span class="p">)</span>
-
-        <span class="n">loss_c</span> <span class="o">=</span> <span class="o">-</span><span class="n">critic</span><span class="p">(</span><span class="n">real</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">+</span> <span class="n">critic</span><span class="p">(</span><span class="n">fake</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
-        <span class="k">return</span> <span class="n">loss_c</span> <span class="o">+</span> <span class="n">gp</span><span class="p">,</span> <span class="n">gradient_norm</span><span class="p">,</span> <span class="n">loss_c</span>
+        <span class="c1"># Return the gradient penalty and the gradient norm for logging purposes</span>
+        <span class="k">return</span> <span class="n">gradient_penalty</span><span class="p">,</span> <span class="n">gradient_norm</span></div>
 
 
+<div class="viewcode-block" id="CriticLoss.forward">
+<a class="viewcode-back" href="../../adversarialloss/index.html#adversarialloss.main.CriticLoss.forward">[Doku]</a>
+    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">real</span><span class="p">,</span> <span class="n">fake</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Compute the critic loss, including the gradient penalty.</span>
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">            real (torch.Tensor):</span>
+<span class="sd">              The real images from the dataset.</span>
+
+<span class="sd">            fake (torch.Tensor):</span>
+<span class="sd">              The generated images from the generator model.</span>
+
+<span class="sd">        Returns:    </span>
+<span class="sd">        --------</span>
+<span class="sd">            Tuple:</span>
+
+<span class="sd">            - torch.Tensor: The total critic loss, which includes the WGAN loss and the gradient penalty.</span>
+
+<span class="sd">            - torch.Tensor: The gradient norm for logging purposes. </span>
+
+<span class="sd">            - torch.Tensor: The pure WGAN loss (without gradient penalty) for logging purposes.</span>
+
+<span class="sd">        **TODO**:</span>
+<span class="sd">            - Calculate the WGAN loss as the difference between the **mean** critic score for real images and the **mean** critic score for fake images.</span>
+
+<span class="sd">            - Compute the gradient penalty using the `compute_gradient_penalty` method. Note: This method returns both the gradient penalty and the gradient norm.</span>
+
+<span class="sd">            - Return the total critic loss, gradient norm, and pure WGAN loss.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">gp</span><span class="p">,</span> <span class="n">gradient_norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_gradient_penalty</span><span class="p">(</span><span class="n">real</span><span class="p">,</span> <span class="n">fake</span><span class="p">)</span>
+
+        <span class="n">loss_c</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="p">(</span><span class="n">real</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="p">(</span><span class="n">fake</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">loss_c</span> <span class="o">+</span> <span class="n">gp</span><span class="p">,</span> <span class="n">gradient_norm</span><span class="p">,</span> <span class="n">loss_c</span></div>
+</div>
+
+
+
+<div class="viewcode-block" id="UpscaleTrainer">
+<a class="viewcode-back" href="../../adversarialloss/index.html#adversarialloss.main.UpscaleTrainer">[Doku]</a>
 <span class="k">class</span><span class="w"> </span><span class="nc">UpscaleTrainer</span><span class="p">:</span>
+<div class="viewcode-block" id="UpscaleTrainer.__init__">
+<a class="viewcode-back" href="../../adversarialloss/index.html#adversarialloss.main.UpscaleTrainer.__init__">[Doku]</a>
     <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">criticUpdates</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">critic</span> <span class="o">=</span> <span class="n">Critic</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">generatorLoss</span> <span class="o">=</span> <span class="n">GeneratorLoss</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">criticLoss</span> <span class="o">=</span> <span class="n">CriticLoss</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">criticLoss</span> <span class="o">=</span> <span class="n">CriticLoss</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
 
-        <span class="bp">self</span><span class="o">.</span><span class="n">optimGenerator</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.005</span><span class="p">)</span>
-        <span class="bp">self</span><span class="o">.</span><span class="n">optimCritic</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.001</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimGenerator</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.0005</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">optimCritic</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">)</span>
 
         <span class="c1"># Count and print parameters</span>
         <span class="n">gen_params</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
         <span class="n">critic_params</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
         <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generator parameters: </span><span class="si">{</span><span class="n">gen_params</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
-        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Critic parameters: </span><span class="si">{</span><span class="n">critic_params</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Critic parameters: </span><span class="si">{</span><span class="n">critic_params</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span></div>
 
+
+<div class="viewcode-block" id="UpscaleTrainer.train_critic">
+<a class="viewcode-back" href="../../adversarialloss/index.html#adversarialloss.main.UpscaleTrainer.train_critic">[Doku]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">train_critic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Train the critic model on a batch of input and target images.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------            </span>
+<span class="sd">            input (torch.Tensor):</span>
+<span class="sd">              The input tensor containing the images to be processed by the generator.</span>
+
+<span class="sd">            target (torch.Tensor):</span>
+<span class="sd">              The target tensor containing the ground truth images for comparison.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        --------    </span>
+<span class="sd">            dict: A dictionary containing the gradient norm and the critic loss with the following keys:.</span>
+<span class="sd">                </span>
+<span class="sd">                &quot;gradient_norm&quot;:  The gradient norm computed during the training of the critic (float).</span>
+<span class="sd">                &quot;loss_c&quot;: The critic loss computed during the training (float).</span>
+
+<span class="sd">        **TODO**:</span>
+
+<span class="sd">        - Pass the input tensor through the generator to obtain the generator output.</span>
+
+<span class="sd">        - Zero the gradients of the critic optimizer (self.optimCritic).</span>
+
+<span class="sd">        - Compute the critic loss using the `CriticLoss` module, which includes the WGAN loss and the gradient penalty.</span>
+<span class="sd">          Store the gradient norm and the critic loss for later so you can return it.</span>
+
+<span class="sd">        - Backpropagate the critic loss to compute the gradients.</span>
+
+<span class="sd">        - Clip the gradients of the generator to prevent exploding gradients (use `torch.nn.utils.clip_grad_norm_ https://docs.pytorch.org/docs/stable/generated/torch.nn.utils.clip_grad_norm_.html&gt;`_ with `max_norm=5.0`).</span>
+
+<span class="sd">        - Step the critic optimizer to update the critic&#39;s parameters.</span>
+
+<span class="sd">        - Return a dictionary containing the gradient norm and the critic loss.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
 
         <span class="bp">self</span><span class="o">.</span><span class="n">optimCritic</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
@@ -290,14 +505,59 @@ window.addEventListener("load", () => mermaid.run());
             <span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">output</span>
         <span class="p">)</span>
         <span class="n">critic_loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+        <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">clip_grad_norm_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">max_norm</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">optimCritic</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
 
         <span class="k">return</span> <span class="p">{</span>
             <span class="s2">&quot;gradient_norm&quot;</span><span class="p">:</span> <span class="n">gradient_norm</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
             <span class="s2">&quot;loss_c&quot;</span><span class="p">:</span> <span class="n">loss_c</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
-        <span class="p">}</span>
+        <span class="p">}</span></div>
 
+
+<div class="viewcode-block" id="UpscaleTrainer.train_generator">
+<a class="viewcode-back" href="../../adversarialloss/index.html#adversarialloss.main.UpscaleTrainer.train_generator">[Doku]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">train_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">epoch</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot; Train the generator model on a batch of input and target images.</span>
+<span class="sd">        </span>
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">            input (torch.Tensor):   </span>
+<span class="sd">                The input tensor containing the images to be processed by the generator.</span>
+
+<span class="sd">            target (torch.Tensor):</span>
+<span class="sd">                The target tensor containing the ground truth images for comparison.    </span>
+
+<span class="sd">            epoch (int):</span>
+<span class="sd">            The current training epoch, used to scale the adversarial loss.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        --------</span>
+<span class="sd">            dict: A dictionary containing the total generator loss, content loss, adversarial loss, and gradient norm with the following keys:</span>
+<span class="sd">                &quot;loss&quot;: The total generator loss (float).</span>
+<span class="sd">                &quot;content_loss&quot;: The content loss (float).</span>
+<span class="sd">                &quot;adversarial_loss&quot;: The adversarial loss (float).</span>
+<span class="sd">                &quot;gradient_norm&quot;: The gradient norm (float).</span>
+<span class="sd">                &quot;output&quot;: The output tensor from the generator (torch.Tensor).</span>
+<span class="sd">                </span>
+<span class="sd">        **TODO**:</span>
+<span class="sd">        </span>
+<span class="sd">        - Zero the gradients of the generator optimizer (self.optimGenerator).</span>
+<span class="sd">        </span>
+<span class="sd">        - Pass the input tensor through the generator to obtain the generated upsample image.</span>
+
+<span class="sd">        - Compute the generator loss using the `GeneratorLoss` module, which includes perceptual loss, TV loss, and adversarial loss.</span>
+<span class="sd">          Store the content loss, adversarial loss, and total generator loss for later so you can return it.</span>
+<span class="sd">        </span>
+<span class="sd">        - Backpropagate the total generator loss to compute the gradients.</span>
+
+<span class="sd">        - Clip the gradients of the generator to prevent exploding gradients (use `torch.nn.utils.clip_grad_norm_ https://docs.pytorch.org/docs/stable/generated/torch.nn.utils.clip_grad_norm_.html&gt;`_ with `max_norm=1.0`).</span>
+<span class="sd">        </span>
+<span class="sd">        - Call `torch.nn.utils.clip_grad_norm_` again with `max_norm=1e9` and store the gradient norm for later so you can return it.</span>
+
+<span class="sd">        - Step the generator optimizer to update the generator&#39;s parameters.</span>
+
+<span class="sd">        - Return a dictionary containing the total generator loss, content loss, adversarial loss, the output and the gradient norm.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">optimGenerator</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
         <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
 
@@ -317,22 +577,59 @@ window.addEventListener("load", () => mermaid.run());
             <span class="s2">&quot;content_loss&quot;</span><span class="p">:</span> <span class="n">content_loss</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
             <span class="s2">&quot;adversarial_loss&quot;</span><span class="p">:</span> <span class="n">adversarial_loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
             <span class="s2">&quot;gradient_norm&quot;</span><span class="p">:</span> <span class="n">gen_norm</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
-        <span class="p">},</span> <span class="n">output</span>
+            <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="n">output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span><span class="o">.</span><span class="n">cpu</span><span class="p">()</span> <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+        <span class="p">}</span></div>
 
+
+<div class="viewcode-block" id="UpscaleTrainer.train_batch">
+<a class="viewcode-back" href="../../adversarialloss/index.html#adversarialloss.main.UpscaleTrainer.train_batch">[Doku]</a>
     <span class="k">def</span><span class="w"> </span><span class="nf">train_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">epoch</span><span class="p">):</span>
+<span class="w">        </span><span class="sd">&quot;&quot;&quot;Train a batch of images using the critic and generator models.</span>
+
+<span class="sd">        Parameters:</span>
+<span class="sd">        -----------</span>
+<span class="sd">            input (torch.Tensor):</span>
+<span class="sd">              The input tensor containing the images to be processed by the generator.</span>
+
+<span class="sd">            target (torch.Tensor):</span>
+<span class="sd">              The target tensor containing the ground truth images for comparison.</span>
+
+<span class="sd">            epoch (int):</span>
+<span class="sd">              The current training epoch, used to scale the adversarial loss.</span>
+
+<span class="sd">        Returns:</span>
+<span class="sd">        --------</span>
+<span class="sd">            Tuple:</span>
+<span class="sd">            - dict: A dictionary containing the critic scores with keys &quot;gradient_norm&quot; and &quot;loss_c&quot;.</span>
+<span class="sd">            - dict: A dictionary containing the generator scores with keys &quot;loss&quot;, &quot;content_loss&quot;, &quot;adversarial_loss&quot;, &quot;gradient_norm&quot;, and &quot;output&quot;.</span>
+<span class="sd">        </span>
+<span class="sd">        **TODO**:</span>
+
+<span class="sd">        - Train the critic model using the `train_critic` method with the input and target tensors.</span>
+
+<span class="sd">        - Increment the critic updates counter (self.criticUpdates).</span>
+
+<span class="sd">        - If the critic updates counter is 5 or the epoch is less than 1, </span>
+<span class="sd">          train the generator model using the `train_generator` method with the input and target tensors, and the current epoch. Also reset the critic updates counter to 0.</span>
+
+<span class="sd">        - If the critic updates counter is not 5 and the epoch is greater than or equal to 1, skip training the generator and set the generator scores to None.</span>
+
+<span class="sd">        - Return the critic scores and generator scores (if available)</span>
+<span class="sd">        &quot;&quot;&quot;</span>
         <span class="c1"># Train Critic every step</span>
         <span class="n">scoresCritic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_critic</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">criticUpdates</span> <span class="o">+=</span> <span class="mi">1</span>
 
         <span class="c1"># Train Generator only every 4th step</span>
-        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">criticUpdates</span> <span class="o">==</span> <span class="mi">4</span> <span class="ow">or</span> <span class="n">epoch</span> <span class="o">&lt;</span> <span class="mi">4</span><span class="p">:</span>
-            <span class="n">scoresGenerator</span><span class="p">,</span> <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_generator</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">criticUpdates</span> <span class="o">==</span> <span class="mi">5</span> <span class="ow">or</span> <span class="n">epoch</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+            <span class="n">scoresGenerator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_generator</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">criticUpdates</span> <span class="o">=</span> <span class="mi">0</span>
         <span class="k">else</span><span class="p">:</span>
             <span class="n">scoresGenerator</span> <span class="o">=</span> <span class="kc">None</span>
-            <span class="n">output</span> <span class="o">=</span> <span class="kc">None</span>
 
-        <span class="k">return</span> <span class="n">scoresCritic</span><span class="p">,</span> <span class="n">scoresGenerator</span><span class="p">,</span> <span class="n">output</span>
+        <span class="k">return</span> <span class="n">scoresCritic</span><span class="p">,</span> <span class="n">scoresGenerator</span></div>
+</div>
+
 
 
 <span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>

@@ -404,9 +404,10 @@ def train(prefix, trainer, dataloader):
             input = input.cuda()
             target = target.cuda()
 
-            scoresCritic, scoresGenerator, output = trainer.train_batch(
+            scoresCritic, scoresGenerator = trainer.train_batch(
                 input, target, epoch
             )
+            output = scoresGenerator["output"] if scoresGenerator is not None else None
 
             if scoresCritic is not None:
                 gradient_norm_score.update(scoresCritic["gradient_norm"])
