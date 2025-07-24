@@ -134,7 +134,7 @@ def get_dataloader(batch_size=32):
 
 
 class ResNetBlock(nn.Module):
-    def __init__(self, in_channels, out_channels, kernel_size=9, padding=None, norm=True):
+    def __init__(self, in_channels, out_channels, kernel_size=9, padding=None, stride=1, norm=True):
         """Initialisiert einen ResNet-Block mit zwei Convolutional-Schichten, Batch-Normalisierung und ReLU-Aktivierung.
 
         Parameters:
@@ -161,10 +161,11 @@ class ResNetBlock(nn.Module):
             out_channels,
             kernel_size=kernel_size,
             padding=padding,
-            bias=False,
+            stride=stride,
+            bias=not norm,
         )
         self.bn1 = nn.BatchNorm2d(out_channels) if norm else nn.Identity()
-        self.relu = nn.ReLU(inplace=True)
+        self.relu = nn.LeakyReLU(inplace=True)
 
         self.conv2 = nn.Conv2d(
             out_channels,
@@ -172,13 +173,13 @@ class ResNetBlock(nn.Module):
             kernel_size=kernel_size,
             stride=1,
             padding=padding,
-            bias=False,
+            bias=not norm,
         )
-        self.bn2 = nn.BatchNorm2d(out_channels)
+        self.bn2 = nn.BatchNorm2d(out_channels) if norm else nn.Identity()
 
-        if in_channels != out_channels:
+        if in_channels != out_channels or stride != 1:
             self.shortcut = nn.Sequential(
-                nn.Conv2d(in_channels, out_channels, kernel_size=1, bias=False),
+                nn.Conv2d(in_channels, out_channels, kernel_size=1, bias=False, stride=stride),
             )
         else:
             self.shortcut = nn.Identity()
