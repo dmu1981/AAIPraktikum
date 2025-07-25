@@ -233,8 +233,8 @@ class CriticLoss(nn.Module):
 class UpscaleTrainer:
     def __init__(self):
         self.criticUpdates = 0
-        self.generator = Generator(100, 3, 64).cuda()
-        self.critic = Critic(3, 96).cuda()
+        self.generator = Generator(100, 3, 128).cuda()
+        self.critic = Critic(3, 256).cuda()
 
         initialize_weights(self.generator)
         initialize_weights(self.critic)
