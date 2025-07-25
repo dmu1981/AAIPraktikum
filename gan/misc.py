@@ -261,7 +261,7 @@ def log_images(writer, model, dataloader, epoch):
         batch = [b.cuda() for b in batch]
 
 
-        noise = torch.randn((16, 100, 1, 1), device="cuda")
+        noise = torch.randn((16, 100), device="cuda")
 
         sizes = [64]
         for index in [0]:

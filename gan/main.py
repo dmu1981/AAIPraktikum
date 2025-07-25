@@ -42,7 +42,9 @@ class Critic(nn.Module):
     def __init__(self, channels_img, features_d):
         super(Critic, self).__init__()
         self.disc = nn.Sequential(
-            nn.Conv2d(channels_img, features_d, kernel_size=4, stride=2, padding=1),
+            nn.Conv2d(channels_img, features_d, kernel_size=7, stride=1, padding=3),
+            nn.LeakyReLU(0.2),
+            nn.Conv2d(features_d, features_d, kernel_size=4, stride=2, padding=1),
             nn.LeakyReLU(0.2),
             self._block(features_d, features_d * 2, 3, 2, 1),
             self._block(features_d * 2, features_d * 4, 3, 2, 1),
@@ -59,19 +61,6 @@ class Critic(nn.Module):
             stride=stride,
             norm=False
         )
-        return nn.Sequential(
-            nn.Conv2d(
-                in_channels,
-                out_channels,
-                kernel_size,
-                stride,
-                padding,
-                bias=False
-            ),
-            nn.BatchNorm2d(out_channels),
-            nn.LeakyReLU(0.2)
-        )
-
     def forward(self, x):
         return self.disc(x)
 
@@ -125,36 +114,45 @@ def initialize_weights(model):
 #         x = self.inputNetwork(x)
 #         return x 
 
+class View(nn.Module):
+    def __init__(self, shape):
+        super(View, self).__init__()
+        self.shape = shape
+
+    def forward(self, x):
+        return x.view(*self.shape)
+    
 class Generator(nn.Module):
     def __init__(self, z_dim, channels_img, features_g):
         super(Generator, self).__init__()
         self.net = nn.Sequential(
-            self._block(z_dim, features_g * 16, 4, 1, 0),
-            self._block(features_g * 16, features_g * 8, 4, 2, 1),
-            self._block(features_g * 8, features_g * 4, 4, 2, 1),
-            self._block(features_g * 4, features_g * 2, 4, 2, 1),
-            nn.ConvTranspose2d(
-                features_g * 2, channels_img, kernel_size=4, stride=2, padding=1
-            ),
-            #nn.Tanh()
+            nn.Linear(z_dim, features_g * 16 * 4 * 4),
+            View((-1, features_g * 16, 4, 4)),
+            nn.ReLU(),
+            self._block(features_g * 16, features_g * 8, 5, 2, 2),
+            self._block(features_g * 8, features_g * 4, 5, 2, 2),
+            self._block(features_g * 4, features_g * 2, 5, 2, 2),
+            self._block(features_g * 2, features_g, 5, 2, 2),
+            nn.Conv2d(features_g, channels_img, kernel_size=5, stride=1, padding=2),
         )
 
     def _block(self, in_channels, out_channels, kernel_size, stride, padding):
+        if stride == 1:
+            return nn.Sequential(
+              ResNetBlock(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size, padding=padding, stride=1, norm=True),
+              nn.ReLU()
+            )
+        
         return nn.Sequential(
-            nn.ConvTranspose2d(
-                in_channels,
-                out_channels,
-                kernel_size,
-                stride,
-                padding,
-                bias=False
-            ),
-            #nn.BatchNorm2d(out_channels),
+            ResNetBlock(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size, padding=padding, stride=1, norm=True),
+            nn.Conv2d(out_channels, out_channels * 4, kernel_size=1, padding=0),
+            nn.PixelShuffle(upscale_factor=2),
             nn.ReLU()
         )
 
     def forward(self, x):
-        return self.net(x)
+        res = self.net(x)
+        return res
     
 class GeneratorLoss(nn.Module):
     def __init__(self, critic):
@@ -164,11 +162,11 @@ class GeneratorLoss(nn.Module):
 
     def forward(self, img, epoch):
         #self.critic.eval()
-        adversarial_loss = self.critic(img).mean()
+        adversarial_loss = torch.tanh(0.001 * self.critic(img)).mean()
 
         adversarial_lambda = 1.0# min(1.0, epoch / 5.0)
 
-        content_loss = 10.0 * self.tvLoss(img)
+        content_loss = 0.01 * self.tvLoss(img)
 
         return {
             "generator_loss": content_loss - adversarial_lambda * adversarial_loss,
@@ -233,8 +231,8 @@ class CriticLoss(nn.Module):
 class UpscaleTrainer:
     def __init__(self):
         self.criticUpdates = 0
-        self.generator = Generator(100, 3, 128).cuda()
-        self.critic = Critic(3, 256).cuda()
+        self.generator = Generator(100, 3, 64).cuda()
+        self.critic = Critic(3, 160).cuda()
 
         initialize_weights(self.generator)
         initialize_weights(self.critic)
@@ -252,7 +250,7 @@ class UpscaleTrainer:
         print(f"Critic parameters: {critic_params:,}")
 
     def generate(self, batch_size):
-        noise = torch.randn((batch_size, 100, 1, 1), device="cuda")
+        noise = torch.randn((batch_size, 100), device="cuda")
         return self.generator(noise)
 
     def train_critic(self, fake, target):
