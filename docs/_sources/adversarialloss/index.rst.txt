@@ -9,7 +9,11 @@ Hier kommt der *Adversarial Loss* ins Spiel. Anstatt das hochskalierte Bild nur 
 
 Kurz gesagt: Während TV- und Perceptual Loss eher lokale oder semantische Fehler reduzieren, ermöglicht der Adversarial Loss eine globale Verbesserung des Bildrealismus. Er verschiebt den Fokus von „rekonstruiere das Original“ hin zu „täusche den Betrachter“. Für das Upscaling bedeutet das oft: schärfere Kanten, realistischere Texturen und weniger künstlich wirkende Artefakte – insbesondere in fein strukturierten Bildbereichen wie Haaren, Gras oder Texturen.
 
-Im nächsten Abschnitt implementieren wir diesen Ansatz mithilfe eines einfachen GAN-Setups.
+Im nächsten Abschnitt implementieren wir diesen Ansatz mithilfe eines einfachen GAN-Setups. Damit erreichen wir eine signifikante Steigerung der Bildqualität und können realistischere hochskalierte Bilder generieren
+
+.. image:: shot_flower3.png
+   :width: 600px
+   :align: center   
 
 Das alte Setup
 --------------
@@ -569,4 +573,116 @@ Implementieren Sie nun die UpscaleTrainer-Klasse, welche den oben beschriebenen 
         else:
             scoresGenerator = None
 
-        return scoresCritic, scoresGenerator      
+        return scoresCritic, scoresGenerator
+
+Das Training
+-----------
+
+Um das Training zu starten, brauchen Sie nur die main.py Datei auszuführen.
+
+.. code-block:: bash
+
+   python main.py
+
+
+
+Starten Sie parallel das TensorBoard, um den Fortschritt zu verfolgen:
+
+.. code-block:: bash
+
+   tensorboard --logdir=logs
+
+Öffnen Sie dann Ihren Browser und gehen Sie zu `http://localhost:6006 <http://localhost:6006>`_, um die TensorBoard-Oberfläche zu sehen.
+
+Das Training kann je nach Hardware und Datensatz einige Stunden dauern, aber Sie sollten bereits nach kurzer Zeit eine Verbesserung der Bildqualität feststellen können.
+Nach etwa 15 Epochen sollten Sie bereits erste Fortschritte sehen. Die Bilder sollten zunehmend realistischer werden und weniger Artefakte aufweisen.
+
+Die TensorBoard-Diagramme zeigen den Verlauf der verschiedenen Loss-Werte und Metriken während des Trainings.
+
+Die wichtigsten Metriken sind:
+
+
+
+
+**Der Content-Loss**
+Perceptual Loss und TV-Loss ohne Adversarial Loss
+
+ .. image:: shot_contentloss.png
+   :width: 600px
+   :align: center
+
+**Der Adversarial Loss**   
+Der Wasserstein-Loss des Generators, der den Kritiker täuschen soll
+
+.. image:: shot_adversarialloss.png
+   :width: 600px
+   :align: center
+
+**Der Verlust des Generators (Generator Loss)**
+Summe aus Perceptual Loss, TV-Loss und Adversarial Loss
+
+.. image:: shot_generatorloss.png
+   :width: 600px
+   :align: center
+
+**Der Verlust des Diskriminators (Discriminator Loss)**
+
+.. math::
+
+      \mathcal{L}_{\text{WGAN}} = - \mathbb{E}[D(x_{\text{real}})] + \mathbb{E}[D(x_{\text{fake}})]
+
+.. image:: shot_lossc.png
+   :width: 600px
+   :align: center
+
+**Die Bildqualität (z.B. LPIPS, PSNR, MSE)**
+
+.. image:: shot_lpips.png
+   :width: 600px
+   :align: center
+
+.. image:: shot_psnr.png
+   :width: 600px
+   :align: center
+
+.. image:: shot_mse.png
+   :width: 600px
+   :align: center
+
+**Die Norm des Generator-Gradienten**
+
+.. image:: shot_generator_gradientnorm.png
+   :width: 600px
+   :align: center
+
+**Die Norm des Kritiker-Gradienten**
+
+.. image:: shot_criticgradientnorm.png
+   :width: 600px
+   :align: center
+
+**Die generierten Bilder**
+
+Links sehen Sie das niedrig aufgelöste Eingangsbild, in der Mitte das hochskalierte Ergebnis des Generators und 
+rechts das Originalbild zum Vergleich. 
+
+.. image:: shot_flower1.png
+   :width: 600px
+   :align: center
+
+.. image:: shot_flower2.png
+   :width: 600px
+   :align: center   
+
+.. image:: shot_flower4.png
+   :width: 600px
+   :align: center   
+
+.. image:: shot_flower5.png
+   :width: 600px
+   :align: center
+
+Musterlösung
+------------
+
+:doc:`solution`

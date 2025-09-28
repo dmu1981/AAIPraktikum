@@ -222,11 +222,13 @@ class PSNR(nn.Module):
         psnr = 20 * torch.log10(self.max_val / torch.sqrt(mse))
         return psnr
 
+
 # Denormalize images
 def denormalize(tensor):
     mean = torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1).cuda()
     std = torch.tensor([0.229, 0.224, 0.225]).view(3, 1, 1).cuda()
     return tensor * std + mean
+
 
 def train(prefix, model, dataloader, loss_fn):
     print(f"Training {prefix} model...")
@@ -259,10 +261,13 @@ def train(prefix, model, dataloader, loss_fn):
             optim.step()
 
             total_loss += loss.item()
-            total_cnt += 1#input.size(0)
+            total_cnt += 1  # input.size(0)
 
-
-            total_lips += metric(2.0 * denormalize(output) - 1.0, 2.0 * denormalize(target) - 1.0).mean().item()
+            total_lips += (
+                metric(2.0 * denormalize(output) - 1.0, 2.0 * denormalize(target) - 1.0)
+                .mean()
+                .item()
+            )
             total_mse += mseMetric(output, target).item()
             total_psnr += psnrMetric(output, target).item()
 

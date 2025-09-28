@@ -54,6 +54,7 @@ class VGG16PerceptualLoss(nn.Module):
         """
         pass
 
+
 class TVLoss(nn.Module):
     def __init__(self):
         """Initialize the Total Variation Loss.
@@ -63,25 +64,24 @@ class TVLoss(nn.Module):
 
     def forward(self, img):
         """Compute the Total Variation Loss.
-        
+
         Parameters:
         -----------
             img (torch.Tensor):
-              The input image tensor. 
+              The input image tensor.
 
         Returns:
         --------
             torch.Tensor:
-              The computed Total Variation Loss.  
+              The computed Total Variation Loss.
 
         **TODO**:
-        
+
         - Compute the total variation loss as the sum of the absolute differences between adjacent pixels in both dimensions.
-        
+
         **Hint**:
-        Use `torch.mean()` to average the differences. Use slicing to access adjacent pixels in the height and width dimensions.Use `torch.abs()` to compute the absolute differences.          
+        Use `torch.mean()` to average the differences. Use slicing to access adjacent pixels in the height and width dimensions.Use `torch.abs()` to compute the absolute differences.
         """
-        return (
-            torch.mean(torch.abs(img[:, :, :-1, :] - img[:, :, 1:, :]))
-            + torch.mean(torch.abs(img[:, :, :, :-1] - img[:, :, :, 1:]))
+        return torch.mean(torch.abs(img[:, :, :-1, :] - img[:, :, 1:, :])) + torch.mean(
+            torch.abs(img[:, :, :, :-1] - img[:, :, :, 1:])
         )

@@ -120,6 +120,8 @@
 </li>
 </ul>
 </li>
+<li class="toctree-l2"><a class="reference internal" href="#das-training">Das Training</a></li>
+<li class="toctree-l2"><a class="reference internal" href="#musterlosung">Musterlösung</a></li>
 </ul>
 </li>
 </ul>
@@ -154,7 +156,9 @@
 <p>Allerdings stößt diese Optimierung an ihre Grenzen: Auch wenn das rekonstruierte Bild laut Perceptual-Loss „ähnlich“ zum Original ist, fehlt oft der visuelle Realismus, den unser menschliches Auge bei natürlichen Bildern erwartet. Diese Diskrepanz entsteht, weil die verwendeten Verlustfunktionen nicht explizit modellieren, wie ein <em>realistisches Bild</em> aussehen sollte – sie bestrafen lediglich Abweichungen vom Original in bestimmten Merkmalen.</p>
 <p>Hier kommt der <em>Adversarial Loss</em> ins Spiel. Anstatt das hochskalierte Bild nur auf Basis vordefinierter Fehlermaße zu optimieren, wird das Problem als ein Spiel zwischen zwei Netzwerken formuliert: einem Generator, der Bilder erzeugt, und einem Diskriminator, der versucht zu erkennen, ob ein Bild real oder künstlich ist. Diese GAN-ähnliche Architektur führt dazu, dass der Generator lernt, Bilder zu erzeugen, die nicht nur „ähnlich genug“ sind, sondern statistisch realistisch wirken – so wie echte Bilder aus der Trainingsverteilung.</p>
 <p>Kurz gesagt: Während TV- und Perceptual Loss eher lokale oder semantische Fehler reduzieren, ermöglicht der Adversarial Loss eine globale Verbesserung des Bildrealismus. Er verschiebt den Fokus von „rekonstruiere das Original“ hin zu „täusche den Betrachter“. Für das Upscaling bedeutet das oft: schärfere Kanten, realistischere Texturen und weniger künstlich wirkende Artefakte – insbesondere in fein strukturierten Bildbereichen wie Haaren, Gras oder Texturen.</p>
-<p>Im nächsten Abschnitt implementieren wir diesen Ansatz mithilfe eines einfachen GAN-Setups.</p>
+<p>Im nächsten Abschnitt implementieren wir diesen Ansatz mithilfe eines einfachen GAN-Setups. Damit erreichen wir eine signifikante Steigerung der Bildqualität und können realistischere hochskalierte Bilder generieren</p>
+<a class="reference internal image-reference" href="../_images/shot_flower3.png"><img alt="../_images/shot_flower3.png" class="align-center" src="../_images/shot_flower3.png" style="width: 600px;" />
+</a>
 <section id="das-alte-setup">
 <h2>Das alte Setup<a class="headerlink" href="#das-alte-setup" title="Link to this heading"></a></h2>
 <p>Im bisherigen Setup (vgl. frühere Aufgabe zum Perceptual Loss) haben wir ein einzelnes Netzwerk trainiert, um hochskalierte Bilder zu erzeugen. Dieses Netzwerk wurde mit dem Perceptual Loss optimiert, um die Qualität der Ergebnisse zu verbessern.</p>
@@ -585,11 +589,11 @@ training progresses. In the first epoch, the adversarial loss is not applied at 
 <section id="id5">
 <h3>Returns:<a class="headerlink" href="#id5" title="Link to this heading"></a></h3>
 <blockquote>
-<div><p>Tuple:</p>
+<div><p>Dictionary with the following keys:</p>
 <ul class="simple">
-<li><p>torch.Tensor: The total generator loss, which includes perceptual loss, TV loss, and adversarial loss.</p></li>
-<li><p>torch.Tensor: The content loss (perceptual loss).</p></li>
-<li><p>torch.Tensor: The adversarial loss computed from the critic.</p></li>
+<li><p>„generator_loss“: The total generator loss, which includes perceptual loss, TV loss, and adversarial loss.</p></li>
+<li><p>„content_loss“: The content loss (perceptual loss).</p></li>
+<li><p>„adversarial_loss“: The adversarial loss computed from the critic.</p></li>
 </ul>
 </div></blockquote>
 <p><strong>TODO</strong>:</p>
@@ -598,7 +602,7 @@ training progresses. In the first epoch, the adversarial loss is not applied at 
 <li><p>Compute the linear scaling factor for the adversarial loss based on the current epoch. The scaling factor should be 0 in the first epoch and increase linearly to 1 by epoch 5.</p></li>
 <li><p>Compute the content loss as the sum of perceptual loss and TV loss. Scale the TV loss by 0.1 to reduce its impact on the total loss.</p></li>
 <li><p>Compute the total generator loss as the sum of content loss and the <strong>negative</strong> adversarial loss scaled by the linear scaling factor.</p></li>
-<li><p>Return a tuple containing the total generator loss, content loss, and adversarial loss.</p></li>
+<li><p>Return a dictionary containing the total generator loss, content loss, and adversarial loss.</p></li>
 </ul>
 </section>
 </dd></dl>
@@ -716,11 +720,11 @@ Parameters:
 <section id="id6">
 <h3>Returns:<a class="headerlink" href="#id6" title="Link to this heading"></a></h3>
 <blockquote>
-<div><p>Tuple:</p>
+<div><p>Dictionary with the following keys:</p>
 <ul class="simple">
-<li><p>torch.Tensor: The total critic loss, which includes the WGAN loss and the gradient penalty.</p></li>
-<li><p>torch.Tensor: The gradient norm for logging purposes.</p></li>
-<li><p>torch.Tensor: The pure WGAN loss (without gradient penalty) for logging purposes.</p></li>
+<li><p>„loss_c“: The total critic loss, which includes the WGAN loss and the gradient penalty (torch.Tensor).</p></li>
+<li><p>„gradient_norm“: The gradient norm for logging purposes (torch.Tensor).</p></li>
+<li><p>„pure_wgan_loss“: The pure WGAN loss (without gradient penalty) for logging purposes (torch.Tensor).</p></li>
 </ul>
 </div></blockquote>
 <dl class="simple">
@@ -835,9 +839,9 @@ Optimierungsschritten.</p>
 <section id="id8">
 <h3>Returns:<a class="headerlink" href="#id8" title="Link to this heading"></a></h3>
 <blockquote>
-<div><p>Tuple:
-- dict: A dictionary containing the critic scores with keys „gradient_norm“ and „loss_c“.
-- dict: A dictionary containing the generator scores with keys „loss“, „content_loss“, „adversarial_loss“, „gradient_norm“, and „output“.</p>
+<div><p>A dictionary containing the scores from the critic and generator models with the following keys:
+- „critic“: A dictionary containing the critic scores with keys „gradient_norm“ and „loss_c“.
+- „generator“: A dictionary containing the generator scores with keys „loss“, „content_loss“, „adversarial_loss“, „gradient_norm“, and „output“.</p>
 </div></blockquote>
 <p><strong>TODO</strong>:</p>
 <ul class="simple">
@@ -1000,6 +1004,69 @@ Store the content loss, adversarial loss, and total generator loss for later so 
 </pre></div>
 </div>
 </div>
+</section>
+<section id="das-training">
+<h2>Das Training<a class="headerlink" href="#das-training" title="Link to this heading"></a></h2>
+<p>Um das Training zu starten, brauchen Sie nur die main.py Datei auszuführen.</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>python<span class="w"> </span>main.py
+</pre></div>
+</div>
+<p>Starten Sie parallel das TensorBoard, um den Fortschritt zu verfolgen:</p>
+<div class="highlight-bash notranslate"><div class="highlight"><pre><span></span>tensorboard<span class="w"> </span>--logdir<span class="o">=</span>logs
+</pre></div>
+</div>
+<p>Öffnen Sie dann Ihren Browser und gehen Sie zu <a class="reference external" href="http://localhost:6006">http://localhost:6006</a>, um die TensorBoard-Oberfläche zu sehen.</p>
+<p>Das Training kann je nach Hardware und Datensatz einige Stunden dauern, aber Sie sollten bereits nach kurzer Zeit eine Verbesserung der Bildqualität feststellen können.
+Nach etwa 15 Epochen sollten Sie bereits erste Fortschritte sehen. Die Bilder sollten zunehmend realistischer werden und weniger Artefakte aufweisen.</p>
+<p>Die TensorBoard-Diagramme zeigen den Verlauf der verschiedenen Loss-Werte und Metriken während des Trainings.</p>
+<p>Die wichtigsten Metriken sind:</p>
+<p><strong>Der Content-Loss</strong>
+Perceptual Loss und TV-Loss ohne Adversarial Loss</p>
+<blockquote>
+<div><a class="reference internal image-reference" href="../_images/shot_contentloss.png"><img alt="../_images/shot_contentloss.png" class="align-center" src="../_images/shot_contentloss.png" style="width: 600px;" />
+</a>
+</div></blockquote>
+<p><strong>Der Adversarial Loss</strong>
+Der Wasserstein-Loss des Generators, der den Kritiker täuschen soll</p>
+<a class="reference internal image-reference" href="../_images/shot_adversarialloss.png"><img alt="../_images/shot_adversarialloss.png" class="align-center" src="../_images/shot_adversarialloss.png" style="width: 600px;" />
+</a>
+<p><strong>Der Verlust des Generators (Generator Loss)</strong>
+Summe aus Perceptual Loss, TV-Loss und Adversarial Loss</p>
+<a class="reference internal image-reference" href="../_images/shot_generatorloss.png"><img alt="../_images/shot_generatorloss.png" class="align-center" src="../_images/shot_generatorloss.png" style="width: 600px;" />
+</a>
+<p><strong>Der Verlust des Diskriminators (Discriminator Loss)</strong></p>
+<div class="math notranslate nohighlight">
+\[\mathcal{L}_{\text{WGAN}} = - \mathbb{E}[D(x_{\text{real}})] + \mathbb{E}[D(x_{\text{fake}})]\]</div>
+<a class="reference internal image-reference" href="../_images/shot_lossc.png"><img alt="../_images/shot_lossc.png" class="align-center" src="../_images/shot_lossc.png" style="width: 600px;" />
+</a>
+<p><strong>Die Bildqualität (z.B. LPIPS, PSNR, MSE)</strong></p>
+<a class="reference internal image-reference" href="../_images/shot_lpips.png"><img alt="../_images/shot_lpips.png" class="align-center" src="../_images/shot_lpips.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/shot_psnr.png"><img alt="../_images/shot_psnr.png" class="align-center" src="../_images/shot_psnr.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/shot_mse.png"><img alt="../_images/shot_mse.png" class="align-center" src="../_images/shot_mse.png" style="width: 600px;" />
+</a>
+<p><strong>Die Norm des Generator-Gradienten</strong></p>
+<a class="reference internal image-reference" href="../_images/shot_generator_gradientnorm.png"><img alt="../_images/shot_generator_gradientnorm.png" class="align-center" src="../_images/shot_generator_gradientnorm.png" style="width: 600px;" />
+</a>
+<p><strong>Die Norm des Kritiker-Gradienten</strong></p>
+<a class="reference internal image-reference" href="../_images/shot_criticgradientnorm.png"><img alt="../_images/shot_criticgradientnorm.png" class="align-center" src="../_images/shot_criticgradientnorm.png" style="width: 600px;" />
+</a>
+<p><strong>Die generierten Bilder</strong></p>
+<p>Links sehen Sie das niedrig aufgelöste Eingangsbild, in der Mitte das hochskalierte Ergebnis des Generators und
+rechts das Originalbild zum Vergleich.</p>
+<a class="reference internal image-reference" href="../_images/shot_flower1.png"><img alt="../_images/shot_flower1.png" class="align-center" src="../_images/shot_flower1.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/shot_flower2.png"><img alt="../_images/shot_flower2.png" class="align-center" src="../_images/shot_flower2.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/shot_flower4.png"><img alt="../_images/shot_flower4.png" class="align-center" src="../_images/shot_flower4.png" style="width: 600px;" />
+</a>
+<a class="reference internal image-reference" href="../_images/shot_flower5.png"><img alt="../_images/shot_flower5.png" class="align-center" src="../_images/shot_flower5.png" style="width: 600px;" />
+</a>
+</section>
+<section id="musterlosung">
+<h2>Musterlösung<a class="headerlink" href="#musterlosung" title="Link to this heading"></a></h2>
+<p><a class="reference internal" href="solution.html"><span class="doc">Adversarial Loss - Musterlösung</span></a></p>
 </section>
 </section>
 

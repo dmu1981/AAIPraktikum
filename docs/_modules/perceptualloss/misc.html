@@ -320,11 +320,13 @@ window.addEventListener("load", () => mermaid.run());
         <span class="n">psnr</span> <span class="o">=</span> <span class="mi">20</span> <span class="o">*</span> <span class="n">torch</span><span class="o">.</span><span class="n">log10</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">max_val</span> <span class="o">/</span> <span class="n">torch</span><span class="o">.</span><span class="n">sqrt</span><span class="p">(</span><span class="n">mse</span><span class="p">))</span>
         <span class="k">return</span> <span class="n">psnr</span>
 
+
 <span class="c1"># Denormalize images</span>
 <span class="k">def</span><span class="w"> </span><span class="nf">denormalize</span><span class="p">(</span><span class="n">tensor</span><span class="p">):</span>
     <span class="n">mean</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.485</span><span class="p">,</span> <span class="mf">0.456</span><span class="p">,</span> <span class="mf">0.406</span><span class="p">])</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
     <span class="n">std</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">tensor</span><span class="p">([</span><span class="mf">0.229</span><span class="p">,</span> <span class="mf">0.224</span><span class="p">,</span> <span class="mf">0.225</span><span class="p">])</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
     <span class="k">return</span> <span class="n">tensor</span> <span class="o">*</span> <span class="n">std</span> <span class="o">+</span> <span class="n">mean</span>
+
 
 <span class="k">def</span><span class="w"> </span><span class="nf">train</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">model</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">,</span> <span class="n">loss_fn</span><span class="p">):</span>
     <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Training </span><span class="si">{</span><span class="n">prefix</span><span class="si">}</span><span class="s2"> model...&quot;</span><span class="p">)</span>
@@ -357,10 +359,13 @@ window.addEventListener("load", () => mermaid.run());
             <span class="n">optim</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
 
             <span class="n">total_loss</span> <span class="o">+=</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
-            <span class="n">total_cnt</span> <span class="o">+=</span> <span class="mi">1</span><span class="c1">#input.size(0)</span>
+            <span class="n">total_cnt</span> <span class="o">+=</span> <span class="mi">1</span>  <span class="c1"># input.size(0)</span>
 
-
-            <span class="n">total_lips</span> <span class="o">+=</span> <span class="n">metric</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">denormalize</span><span class="p">(</span><span class="n">output</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">denormalize</span><span class="p">(</span><span class="n">target</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="n">total_lips</span> <span class="o">+=</span> <span class="p">(</span>
+                <span class="n">metric</span><span class="p">(</span><span class="mf">2.0</span> <span class="o">*</span> <span class="n">denormalize</span><span class="p">(</span><span class="n">output</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">,</span> <span class="mf">2.0</span> <span class="o">*</span> <span class="n">denormalize</span><span class="p">(</span><span class="n">target</span><span class="p">)</span> <span class="o">-</span> <span class="mf">1.0</span><span class="p">)</span>
+                <span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+                <span class="o">.</span><span class="n">item</span><span class="p">()</span>
+            <span class="p">)</span>
             <span class="n">total_mse</span> <span class="o">+=</span> <span class="n">mseMetric</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
             <span class="n">total_psnr</span> <span class="o">+=</span> <span class="n">psnrMetric</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span><span class="o">.</span><span class="n">item</span><span class="p">()</span>
 

@@ -33,7 +33,21 @@ class Generator(nn.Module):
 
         - A final convolutional layer with 16 input channels, 3 output channels and kernel size 5 with padding 2.
         """
-        pass
+        super(Generator, self).__init__()
+
+        self.upBilinear = nn.Upsample(
+            scale_factor=4, mode="bilinear", align_corners=True
+        )
+
+        self.model = nn.Sequential(
+            ResNetBlock(3, 16, kernel_size=7),
+            ResNetBlock(16, 32, kernel_size=7),
+            ResNetBlock(32, 64, kernel_size=7),
+            ResNetBlock(64, 128, kernel_size=7),
+            ResNetBlock(128, 256, kernel_size=7),
+            nn.PixelShuffle(upscale_factor=4),  # First upsample
+            nn.Conv2d(16, 3, kernel_size=7, padding=3),  # Final conv to reduce channels
+        )
 
     def forward(self, x):
         """Perform the forward pass of the Upscale2x model.
@@ -56,7 +70,9 @@ class Generator(nn.Module):
 
         - Add the upsampled tensor to the output of the model.
         """
-        pass
+        x = self.upBilinear(x) + self.model(x)
+
+        return x
 
 
 class Critic(nn.Module):
@@ -86,7 +102,24 @@ class Critic(nn.Module):
             - A flattening layer to convert the output to a 1D tensor.
             - A linear layer with 1024 input features and 1 output feature (no bias).
         """
-        pass
+        super(Critic, self).__init__()
+        self.model = nn.Sequential(
+            nn.Conv2d(3, 32, kernel_size=9, stride=2, padding=4),
+            nn.LeakyReLU(inplace=True),  # 32x128x128
+            nn.Conv2d(32, 64, kernel_size=5, stride=2, padding=2),
+            nn.LeakyReLU(inplace=True),  # 64x64x64
+            nn.Conv2d(64, 128, kernel_size=5, stride=2, padding=2),
+            nn.LeakyReLU(inplace=True),  # 128x32x32
+            nn.Conv2d(128, 256, kernel_size=5, stride=2, padding=2),
+            nn.LeakyReLU(inplace=True),  # 256x16x16
+            nn.Conv2d(256, 512, kernel_size=5, stride=2, padding=2),
+            nn.LeakyReLU(inplace=True),  # 512x8x8
+            nn.Conv2d(512, 1024, kernel_size=5, stride=2, padding=2),
+            nn.LeakyReLU(inplace=True),  # 1024x4x4
+            nn.AvgPool2d(kernel_size=(4, 4)),  # 1024x1x1
+            nn.Flatten(),
+            nn.Linear(1024, 1, bias=False),  # Final output layer
+        )
 
     def forward(self, x):
         """
@@ -106,7 +139,7 @@ class Critic(nn.Module):
 
         - Return the output score from the model.
         """
-        pass
+        return self.model(x)
 
 
 class GeneratorLoss(nn.Module):
@@ -128,7 +161,10 @@ class GeneratorLoss(nn.Module):
 
         - Store the critic model for adversarial loss computation.
         """
-        pass
+        super(GeneratorLoss, self).__init__()
+        self.perceptualLoss = VGG16PerceptualLoss()
+        self.tvLoss = TVLoss()
+        self.critic = critic
 
     def forward(self, output, target, epoch):
         """Compute the generator loss.
@@ -182,10 +218,16 @@ class GeneratorLoss(nn.Module):
 
         - Return a dictionary containing the total generator loss, content loss, and adversarial loss.
         """
+        adversarial_loss = 0.01 * self.critic(output).mean()
+
+        adversarial_lambda = min(1.0, epoch / 5.0)
+
+        content_loss = self.perceptualLoss(output, target) + 0.1 * self.tvLoss(output)
+
         return {
-            "generator_loss": None,
-            "content_loss": None,
-            "adversarial_loss": None,
+            "generator_loss": content_loss - adversarial_lambda * adversarial_loss,
+            "content_loss": content_loss,
+            "adversarial_loss": adversarial_loss,
         }
 
 
@@ -194,7 +236,8 @@ class CriticLoss(nn.Module):
         """Initialize the CriticLoss module.
         This module computes the loss for the critic model, including the gradient penalty to enforce the Lipschitz constraint.
         """
-        pass
+        super(CriticLoss, self).__init__()
+        self.critic = critic
 
     def compute_gradient_penalty(self, real, fake, lambda_gp=30):
         """Compute the gradient penalty for the critic.
@@ -256,10 +299,14 @@ class CriticLoss(nn.Module):
 
             - Return the total critic loss, gradient norm, and pure WGAN loss.
         """
+        gp, gradient_norm = self.compute_gradient_penalty(real, fake)
+
+        loss_c = -self.critic(real).mean() + self.critic(fake).mean()
+
         return {
-            "loss_c": None,
-            "gradient_norm": None,
-            "pure_wgan_loss": None,
+            "loss_c": loss_c + gp,
+            "gradient_norm": gradient_norm,
+            "pure_wgan_loss": loss_c,
         }
 
 
@@ -316,9 +363,22 @@ class UpscaleTrainer:
 
         - Return a dictionary containing the gradient norm and the critic loss.
         """
+        output = self.generator(input)
+
+        self.optimCritic.zero_grad()
+        result = self.criticLoss(target, output)
+        critic_loss, gradient_norm, loss_c = (
+            result["loss_c"],
+            result["gradient_norm"],
+            result["pure_wgan_loss"],
+        )
+        critic_loss.backward()
+        torch.nn.utils.clip_grad_norm_(self.generator.parameters(), max_norm=5.0) # THIS IS A BUG, IT SHOULD BE self.critic.parameters()
+        self.optimCritic.step()
+
         return {
-            "gradient_norm": None,
-            "loss_c": None,
+            "gradient_norm": gradient_norm.mean().item(),
+            "loss_c": loss_c.item(),
         }
 
     def train_generator(self, input, target, epoch):
@@ -363,12 +423,31 @@ class UpscaleTrainer:
 
         - Return a dictionary containing the total generator loss, content loss, adversarial loss, the output and the gradient norm.
         """
+        self.optimGenerator.zero_grad()
+        output = self.generator(input)
+
+        result = self.generatorLoss(output, target, epoch)
+        loss, content_loss, adversarial_loss = (
+            result["generator_loss"],
+            result["content_loss"],
+            result["adversarial_loss"],
+        )
+
+        loss.backward()
+
+        torch.nn.utils.clip_grad_norm_(self.generator.parameters(), max_norm=1.0)
+        gen_norm = torch.nn.utils.clip_grad_norm_(
+            self.generator.parameters(), max_norm=1e9
+        )
+
+        self.optimGenerator.step()
+
         return {
-            "loss": None,
-            "content_loss": None,
-            "adversarial_loss": None,
-            "gradient_norm": None,
-            "output": None,
+            "loss": loss.item(),
+            "content_loss": content_loss.item(),
+            "adversarial_loss": adversarial_loss.mean().item(),
+            "gradient_norm": gen_norm.item(),
+            "output": output.detach() if output is not None else None,
         }
 
     def train_batch(self, input, target, epoch):
@@ -404,7 +483,18 @@ class UpscaleTrainer:
 
         - Return the critic scores and generator scores (if available)
         """
-        return {"critic": None, "generator": None}
+        # Train Critic every step
+        scoresCritic = self.train_critic(input, target)
+        self.criticUpdates += 1
+
+        # Train Generator only every 4th step
+        if self.criticUpdates == 5 or epoch < 1:
+            scoresGenerator = self.train_generator(input, target, epoch)
+            self.criticUpdates = 0
+        else:
+            scoresGenerator = None
+
+        return {"critic": scoresCritic, "generator": scoresGenerator}
 
 
 if __name__ == "__main__":

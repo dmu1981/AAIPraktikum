@@ -1,0 +1,629 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html5" lang="de" data-content_root="../">
+<head>
+  <meta charset="utf-8" /><meta name="viewport" content="width=device-width, initial-scale=1" />
+
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Adversarial Loss - Musterlösung &mdash; Advances in AI Praktikum  Dokumentation</title>
+      <link rel="stylesheet" type="text/css" href="../_static/pygments.css?v=b86133f3" />
+      <link rel="stylesheet" type="text/css" href="../_static/css/theme.css?v=e59714d7" />
+      <link rel="stylesheet" type="text/css" href="../_static/togglebutton.css?v=13237357" />
+
+  
+    <link rel="canonical" href="https://dmu1981.github.io/MPTPraktikum/adversarialloss/solution.html" />
+      <script src="../_static/jquery.js?v=5d32c60e"></script>
+      <script src="../_static/_sphinx_javascript_frameworks_compat.js?v=2cd50e6c"></script>
+      <script src="../_static/documentation_options.js?v=245627df"></script>
+      <script src="../_static/doctools.js?v=9a2dae69"></script>
+      <script src="../_static/sphinx_highlight.js?v=dc90522c"></script>
+      <script>let toggleHintShow = 'Click to show';</script>
+      <script>let toggleHintHide = 'Click to hide';</script>
+      <script>let toggleOpenOnPrint = 'true';</script>
+      <script src="../_static/togglebutton.js?v=4a39c7ea"></script>
+      <script src="../_static/translations.js?v=79cc9f76"></script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+      <script>var togglebuttonSelector = '.toggle, .admonition.dropdown';</script>
+    <script src="../_static/js/theme.js"></script>
+    <link rel="index" title="Stichwortverzeichnis" href="../genindex.html" />
+    <link rel="search" title="Suche" href="../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav"> 
+  <div class="wy-grid-for-nav">
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+
+          
+          
+          <a href="../index.html" class="icon icon-home">
+            Advances in AI Praktikum
+          </a>
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../search.html" method="get">
+    <input type="text" name="q" placeholder="Dokumentation durchsuchen" aria-label="Dokumentation durchsuchen" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+        </div><div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="Navigation menu">
+              <p class="caption" role="heading"><span class="caption-text">Aufgaben:</span></p>
+<ul>
+<li class="toctree-l1"><a class="reference internal" href="../pytorch/index.html">PyTorch - Grundlagen</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../pytorch/cnn.html">Convolutional Neural Networks</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../checkpoints/index.html">Checkpoints</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../tensorboard/index.html">Tensor Board</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../resnet/index.html">ResNet</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../embeddings/index.html">Embeddings</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../perceptualloss/index.html">Perceptual Loss</a></li>
+<li class="toctree-l1"><a class="reference internal" href="index.html">Adversarial Loss</a></li>
+</ul>
+
+        </div>
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap"><nav class="wy-nav-top" aria-label="Mobile navigation menu" >
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../index.html">Advances in AI Praktikum</a>
+      </nav>
+
+      <div class="wy-nav-content">
+        <div class="rst-content">
+          <div role="navigation" aria-label="Page navigation">
+  <ul class="wy-breadcrumbs">
+      <li><a href="../index.html" class="icon icon-home" aria-label="Home"></a></li>
+      <li class="breadcrumb-item active">Adversarial Loss - Musterlösung</li>
+      <li class="wy-breadcrumbs-aside">
+            <a href="../_sources/adversarialloss/solution.rst.txt" rel="nofollow"> Quelltext anzeigen</a>
+      </li>
+  </ul>
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+             
+  <section id="adversarial-loss-musterlosung">
+<h1>Adversarial Loss - Musterlösung<a class="headerlink" href="#adversarial-loss-musterlosung" title="Link to this heading"></a></h1>
+<div class="highlight-python notranslate"><div class="highlight"><pre><span></span><span class="linenos">  1</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch</span>
+<span class="linenos">  2</span><span class="kn">from</span><span class="w"> </span><span class="nn">torch</span><span class="w"> </span><span class="kn">import</span> <span class="n">nn</span>
+<span class="linenos">  3</span><span class="kn">from</span><span class="w"> </span><span class="nn">torchvision.models</span><span class="w"> </span><span class="kn">import</span> <span class="n">vgg16</span>
+<span class="linenos">  4</span><span class="kn">import</span><span class="w"> </span><span class="nn">torch.nn.init</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="nn">init</span>
+<span class="linenos">  5</span><span class="kn">from</span><span class="w"> </span><span class="nn">misc</span><span class="w"> </span><span class="kn">import</span> <span class="p">(</span>
+<span class="linenos">  6</span>    <span class="n">get_dataloader</span><span class="p">,</span>
+<span class="linenos">  7</span>    <span class="n">ResNetBlock</span><span class="p">,</span>
+<span class="linenos">  8</span>    <span class="n">VGG16PerceptualLoss</span><span class="p">,</span>
+<span class="linenos">  9</span>    <span class="n">train</span><span class="p">,</span>
+<span class="linenos"> 10</span>    <span class="n">TVLoss</span><span class="p">,</span>
+<span class="linenos"> 11</span><span class="p">)</span>
+<span class="linenos"> 12</span><span class="kn">from</span><span class="w"> </span><span class="nn">tqdm</span><span class="w"> </span><span class="kn">import</span> <span class="n">tqdm</span>
+<span class="linenos"> 13</span><span class="kn">from</span><span class="w"> </span><span class="nn">torch.utils.tensorboard</span><span class="w"> </span><span class="kn">import</span> <span class="n">SummaryWriter</span>
+<span class="linenos"> 14</span>
+<span class="linenos"> 15</span>
+<span class="linenos"> 16</span><span class="k">class</span><span class="w"> </span><span class="nc">Generator</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="linenos"> 17</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos"> 18</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Upscale4x model.</span>
+<span class="linenos"> 19</span>
+<span class="linenos"> 20</span><span class="sd">        This model performs 4x upscaling using a series of ResNet blocks and an upsampling layer.</span>
+<span class="linenos"> 21</span>
+<span class="linenos"> 22</span><span class="sd">        **TODO**:</span>
+<span class="linenos"> 23</span>
+<span class="linenos"> 24</span><span class="sd">        - Call the `__init__` method of the base class `nn.Module`.</span>
+<span class="linenos"> 25</span>
+<span class="linenos"> 26</span><span class="sd">        - Define an upsampling layer using `nn.Upsample(scale_factor=4, mode=&quot;bilinear&quot;, align_corners=True) &lt;https://docs.pytorch.org/docs/stable/generated/torch.nn.Upsample.html&gt;`_.</span>
+<span class="linenos"> 27</span>
+<span class="linenos"> 28</span><span class="sd">        - Define a sequential model consisting of:</span>
+<span class="linenos"> 29</span>
+<span class="linenos"> 30</span><span class="sd">        - Five `ResNetBlock` layers with 3-&gt;16, 16-&gt;32, 32-&gt;64, 64-&gt;128 and 128-&gt;256 channels as well as kernel sizes 7.</span>
+<span class="linenos"> 31</span>
+<span class="linenos"> 32</span><span class="sd">        - A PixelShuffle layer with an upscale factor of 4.</span>
+<span class="linenos"> 33</span>
+<span class="linenos"> 34</span><span class="sd">        - A final convolutional layer with 16 input channels, 3 output channels and kernel size 5 with padding 2.</span>
+<span class="linenos"> 35</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos"> 36</span>        <span class="nb">super</span><span class="p">(</span><span class="n">Generator</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<span class="linenos"> 37</span>
+<span class="linenos"> 38</span>        <span class="bp">self</span><span class="o">.</span><span class="n">upBilinear</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Upsample</span><span class="p">(</span>
+<span class="linenos"> 39</span>            <span class="n">scale_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">,</span> <span class="n">mode</span><span class="o">=</span><span class="s2">&quot;bilinear&quot;</span><span class="p">,</span> <span class="n">align_corners</span><span class="o">=</span><span class="kc">True</span>
+<span class="linenos"> 40</span>        <span class="p">)</span>
+<span class="linenos"> 41</span>
+<span class="linenos"> 42</span>        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+<span class="linenos"> 43</span>            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">16</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+<span class="linenos"> 44</span>            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+<span class="linenos"> 45</span>            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+<span class="linenos"> 46</span>            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+<span class="linenos"> 47</span>            <span class="n">ResNetBlock</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">),</span>
+<span class="linenos"> 48</span>            <span class="n">nn</span><span class="o">.</span><span class="n">PixelShuffle</span><span class="p">(</span><span class="n">upscale_factor</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>  <span class="c1"># First upsample</span>
+<span class="linenos"> 49</span>            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">16</span><span class="p">,</span> <span class="mi">3</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">7</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">3</span><span class="p">),</span>  <span class="c1"># Final conv to reduce channels</span>
+<span class="linenos"> 50</span>        <span class="p">)</span>
+<span class="linenos"> 51</span>
+<span class="linenos"> 52</span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="linenos"> 53</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Perform the forward pass of the Upscale2x model.</span>
+<span class="linenos"> 54</span>
+<span class="linenos"> 55</span><span class="sd">        Parameters:</span>
+<span class="linenos"> 56</span><span class="sd">        -----------</span>
+<span class="linenos"> 57</span><span class="sd">            x (torch.Tensor):</span>
+<span class="linenos"> 58</span><span class="sd">              The input tensor to be upscaled.</span>
+<span class="linenos"> 59</span>
+<span class="linenos"> 60</span><span class="sd">        Returns:</span>
+<span class="linenos"> 61</span><span class="sd">        --------</span>
+<span class="linenos"> 62</span><span class="sd">            torch.Tensor:</span>
+<span class="linenos"> 63</span><span class="sd">              The upscaled output tensor.</span>
+<span class="linenos"> 64</span>
+<span class="linenos"> 65</span><span class="sd">        **TODO**:</span>
+<span class="linenos"> 66</span>
+<span class="linenos"> 67</span><span class="sd">        - Pass the input tensor through the model.</span>
+<span class="linenos"> 68</span>
+<span class="linenos"> 69</span><span class="sd">        - Also, apply the upsampling layer to the input tensor `x`.</span>
+<span class="linenos"> 70</span>
+<span class="linenos"> 71</span><span class="sd">        - Add the upsampled tensor to the output of the model.</span>
+<span class="linenos"> 72</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos"> 73</span>        <span class="n">x</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">upBilinear</span><span class="p">(</span><span class="n">x</span><span class="p">)</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="linenos"> 74</span>
+<span class="linenos"> 75</span>        <span class="k">return</span> <span class="n">x</span>
+<span class="linenos"> 76</span>
+<span class="linenos"> 77</span>
+<span class="linenos"> 78</span><span class="k">class</span><span class="w"> </span><span class="nc">Critic</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="linenos"> 79</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos"> 80</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the Critic model.</span>
+<span class="linenos"> 81</span>
+<span class="linenos"> 82</span><span class="sd">        This model is a convolutional neural network that takes an image as input and outputs a single score indicating the quality of the image.</span>
+<span class="linenos"> 83</span>
+<span class="linenos"> 84</span><span class="sd">        **TODO**:</span>
+<span class="linenos"> 85</span>
+<span class="linenos"> 86</span><span class="sd">        - Call the `__init__` method of the base class `nn.Module`.</span>
+<span class="linenos"> 87</span>
+<span class="linenos"> 88</span><span class="sd">        - Define a sequential model consisting of:</span>
+<span class="linenos"> 89</span><span class="sd">            - A convolutional layer with 3 input channels, 32 output channels, kernel size 9, stride 2, and padding 4.</span>
+<span class="linenos"> 90</span><span class="sd">            - A LeakyReLU activation function with an inplace operation.</span>
+<span class="linenos"> 91</span><span class="sd">            - A convolutional layer with 32 input channels, 64 output channels, kernel size 5, stride 2, and padding 2.</span>
+<span class="linenos"> 92</span><span class="sd">            - A LeakyReLU activation function with an inplace operation.</span>
+<span class="linenos"> 93</span><span class="sd">            - A convolutional layer with 64 input channels, 128 output channels, kernel size 5, stride 2, and padding 2.</span>
+<span class="linenos"> 94</span><span class="sd">            - A LeakyReLU activation function with an inplace operation.</span>
+<span class="linenos"> 95</span><span class="sd">            - A convolutional layer with 128 input channels, 256 output channels, kernel size 5, stride 2, and padding 2.</span>
+<span class="linenos"> 96</span><span class="sd">            - A LeakyReLU activation function with an inplace operation.</span>
+<span class="linenos"> 97</span><span class="sd">            - A convolutional layer with 256 input channels, 512 output channels, kernel size 5, stride 2, and padding 2.</span>
+<span class="linenos"> 98</span><span class="sd">            - A LeakyReLU activation function with an inplace operation.</span>
+<span class="linenos"> 99</span><span class="sd">            - A convolutional layer with 512 input channels, 1024 output channels, kernel size 5, stride 2, and padding 2.</span>
+<span class="linenos">100</span><span class="sd">            - A LeakyReLU activation function with an inplace operation.</span>
+<span class="linenos">101</span><span class="sd">            - An average pooling layer with kernel size (4, 4) to reduce the spatial dimensions.</span>
+<span class="linenos">102</span><span class="sd">            - A flattening layer to convert the output to a 1D tensor.</span>
+<span class="linenos">103</span><span class="sd">            - A linear layer with 1024 input features and 1 output feature (no bias).</span>
+<span class="linenos">104</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">105</span>        <span class="nb">super</span><span class="p">(</span><span class="n">Critic</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<span class="linenos">106</span>        <span class="bp">self</span><span class="o">.</span><span class="n">model</span> <span class="o">=</span> <span class="n">nn</span><span class="o">.</span><span class="n">Sequential</span><span class="p">(</span>
+<span class="linenos">107</span>            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">3</span><span class="p">,</span> <span class="mi">32</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">9</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">4</span><span class="p">),</span>
+<span class="linenos">108</span>            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 32x128x128</span>
+<span class="linenos">109</span>            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">32</span><span class="p">,</span> <span class="mi">64</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+<span class="linenos">110</span>            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 64x64x64</span>
+<span class="linenos">111</span>            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">64</span><span class="p">,</span> <span class="mi">128</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+<span class="linenos">112</span>            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 128x32x32</span>
+<span class="linenos">113</span>            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">128</span><span class="p">,</span> <span class="mi">256</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+<span class="linenos">114</span>            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 256x16x16</span>
+<span class="linenos">115</span>            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">256</span><span class="p">,</span> <span class="mi">512</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+<span class="linenos">116</span>            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 512x8x8</span>
+<span class="linenos">117</span>            <span class="n">nn</span><span class="o">.</span><span class="n">Conv2d</span><span class="p">(</span><span class="mi">512</span><span class="p">,</span> <span class="mi">1024</span><span class="p">,</span> <span class="n">kernel_size</span><span class="o">=</span><span class="mi">5</span><span class="p">,</span> <span class="n">stride</span><span class="o">=</span><span class="mi">2</span><span class="p">,</span> <span class="n">padding</span><span class="o">=</span><span class="mi">2</span><span class="p">),</span>
+<span class="linenos">118</span>            <span class="n">nn</span><span class="o">.</span><span class="n">LeakyReLU</span><span class="p">(</span><span class="n">inplace</span><span class="o">=</span><span class="kc">True</span><span class="p">),</span>  <span class="c1"># 1024x4x4</span>
+<span class="linenos">119</span>            <span class="n">nn</span><span class="o">.</span><span class="n">AvgPool2d</span><span class="p">(</span><span class="n">kernel_size</span><span class="o">=</span><span class="p">(</span><span class="mi">4</span><span class="p">,</span> <span class="mi">4</span><span class="p">)),</span>  <span class="c1"># 1024x1x1</span>
+<span class="linenos">120</span>            <span class="n">nn</span><span class="o">.</span><span class="n">Flatten</span><span class="p">(),</span>
+<span class="linenos">121</span>            <span class="n">nn</span><span class="o">.</span><span class="n">Linear</span><span class="p">(</span><span class="mi">1024</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">bias</span><span class="o">=</span><span class="kc">False</span><span class="p">),</span>  <span class="c1"># Final output layer</span>
+<span class="linenos">122</span>        <span class="p">)</span>
+<span class="linenos">123</span>
+<span class="linenos">124</span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">x</span><span class="p">):</span>
+<span class="linenos">125</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;</span>
+<span class="linenos">126</span><span class="sd">        Perform the forward pass of the Critic model.</span>
+<span class="linenos">127</span><span class="sd">        Parameters:</span>
+<span class="linenos">128</span><span class="sd">        -----------</span>
+<span class="linenos">129</span><span class="sd">            x (torch.Tensor):</span>
+<span class="linenos">130</span><span class="sd">              The input tensor to be processed by the Critic model.</span>
+<span class="linenos">131</span>
+<span class="linenos">132</span><span class="sd">        Returns:</span>
+<span class="linenos">133</span><span class="sd">        --------</span>
+<span class="linenos">134</span><span class="sd">            torch.Tensor: The output score from the Critic model.</span>
+<span class="linenos">135</span>
+<span class="linenos">136</span><span class="sd">        **TODO**:</span>
+<span class="linenos">137</span>
+<span class="linenos">138</span><span class="sd">        - Pass the input tensor through the model.</span>
+<span class="linenos">139</span>
+<span class="linenos">140</span><span class="sd">        - Return the output score from the model.</span>
+<span class="linenos">141</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">142</span>        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">model</span><span class="p">(</span><span class="n">x</span><span class="p">)</span>
+<span class="linenos">143</span>
+<span class="linenos">144</span>
+<span class="linenos">145</span><span class="k">class</span><span class="w"> </span><span class="nc">GeneratorLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="linenos">146</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">critic</span><span class="p">):</span>
+<span class="linenos">147</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the GeneratorLoss module.</span>
+<span class="linenos">148</span>
+<span class="linenos">149</span><span class="sd">        Parameters:</span>
+<span class="linenos">150</span><span class="sd">        -----------</span>
+<span class="linenos">151</span><span class="sd">            critic (nn.Module):</span>
+<span class="linenos">152</span><span class="sd">              The critic model used for adversarial loss computation.</span>
+<span class="linenos">153</span>
+<span class="linenos">154</span><span class="sd">        **TODO**:</span>
+<span class="linenos">155</span>
+<span class="linenos">156</span><span class="sd">        - Call the `__init__` method of the base class `nn.Module`.</span>
+<span class="linenos">157</span>
+<span class="linenos">158</span><span class="sd">        - Initialize the `VGG16PerceptualLoss` for perceptual loss computation.</span>
+<span class="linenos">159</span>
+<span class="linenos">160</span><span class="sd">        - Initialize the `TVLoss` for total variation loss computation.</span>
+<span class="linenos">161</span>
+<span class="linenos">162</span><span class="sd">        - Store the critic model for adversarial loss computation.</span>
+<span class="linenos">163</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">164</span>        <span class="nb">super</span><span class="p">(</span><span class="n">GeneratorLoss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<span class="linenos">165</span>        <span class="bp">self</span><span class="o">.</span><span class="n">perceptualLoss</span> <span class="o">=</span> <span class="n">VGG16PerceptualLoss</span><span class="p">()</span>
+<span class="linenos">166</span>        <span class="bp">self</span><span class="o">.</span><span class="n">tvLoss</span> <span class="o">=</span> <span class="n">TVLoss</span><span class="p">()</span>
+<span class="linenos">167</span>        <span class="bp">self</span><span class="o">.</span><span class="n">critic</span> <span class="o">=</span> <span class="n">critic</span>
+<span class="linenos">168</span>
+<span class="linenos">169</span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">epoch</span><span class="p">):</span>
+<span class="linenos">170</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the generator loss.</span>
+<span class="linenos">171</span>
+<span class="linenos">172</span><span class="sd">        The generator loss is a combination of perceptual loss, total variation loss, and adversarial loss.</span>
+<span class="linenos">173</span>
+<span class="linenos">174</span><span class="sd">        The sum of the perceptual loss and total variation loss is called content loss as it is used to measure the quality of the generated image in terms</span>
+<span class="linenos">175</span><span class="sd">        of content similarity to the target image.</span>
+<span class="linenos">176</span>
+<span class="linenos">177</span><span class="sd">        The adversarial loss is computed using the critic model, which is trained to distinguish between real and generated images.</span>
+<span class="linenos">178</span><span class="sd">        The generator aims to maximize the critic&#39;s output for generated images, thus it tries to fool the critic. Mathematically, this is achieved by negating</span>
+<span class="linenos">179</span><span class="sd">        the critic&#39;s output.</span>
+<span class="linenos">180</span>
+<span class="linenos">181</span><span class="sd">        Since the critic is not yet fully trained during the initial epochs, we apply a linear scaling factor to the adversarial loss based on the current epoch.</span>
+<span class="linenos">182</span><span class="sd">        This allows the generator to focus more on content loss in the early stages of training and gradually increase the importance of adversarial loss as</span>
+<span class="linenos">183</span><span class="sd">        training progresses. In the first epoch, the adversarial loss is not applied at all, and it starts to increase linearly until it reaches its full weight at epoch 5 epoch.</span>
+<span class="linenos">184</span>
+<span class="linenos">185</span><span class="sd">        The generator shall minimize the content loss while maximizing the adversarial loss, which is achieved by negating the critic&#39;s output.</span>
+<span class="linenos">186</span>
+<span class="linenos">187</span>
+<span class="linenos">188</span><span class="sd">        Parameters:</span>
+<span class="linenos">189</span><span class="sd">        -----------</span>
+<span class="linenos">190</span><span class="sd">            output (torch.Tensor):</span>
+<span class="linenos">191</span><span class="sd">              The output tensor from the generator.</span>
+<span class="linenos">192</span>
+<span class="linenos">193</span><span class="sd">            target (torch.Tensor):</span>
+<span class="linenos">194</span><span class="sd">              The target tensor for comparison.</span>
+<span class="linenos">195</span>
+<span class="linenos">196</span><span class="sd">            epoch (int):</span>
+<span class="linenos">197</span><span class="sd">              The current training epoch.</span>
+<span class="linenos">198</span>
+<span class="linenos">199</span><span class="sd">        Returns:</span>
+<span class="linenos">200</span><span class="sd">        --------</span>
+<span class="linenos">201</span><span class="sd">            Dictionary with the following keys:</span>
+<span class="linenos">202</span>
+<span class="linenos">203</span><span class="sd">            - &quot;generator_loss&quot;: The total generator loss, which includes perceptual loss, TV loss, and adversarial loss.</span>
+<span class="linenos">204</span>
+<span class="linenos">205</span><span class="sd">            - &quot;content_loss&quot;: The content loss (perceptual loss).</span>
+<span class="linenos">206</span>
+<span class="linenos">207</span><span class="sd">            - &quot;adversarial_loss&quot;: The adversarial loss computed from the critic.</span>
+<span class="linenos">208</span>
+<span class="linenos">209</span><span class="sd">        **TODO**:</span>
+<span class="linenos">210</span>
+<span class="linenos">211</span><span class="sd">        - Compute the adversarial loss by running the generator images through the critic and **taking the mean**. Then scale it by 0.01.</span>
+<span class="linenos">212</span>
+<span class="linenos">213</span><span class="sd">        - Compute the linear scaling factor for the adversarial loss based on the current epoch. The scaling factor should be 0 in the first epoch and increase linearly to 1 by epoch 5.</span>
+<span class="linenos">214</span>
+<span class="linenos">215</span><span class="sd">        - Compute the content loss as the sum of perceptual loss and TV loss. Scale the TV loss by 0.1 to reduce its impact on the total loss.</span>
+<span class="linenos">216</span>
+<span class="linenos">217</span><span class="sd">        - Compute the total generator loss as the sum of content loss and the **negative** adversarial loss scaled by the linear scaling factor.</span>
+<span class="linenos">218</span>
+<span class="linenos">219</span><span class="sd">        - Return a dictionary containing the total generator loss, content loss, and adversarial loss.</span>
+<span class="linenos">220</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">221</span>        <span class="n">adversarial_loss</span> <span class="o">=</span> <span class="mf">0.01</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="p">(</span><span class="n">output</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="linenos">222</span>
+<span class="linenos">223</span>        <span class="n">adversarial_lambda</span> <span class="o">=</span> <span class="nb">min</span><span class="p">(</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">epoch</span> <span class="o">/</span> <span class="mf">5.0</span><span class="p">)</span>
+<span class="linenos">224</span>
+<span class="linenos">225</span>        <span class="n">content_loss</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">perceptualLoss</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span> <span class="o">+</span> <span class="mf">0.1</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">tvLoss</span><span class="p">(</span><span class="n">output</span><span class="p">)</span>
+<span class="linenos">226</span>
+<span class="linenos">227</span>        <span class="k">return</span> <span class="p">{</span>
+<span class="linenos">228</span>            <span class="s2">&quot;generator_loss&quot;</span><span class="p">:</span> <span class="n">content_loss</span> <span class="o">-</span> <span class="n">adversarial_lambda</span> <span class="o">*</span> <span class="n">adversarial_loss</span><span class="p">,</span>
+<span class="linenos">229</span>            <span class="s2">&quot;content_loss&quot;</span><span class="p">:</span> <span class="n">content_loss</span><span class="p">,</span>
+<span class="linenos">230</span>            <span class="s2">&quot;adversarial_loss&quot;</span><span class="p">:</span> <span class="n">adversarial_loss</span><span class="p">,</span>
+<span class="linenos">231</span>        <span class="p">}</span>
+<span class="linenos">232</span>
+<span class="linenos">233</span>
+<span class="linenos">234</span><span class="k">class</span><span class="w"> </span><span class="nc">CriticLoss</span><span class="p">(</span><span class="n">nn</span><span class="o">.</span><span class="n">Module</span><span class="p">):</span>
+<span class="linenos">235</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">critic</span><span class="p">):</span>
+<span class="linenos">236</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Initialize the CriticLoss module.</span>
+<span class="linenos">237</span><span class="sd">        This module computes the loss for the critic model, including the gradient penalty to enforce the Lipschitz constraint.</span>
+<span class="linenos">238</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">239</span>        <span class="nb">super</span><span class="p">(</span><span class="n">CriticLoss</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">()</span>
+<span class="linenos">240</span>        <span class="bp">self</span><span class="o">.</span><span class="n">critic</span> <span class="o">=</span> <span class="n">critic</span>
+<span class="linenos">241</span>
+<span class="linenos">242</span>    <span class="k">def</span><span class="w"> </span><span class="nf">compute_gradient_penalty</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">real</span><span class="p">,</span> <span class="n">fake</span><span class="p">,</span> <span class="n">lambda_gp</span><span class="o">=</span><span class="mi">30</span><span class="p">):</span>
+<span class="linenos">243</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the gradient penalty for the critic.</span>
+<span class="linenos">244</span><span class="sd">        This function calculates the gradient penalty to enforce the Lipschitz constraint on the critic model.</span>
+<span class="linenos">245</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">246</span>
+<span class="linenos">247</span>        <span class="c1"># Generate random interpolation between real and fake images</span>
+<span class="linenos">248</span>        <span class="n">batch_size</span> <span class="o">=</span> <span class="n">real</span><span class="o">.</span><span class="n">size</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+<span class="linenos">249</span>        <span class="n">epsilon</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">rand</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="mi">1</span><span class="p">,</span> <span class="n">device</span><span class="o">=</span><span class="n">real</span><span class="o">.</span><span class="n">device</span><span class="p">)</span>
+<span class="linenos">250</span>        <span class="n">interpolated</span> <span class="o">=</span> <span class="p">(</span><span class="n">epsilon</span> <span class="o">*</span> <span class="n">real</span> <span class="o">+</span> <span class="p">(</span><span class="mi">1</span> <span class="o">-</span> <span class="n">epsilon</span><span class="p">)</span> <span class="o">*</span> <span class="n">fake</span><span class="p">)</span><span class="o">.</span><span class="n">requires_grad_</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
+<span class="linenos">251</span>
+<span class="linenos">252</span>        <span class="c1"># Compute the critic&#39;s output for the interpolated images</span>
+<span class="linenos">253</span>        <span class="n">critic_output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="p">(</span><span class="n">interpolated</span><span class="p">)</span>
+<span class="linenos">254</span>
+<span class="linenos">255</span>        <span class="c1"># Compute the gradients of the critic&#39;s output with respect to the interpolated images</span>
+<span class="linenos">256</span>        <span class="n">grad_outputs</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">ones_like</span><span class="p">(</span><span class="n">critic_output</span><span class="p">)</span>
+<span class="linenos">257</span>
+<span class="linenos">258</span>        <span class="n">gradients</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">autograd</span><span class="o">.</span><span class="n">grad</span><span class="p">(</span>
+<span class="linenos">259</span>            <span class="n">outputs</span><span class="o">=</span><span class="n">critic_output</span><span class="p">,</span>
+<span class="linenos">260</span>            <span class="n">inputs</span><span class="o">=</span><span class="n">interpolated</span><span class="p">,</span>
+<span class="linenos">261</span>            <span class="n">grad_outputs</span><span class="o">=</span><span class="n">grad_outputs</span><span class="p">,</span>
+<span class="linenos">262</span>            <span class="n">create_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="linenos">263</span>            <span class="n">retain_graph</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="linenos">264</span>            <span class="n">only_inputs</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
+<span class="linenos">265</span>        <span class="p">)[</span><span class="mi">0</span><span class="p">]</span>
+<span class="linenos">266</span>
+<span class="linenos">267</span>        <span class="c1"># Compute the gradient penalty</span>
+<span class="linenos">268</span>        <span class="n">gradients</span> <span class="o">=</span> <span class="n">gradients</span><span class="o">.</span><span class="n">view</span><span class="p">(</span><span class="n">batch_size</span><span class="p">,</span> <span class="o">-</span><span class="mi">1</span><span class="p">)</span>
+<span class="linenos">269</span>        <span class="n">gradient_norm</span> <span class="o">=</span> <span class="n">gradients</span><span class="o">.</span><span class="n">norm</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="n">dim</span><span class="o">=</span><span class="mi">1</span><span class="p">)</span>
+<span class="linenos">270</span>        <span class="n">gradient_penalty</span> <span class="o">=</span> <span class="p">((</span><span class="n">gradient_norm</span> <span class="o">-</span> <span class="mi">1</span><span class="p">)</span> <span class="o">**</span> <span class="mi">2</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">*</span> <span class="n">lambda_gp</span>
+<span class="linenos">271</span>
+<span class="linenos">272</span>        <span class="c1"># Return the gradient penalty and the gradient norm for logging purposes</span>
+<span class="linenos">273</span>        <span class="k">return</span> <span class="n">gradient_penalty</span><span class="p">,</span> <span class="n">gradient_norm</span>
+<span class="linenos">274</span>
+<span class="linenos">275</span>    <span class="k">def</span><span class="w"> </span><span class="nf">forward</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">real</span><span class="p">,</span> <span class="n">fake</span><span class="p">):</span>
+<span class="linenos">276</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Compute the critic loss, including the gradient penalty.</span>
+<span class="linenos">277</span><span class="sd">        Parameters:</span>
+<span class="linenos">278</span><span class="sd">        -----------</span>
+<span class="linenos">279</span><span class="sd">            real (torch.Tensor):</span>
+<span class="linenos">280</span><span class="sd">              The real images from the dataset.</span>
+<span class="linenos">281</span>
+<span class="linenos">282</span><span class="sd">            fake (torch.Tensor):</span>
+<span class="linenos">283</span><span class="sd">              The generated images from the generator model.</span>
+<span class="linenos">284</span>
+<span class="linenos">285</span><span class="sd">        Returns:</span>
+<span class="linenos">286</span><span class="sd">        --------</span>
+<span class="linenos">287</span><span class="sd">            Dictionary with the following keys:</span>
+<span class="linenos">288</span>
+<span class="linenos">289</span><span class="sd">            - &quot;loss_c&quot;: The total critic loss, which includes the WGAN loss and the gradient penalty (torch.Tensor).</span>
+<span class="linenos">290</span>
+<span class="linenos">291</span><span class="sd">            - &quot;gradient_norm&quot;: The gradient norm for logging purposes (torch.Tensor).</span>
+<span class="linenos">292</span>
+<span class="linenos">293</span><span class="sd">            - &quot;pure_wgan_loss&quot;: The pure WGAN loss (without gradient penalty) for logging purposes (torch.Tensor).</span>
+<span class="linenos">294</span>
+<span class="linenos">295</span><span class="sd">        **TODO**:</span>
+<span class="linenos">296</span><span class="sd">            - Calculate the WGAN loss as the difference between the **mean** critic score for real images and the **mean** critic score for fake images.</span>
+<span class="linenos">297</span>
+<span class="linenos">298</span><span class="sd">            - Compute the gradient penalty using the `compute_gradient_penalty` method. Note: This method returns both the gradient penalty and the gradient norm.</span>
+<span class="linenos">299</span>
+<span class="linenos">300</span><span class="sd">            - Return the total critic loss, gradient norm, and pure WGAN loss.</span>
+<span class="linenos">301</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">302</span>        <span class="n">gp</span><span class="p">,</span> <span class="n">gradient_norm</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">compute_gradient_penalty</span><span class="p">(</span><span class="n">real</span><span class="p">,</span> <span class="n">fake</span><span class="p">)</span>
+<span class="linenos">303</span>
+<span class="linenos">304</span>        <span class="n">loss_c</span> <span class="o">=</span> <span class="o">-</span><span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="p">(</span><span class="n">real</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span> <span class="o">+</span> <span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="p">(</span><span class="n">fake</span><span class="p">)</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span>
+<span class="linenos">305</span>
+<span class="linenos">306</span>        <span class="k">return</span> <span class="p">{</span>
+<span class="linenos">307</span>            <span class="s2">&quot;loss_c&quot;</span><span class="p">:</span> <span class="n">loss_c</span> <span class="o">+</span> <span class="n">gp</span><span class="p">,</span>
+<span class="linenos">308</span>            <span class="s2">&quot;gradient_norm&quot;</span><span class="p">:</span> <span class="n">gradient_norm</span><span class="p">,</span>
+<span class="linenos">309</span>            <span class="s2">&quot;pure_wgan_loss&quot;</span><span class="p">:</span> <span class="n">loss_c</span><span class="p">,</span>
+<span class="linenos">310</span>        <span class="p">}</span>
+<span class="linenos">311</span>
+<span class="linenos">312</span>
+<span class="linenos">313</span><span class="k">class</span><span class="w"> </span><span class="nc">UpscaleTrainer</span><span class="p">:</span>
+<span class="linenos">314</span>    <span class="k">def</span><span class="w"> </span><span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+<span class="linenos">315</span>        <span class="bp">self</span><span class="o">.</span><span class="n">criticUpdates</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="linenos">316</span>        <span class="bp">self</span><span class="o">.</span><span class="n">generator</span> <span class="o">=</span> <span class="n">Generator</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+<span class="linenos">317</span>        <span class="bp">self</span><span class="o">.</span><span class="n">critic</span> <span class="o">=</span> <span class="n">Critic</span><span class="p">()</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+<span class="linenos">318</span>
+<span class="linenos">319</span>        <span class="bp">self</span><span class="o">.</span><span class="n">generatorLoss</span> <span class="o">=</span> <span class="n">GeneratorLoss</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+<span class="linenos">320</span>        <span class="bp">self</span><span class="o">.</span><span class="n">criticLoss</span> <span class="o">=</span> <span class="n">CriticLoss</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="p">)</span><span class="o">.</span><span class="n">cuda</span><span class="p">()</span>
+<span class="linenos">321</span>
+<span class="linenos">322</span>        <span class="bp">self</span><span class="o">.</span><span class="n">optimGenerator</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.0005</span><span class="p">)</span>
+<span class="linenos">323</span>        <span class="bp">self</span><span class="o">.</span><span class="n">optimCritic</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">optim</span><span class="o">.</span><span class="n">Adam</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">lr</span><span class="o">=</span><span class="mf">0.0001</span><span class="p">)</span>
+<span class="linenos">324</span>
+<span class="linenos">325</span>        <span class="c1"># Count and print parameters</span>
+<span class="linenos">326</span>        <span class="n">gen_params</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+<span class="linenos">327</span>        <span class="n">critic_params</span> <span class="o">=</span> <span class="nb">sum</span><span class="p">(</span><span class="n">p</span><span class="o">.</span><span class="n">numel</span><span class="p">()</span> <span class="k">for</span> <span class="n">p</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">critic</span><span class="o">.</span><span class="n">parameters</span><span class="p">())</span>
+<span class="linenos">328</span>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Generator parameters: </span><span class="si">{</span><span class="n">gen_params</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">329</span>        <span class="nb">print</span><span class="p">(</span><span class="sa">f</span><span class="s2">&quot;Critic parameters: </span><span class="si">{</span><span class="n">critic_params</span><span class="si">:</span><span class="s2">,</span><span class="si">}</span><span class="s2">&quot;</span><span class="p">)</span>
+<span class="linenos">330</span>
+<span class="linenos">331</span>    <span class="k">def</span><span class="w"> </span><span class="nf">train_critic</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">):</span>
+<span class="linenos">332</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Train the critic model on a batch of input and target images.</span>
+<span class="linenos">333</span>
+<span class="linenos">334</span><span class="sd">        Parameters:</span>
+<span class="linenos">335</span><span class="sd">        -----------</span>
+<span class="linenos">336</span><span class="sd">            input (torch.Tensor):</span>
+<span class="linenos">337</span><span class="sd">              The input tensor containing the images to be processed by the generator.</span>
+<span class="linenos">338</span>
+<span class="linenos">339</span><span class="sd">            target (torch.Tensor):</span>
+<span class="linenos">340</span><span class="sd">              The target tensor containing the ground truth images for comparison.</span>
+<span class="linenos">341</span>
+<span class="linenos">342</span><span class="sd">        Returns:</span>
+<span class="linenos">343</span><span class="sd">        --------</span>
+<span class="linenos">344</span><span class="sd">            dict: A dictionary containing the gradient norm and the critic loss with the following keys:.</span>
+<span class="linenos">345</span>
+<span class="linenos">346</span><span class="sd">                &quot;gradient_norm&quot;:  The gradient norm computed during the training of the critic (float).</span>
+<span class="linenos">347</span><span class="sd">                &quot;loss_c&quot;: The critic loss computed during the training (float).</span>
+<span class="linenos">348</span>
+<span class="linenos">349</span><span class="sd">        **TODO**:</span>
+<span class="linenos">350</span>
+<span class="linenos">351</span><span class="sd">        - Pass the input tensor through the generator to obtain the generator output.</span>
+<span class="linenos">352</span>
+<span class="linenos">353</span><span class="sd">        - Zero the gradients of the critic optimizer (self.optimCritic).</span>
+<span class="linenos">354</span>
+<span class="linenos">355</span><span class="sd">        - Compute the critic loss using the `CriticLoss` module, which includes the WGAN loss and the gradient penalty.</span>
+<span class="linenos">356</span><span class="sd">          Store the gradient norm and the critic loss for later so you can return it.</span>
+<span class="linenos">357</span>
+<span class="linenos">358</span><span class="sd">        - Backpropagate the critic loss to compute the gradients.</span>
+<span class="linenos">359</span>
+<span class="linenos">360</span><span class="sd">        - Clip the gradients of the generator to prevent exploding gradients (use `torch.nn.utils.clip_grad_norm_ https://docs.pytorch.org/docs/stable/generated/torch.nn.utils.clip_grad_norm_.html&gt;`_ with `max_norm=5.0`).</span>
+<span class="linenos">361</span>
+<span class="linenos">362</span><span class="sd">        - Step the critic optimizer to update the critic&#39;s parameters.</span>
+<span class="linenos">363</span>
+<span class="linenos">364</span><span class="sd">        - Return a dictionary containing the gradient norm and the critic loss.</span>
+<span class="linenos">365</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">366</span>        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+<span class="linenos">367</span>
+<span class="linenos">368</span>        <span class="bp">self</span><span class="o">.</span><span class="n">optimCritic</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+<span class="linenos">369</span>        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">criticLoss</span><span class="p">(</span><span class="n">target</span><span class="p">,</span> <span class="n">output</span><span class="p">)</span>
+<span class="linenos">370</span>        <span class="n">critic_loss</span><span class="p">,</span> <span class="n">gradient_norm</span><span class="p">,</span> <span class="n">loss_c</span> <span class="o">=</span> <span class="p">(</span>
+<span class="linenos">371</span>            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;loss_c&quot;</span><span class="p">],</span>
+<span class="linenos">372</span>            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;gradient_norm&quot;</span><span class="p">],</span>
+<span class="linenos">373</span>            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;pure_wgan_loss&quot;</span><span class="p">],</span>
+<span class="linenos">374</span>        <span class="p">)</span>
+<span class="linenos">375</span>        <span class="n">critic_loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="linenos">376</span>        <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">clip_grad_norm_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">max_norm</span><span class="o">=</span><span class="mf">5.0</span><span class="p">)</span> <span class="c1"># THIS IS A BUG, IT SHOULD BE self.critic.parameters()</span>
+<span class="linenos">377</span>        <span class="bp">self</span><span class="o">.</span><span class="n">optimCritic</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+<span class="linenos">378</span>
+<span class="linenos">379</span>        <span class="k">return</span> <span class="p">{</span>
+<span class="linenos">380</span>            <span class="s2">&quot;gradient_norm&quot;</span><span class="p">:</span> <span class="n">gradient_norm</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+<span class="linenos">381</span>            <span class="s2">&quot;loss_c&quot;</span><span class="p">:</span> <span class="n">loss_c</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+<span class="linenos">382</span>        <span class="p">}</span>
+<span class="linenos">383</span>
+<span class="linenos">384</span>    <span class="k">def</span><span class="w"> </span><span class="nf">train_generator</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">epoch</span><span class="p">):</span>
+<span class="linenos">385</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Train the generator model on a batch of input and target images.</span>
+<span class="linenos">386</span>
+<span class="linenos">387</span><span class="sd">        Parameters:</span>
+<span class="linenos">388</span><span class="sd">        -----------</span>
+<span class="linenos">389</span><span class="sd">            input (torch.Tensor):</span>
+<span class="linenos">390</span><span class="sd">                The input tensor containing the images to be processed by the generator.</span>
+<span class="linenos">391</span>
+<span class="linenos">392</span><span class="sd">            target (torch.Tensor):</span>
+<span class="linenos">393</span><span class="sd">                The target tensor containing the ground truth images for comparison.</span>
+<span class="linenos">394</span>
+<span class="linenos">395</span><span class="sd">            epoch (int):</span>
+<span class="linenos">396</span><span class="sd">            The current training epoch, used to scale the adversarial loss.</span>
+<span class="linenos">397</span>
+<span class="linenos">398</span><span class="sd">        Returns:</span>
+<span class="linenos">399</span><span class="sd">        --------</span>
+<span class="linenos">400</span><span class="sd">            dict: A dictionary containing the total generator loss, content loss, adversarial loss, and gradient norm with the following keys:</span>
+<span class="linenos">401</span><span class="sd">                &quot;loss&quot;: The total generator loss (float).</span>
+<span class="linenos">402</span><span class="sd">                &quot;content_loss&quot;: The content loss (float).</span>
+<span class="linenos">403</span><span class="sd">                &quot;adversarial_loss&quot;: The adversarial loss (float).</span>
+<span class="linenos">404</span><span class="sd">                &quot;gradient_norm&quot;: The gradient norm (float).</span>
+<span class="linenos">405</span><span class="sd">                &quot;output&quot;: The output tensor from the generator (torch.Tensor).</span>
+<span class="linenos">406</span>
+<span class="linenos">407</span><span class="sd">        **TODO**:</span>
+<span class="linenos">408</span>
+<span class="linenos">409</span><span class="sd">        - Zero the gradients of the generator optimizer (self.optimGenerator).</span>
+<span class="linenos">410</span>
+<span class="linenos">411</span><span class="sd">        - Pass the input tensor through the generator to obtain the generated upsample image.</span>
+<span class="linenos">412</span>
+<span class="linenos">413</span><span class="sd">        - Compute the generator loss using the `GeneratorLoss` module, which includes perceptual loss, TV loss, and adversarial loss.</span>
+<span class="linenos">414</span><span class="sd">          Store the content loss, adversarial loss, and total generator loss for later so you can return it.</span>
+<span class="linenos">415</span>
+<span class="linenos">416</span><span class="sd">        - Backpropagate the total generator loss to compute the gradients.</span>
+<span class="linenos">417</span>
+<span class="linenos">418</span><span class="sd">        - Clip the gradients of the generator to prevent exploding gradients (use `torch.nn.utils.clip_grad_norm_ https://docs.pytorch.org/docs/stable/generated/torch.nn.utils.clip_grad_norm_.html&gt;`_ with `max_norm=1.0`).</span>
+<span class="linenos">419</span>
+<span class="linenos">420</span><span class="sd">        - Call `torch.nn.utils.clip_grad_norm_` again with `max_norm=1e9` and store the gradient norm for later so you can return it.</span>
+<span class="linenos">421</span>
+<span class="linenos">422</span><span class="sd">        - Step the generator optimizer to update the generator&#39;s parameters.</span>
+<span class="linenos">423</span>
+<span class="linenos">424</span><span class="sd">        - Return a dictionary containing the total generator loss, content loss, adversarial loss, the output and the gradient norm.</span>
+<span class="linenos">425</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">426</span>        <span class="bp">self</span><span class="o">.</span><span class="n">optimGenerator</span><span class="o">.</span><span class="n">zero_grad</span><span class="p">()</span>
+<span class="linenos">427</span>        <span class="n">output</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="p">(</span><span class="nb">input</span><span class="p">)</span>
+<span class="linenos">428</span>
+<span class="linenos">429</span>        <span class="n">result</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">generatorLoss</span><span class="p">(</span><span class="n">output</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
+<span class="linenos">430</span>        <span class="n">loss</span><span class="p">,</span> <span class="n">content_loss</span><span class="p">,</span> <span class="n">adversarial_loss</span> <span class="o">=</span> <span class="p">(</span>
+<span class="linenos">431</span>            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;generator_loss&quot;</span><span class="p">],</span>
+<span class="linenos">432</span>            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;content_loss&quot;</span><span class="p">],</span>
+<span class="linenos">433</span>            <span class="n">result</span><span class="p">[</span><span class="s2">&quot;adversarial_loss&quot;</span><span class="p">],</span>
+<span class="linenos">434</span>        <span class="p">)</span>
+<span class="linenos">435</span>
+<span class="linenos">436</span>        <span class="n">loss</span><span class="o">.</span><span class="n">backward</span><span class="p">()</span>
+<span class="linenos">437</span>
+<span class="linenos">438</span>        <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">clip_grad_norm_</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">max_norm</span><span class="o">=</span><span class="mf">1.0</span><span class="p">)</span>
+<span class="linenos">439</span>        <span class="n">gen_norm</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">nn</span><span class="o">.</span><span class="n">utils</span><span class="o">.</span><span class="n">clip_grad_norm_</span><span class="p">(</span>
+<span class="linenos">440</span>            <span class="bp">self</span><span class="o">.</span><span class="n">generator</span><span class="o">.</span><span class="n">parameters</span><span class="p">(),</span> <span class="n">max_norm</span><span class="o">=</span><span class="mf">1e9</span>
+<span class="linenos">441</span>        <span class="p">)</span>
+<span class="linenos">442</span>
+<span class="linenos">443</span>        <span class="bp">self</span><span class="o">.</span><span class="n">optimGenerator</span><span class="o">.</span><span class="n">step</span><span class="p">()</span>
+<span class="linenos">444</span>
+<span class="linenos">445</span>        <span class="k">return</span> <span class="p">{</span>
+<span class="linenos">446</span>            <span class="s2">&quot;loss&quot;</span><span class="p">:</span> <span class="n">loss</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+<span class="linenos">447</span>            <span class="s2">&quot;content_loss&quot;</span><span class="p">:</span> <span class="n">content_loss</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+<span class="linenos">448</span>            <span class="s2">&quot;adversarial_loss&quot;</span><span class="p">:</span> <span class="n">adversarial_loss</span><span class="o">.</span><span class="n">mean</span><span class="p">()</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+<span class="linenos">449</span>            <span class="s2">&quot;gradient_norm&quot;</span><span class="p">:</span> <span class="n">gen_norm</span><span class="o">.</span><span class="n">item</span><span class="p">(),</span>
+<span class="linenos">450</span>            <span class="s2">&quot;output&quot;</span><span class="p">:</span> <span class="n">output</span><span class="o">.</span><span class="n">detach</span><span class="p">()</span> <span class="k">if</span> <span class="n">output</span> <span class="ow">is</span> <span class="ow">not</span> <span class="kc">None</span> <span class="k">else</span> <span class="kc">None</span><span class="p">,</span>
+<span class="linenos">451</span>        <span class="p">}</span>
+<span class="linenos">452</span>
+<span class="linenos">453</span>    <span class="k">def</span><span class="w"> </span><span class="nf">train_batch</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">epoch</span><span class="p">):</span>
+<span class="linenos">454</span><span class="w">        </span><span class="sd">&quot;&quot;&quot;Train a batch of images using the critic and generator models.</span>
+<span class="linenos">455</span>
+<span class="linenos">456</span><span class="sd">        Parameters:</span>
+<span class="linenos">457</span><span class="sd">        -----------</span>
+<span class="linenos">458</span><span class="sd">            input (torch.Tensor):</span>
+<span class="linenos">459</span><span class="sd">              The input tensor containing the images to be processed by the generator.</span>
+<span class="linenos">460</span>
+<span class="linenos">461</span><span class="sd">            target (torch.Tensor):</span>
+<span class="linenos">462</span><span class="sd">              The target tensor containing the ground truth images for comparison.</span>
+<span class="linenos">463</span>
+<span class="linenos">464</span><span class="sd">            epoch (int):</span>
+<span class="linenos">465</span><span class="sd">              The current training epoch, used to scale the adversarial loss.</span>
+<span class="linenos">466</span>
+<span class="linenos">467</span><span class="sd">        Returns:</span>
+<span class="linenos">468</span><span class="sd">        --------</span>
+<span class="linenos">469</span><span class="sd">            A dictionary containing the scores from the critic and generator models with the following keys:</span>
+<span class="linenos">470</span><span class="sd">            - &quot;critic&quot;: A dictionary containing the critic scores with keys &quot;gradient_norm&quot; and &quot;loss_c&quot;.</span>
+<span class="linenos">471</span><span class="sd">            - &quot;generator&quot;: A dictionary containing the generator scores with keys &quot;loss&quot;, &quot;content_loss&quot;, &quot;adversarial_loss&quot;, &quot;gradient_norm&quot;, and &quot;output&quot;.</span>
+<span class="linenos">472</span>
+<span class="linenos">473</span><span class="sd">        **TODO**:</span>
+<span class="linenos">474</span>
+<span class="linenos">475</span><span class="sd">        - Train the critic model using the `train_critic` method with the input and target tensors.</span>
+<span class="linenos">476</span>
+<span class="linenos">477</span><span class="sd">        - Increment the critic updates counter (self.criticUpdates).</span>
+<span class="linenos">478</span>
+<span class="linenos">479</span><span class="sd">        - If the critic updates counter is 5 or the epoch is less than 1,</span>
+<span class="linenos">480</span><span class="sd">          train the generator model using the `train_generator` method with the input and target tensors, and the current epoch. Also reset the critic updates counter to 0.</span>
+<span class="linenos">481</span>
+<span class="linenos">482</span><span class="sd">        - If the critic updates counter is not 5 and the epoch is greater than or equal to 1, skip training the generator and set the generator scores to None.</span>
+<span class="linenos">483</span>
+<span class="linenos">484</span><span class="sd">        - Return the critic scores and generator scores (if available)</span>
+<span class="linenos">485</span><span class="sd">        &quot;&quot;&quot;</span>
+<span class="linenos">486</span>        <span class="c1"># Train Critic every step</span>
+<span class="linenos">487</span>        <span class="n">scoresCritic</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_critic</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">)</span>
+<span class="linenos">488</span>        <span class="bp">self</span><span class="o">.</span><span class="n">criticUpdates</span> <span class="o">+=</span> <span class="mi">1</span>
+<span class="linenos">489</span>
+<span class="linenos">490</span>        <span class="c1"># Train Generator only every 4th step</span>
+<span class="linenos">491</span>        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">criticUpdates</span> <span class="o">==</span> <span class="mi">5</span> <span class="ow">or</span> <span class="n">epoch</span> <span class="o">&lt;</span> <span class="mi">1</span><span class="p">:</span>
+<span class="linenos">492</span>            <span class="n">scoresGenerator</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">train_generator</span><span class="p">(</span><span class="nb">input</span><span class="p">,</span> <span class="n">target</span><span class="p">,</span> <span class="n">epoch</span><span class="p">)</span>
+<span class="linenos">493</span>            <span class="bp">self</span><span class="o">.</span><span class="n">criticUpdates</span> <span class="o">=</span> <span class="mi">0</span>
+<span class="linenos">494</span>        <span class="k">else</span><span class="p">:</span>
+<span class="linenos">495</span>            <span class="n">scoresGenerator</span> <span class="o">=</span> <span class="kc">None</span>
+<span class="linenos">496</span>
+<span class="linenos">497</span>        <span class="k">return</span> <span class="p">{</span><span class="s2">&quot;critic&quot;</span><span class="p">:</span> <span class="n">scoresCritic</span><span class="p">,</span> <span class="s2">&quot;generator&quot;</span><span class="p">:</span> <span class="n">scoresGenerator</span><span class="p">}</span>
+<span class="linenos">498</span>
+<span class="linenos">499</span>
+<span class="linenos">500</span><span class="k">if</span> <span class="vm">__name__</span> <span class="o">==</span> <span class="s2">&quot;__main__&quot;</span><span class="p">:</span>
+<span class="linenos">501</span>    <span class="n">prefix</span> <span class="o">=</span> <span class="s2">&quot;upscale4x_adversarialloss&quot;</span>
+<span class="linenos">502</span>
+<span class="linenos">503</span>    <span class="n">dataloader</span> <span class="o">=</span> <span class="n">get_dataloader</span><span class="p">(</span><span class="n">inputSize</span><span class="o">=</span><span class="mi">64</span><span class="p">,</span> <span class="n">outputSize</span><span class="o">=</span><span class="mi">256</span><span class="p">,</span> <span class="n">batch_size</span><span class="o">=</span><span class="mi">48</span><span class="p">)</span>
+<span class="linenos">504</span>
+<span class="linenos">505</span>    <span class="n">trainer</span> <span class="o">=</span> <span class="n">UpscaleTrainer</span><span class="p">()</span>
+<span class="linenos">506</span>
+<span class="linenos">507</span>    <span class="n">train</span><span class="p">(</span><span class="n">prefix</span><span class="p">,</span> <span class="n">trainer</span><span class="p">,</span> <span class="n">dataloader</span><span class="p">)</span>
+</pre></div>
+</div>
+</section>
+
+
+           </div>
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>&#169; Copyright 2025, Prof. Dr. Dennis Müller.</p>
+  </div>
+
+  Erstellt mit <a href="https://www.sphinx-doc.org/">Sphinx</a> mit einem
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    bereitgestellt von <a href="https://readthedocs.org">Read the Docs</a>.
+   
+
+</footer>
+        </div>
+      </div>
+    </section>
+  </div>
+  <script>
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script> 
+
+</body>
+</html>

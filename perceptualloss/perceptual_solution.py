@@ -69,12 +69,12 @@ class VGG16PerceptualLoss(nn.Module):
 
         return self.l1_loss(f1, f2)
 
+
 class TVLoss(nn.Module):
     def __init__(self):
         super(TVLoss, self).__init__()
 
     def forward(self, img):
-        return (
-            torch.mean(torch.abs(img[:, :, :-1, :] - img[:, :, 1:, :]))
-            + torch.mean(torch.abs(img[:, :, :, :-1] - img[:, :, :, 1:]))
+        return torch.mean(torch.abs(img[:, :, :-1, :] - img[:, :, 1:, :])) + torch.mean(
+            torch.abs(img[:, :, :, :-1] - img[:, :, :, 1:])
         )

@@ -53,14 +53,22 @@ class Critic(nn.Module):
         )
 
     def _block(self, in_channels, out_channels, kernel_size, stride, padding):
-        return ResNetBlock(
-            in_channels,
-            out_channels,
-            kernel_size=kernel_size,
-            padding=padding, 
-            stride=stride,
-            norm=False
-        )
+        stride = [stride] + [1] * 2 
+        layers = []
+        for s in stride:
+            layers.append(
+                ResNetBlock(
+                    in_channels=in_channels,
+                    out_channels=out_channels,
+                    kernel_size=kernel_size,
+                    padding=padding,
+                    stride=s,
+                    norm=False
+                  ))
+            in_channels = out_channels
+
+        return nn.Sequential(*layers)
+    
     def forward(self, x):
         return self.disc(x)
 
@@ -145,6 +153,7 @@ class Generator(nn.Module):
         
         return nn.Sequential(
             ResNetBlock(in_channels=in_channels, out_channels=out_channels, kernel_size=kernel_size, padding=padding, stride=1, norm=True),
+            ResNetBlock(in_channels=out_channels, out_channels=out_channels, kernel_size=kernel_size, padding=padding, stride=1, norm=True),
             nn.Conv2d(out_channels, out_channels * 4, kernel_size=1, padding=0),
             nn.PixelShuffle(upscale_factor=2),
             nn.ReLU()
@@ -162,7 +171,7 @@ class GeneratorLoss(nn.Module):
 
     def forward(self, img, epoch):
         #self.critic.eval()
-        adversarial_loss = torch.tanh(0.001 * self.critic(img)).mean()
+        adversarial_loss = torch.tanh(0.01 * self.critic(img)).mean()
 
         adversarial_lambda = 1.0# min(1.0, epoch / 5.0)
 
@@ -231,8 +240,8 @@ class CriticLoss(nn.Module):
 class UpscaleTrainer:
     def __init__(self):
         self.criticUpdates = 0
-        self.generator = Generator(100, 3, 64).cuda()
-        self.critic = Critic(3, 160).cuda()
+        self.generator = Generator(100, 3, 96).cuda()
+        self.critic = Critic(3, 164).cuda()
 
         initialize_weights(self.generator)
         initialize_weights(self.critic)
@@ -262,7 +271,7 @@ class UpscaleTrainer:
             result["pure_wgan_loss"],
         )
         critic_loss.backward()
-        #torch.nn.utils.clip_grad_norm_(self.critic.parameters(), max_norm=150.0)
+        torch.nn.utils.clip_grad_norm_(self.critic.parameters(), max_norm=5.0)
         self.optimCritic.step()
 
         return {
@@ -284,7 +293,7 @@ class UpscaleTrainer:
 
         loss.backward()
 
-        #torch.nn.utils.clip_grad_norm_(self.generator.parameters(), max_norm=150.0)
+        torch.nn.utils.clip_grad_norm_(self.generator.parameters(), max_norm=5.0)
         gen_norm = torch.nn.utils.clip_grad_norm_(
             self.generator.parameters(), max_norm=1e9
         )
@@ -324,7 +333,7 @@ class UpscaleTrainer:
 if __name__ == "__main__":
     prefix = "gan64"
 
-    dataloader = get_dataloader(batch_size=256)
+    dataloader = get_dataloader(batch_size=128)
 
     trainer = UpscaleTrainer()
 

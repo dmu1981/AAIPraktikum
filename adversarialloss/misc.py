@@ -204,6 +204,7 @@ class ResNetBlock(nn.Module):
         out = out + residual
         return self.bn2(self.relu(out))
 
+
 def save_checkpoint(checkpoint_dict, epoch, filename="checkpoint.pth"):
     """Speichert den aktuellen Zustand des Modells und des Optimierers in einer Datei."""
 
@@ -253,11 +254,11 @@ class TVLoss(nn.Module):
         super(TVLoss, self).__init__()
 
     def forward(self, img):
-        return (
-            torch.mean(torch.abs(img[:, :, :-1, :] - img[:, :, 1:, :]))
-            + torch.mean(torch.abs(img[:, :, :, :-1] - img[:, :, :, 1:]))
+        return torch.mean(torch.abs(img[:, :, :-1, :] - img[:, :, 1:, :])) + torch.mean(
+            torch.abs(img[:, :, :, :-1] - img[:, :, :, 1:])
         )
-    
+
+
 # Denormalize images
 def denormalize(tensor):
     mean = torch.tensor([0.485, 0.456, 0.406]).view(3, 1, 1).cuda()
@@ -404,9 +405,8 @@ def train(prefix, trainer, dataloader):
             input = input.cuda()
             target = target.cuda()
 
-            scoresCritic, scoresGenerator = trainer.train_batch(
-                input, target, epoch
-            )
+            result = trainer.train_batch(input, target, epoch)
+            scoresCritic, scoresGenerator = (result["critic"], result["generator"])
             output = scoresGenerator["output"] if scoresGenerator is not None else None
 
             if scoresCritic is not None:

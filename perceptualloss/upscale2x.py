@@ -50,6 +50,7 @@ class Upscale2x(nn.Module):
         """
         pass
 
+
 class GeneratorLoss(nn.Module):
     def __init__(self):
         super(GeneratorLoss, self).__init__()
@@ -58,8 +59,9 @@ class GeneratorLoss(nn.Module):
         self.tvLoss = TVLoss()
 
     def forward(self, output, target):
-          return self.perceptualLoss(output, target) + 0.1 * self.tvLoss(output)
-    
+        return self.perceptualLoss(output, target) + 0.1 * self.tvLoss(output)
+
+
 if __name__ == "__main__":
     prefix = "upscale2x_perceptual"
 
